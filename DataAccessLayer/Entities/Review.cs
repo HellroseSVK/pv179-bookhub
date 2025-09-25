@@ -9,6 +9,7 @@ namespace DataAccessLayer.Entities
     public class Review : BaseEntity
     {
         public double Rating { get; set; }
+
         public string Body { get; set; }
     }
 }

@@ -1,10 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DataAccessLayer.Entities;
+using Microsoft.EntityFrameworkCore;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace DataAccessLayer
 {
     public class CustomDBContext : DbContext
     {
-        // public DbSet<User> Users { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<Book> Books { get; set; }
+        public DbSet<Genre> Genres { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -12,7 +20,7 @@ namespace DataAccessLayer
             var dbPath = Path.Join(Environment.GetFolderPath(folder), "BookHub.db");
 
             optionsBuilder
-                .UseSqlite($"Data Source={dbPath}")
+                .UseSqlite($"Data Source={dbPath}") // Windows path: $USER/AppData/Local/BookHub.db
                 .LogTo(s => System.Diagnostics.Debug.WriteLine(s));
         }
 
@@ -24,8 +32,10 @@ namespace DataAccessLayer
                 relationship.DeleteBehavior = DeleteBehavior.SetNull;
             }
 
+            // TODO:
             /* one-to-many relationship */
 
+            // TODO:
             /* many-to-many relationship */
 
             modelBuilder.Seed();
