@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
 
             if (book == null)
             {
-                return BadRequest("No book was found.");
+                return NotFound("No book was found.");
             }
 
             return Ok(book);
@@ -91,7 +91,7 @@ namespace WebAPI.Controllers
 
             await _DBContext.SaveChangesAsync();
 
-            return Ok(book);
+            return Created();
 
         }
 
@@ -110,7 +110,7 @@ namespace WebAPI.Controllers
 
             if (book == null)
             {
-                return BadRequest("No book was found.");
+                return NotFound("No book was found.");
             }
 
             // map the model to the entity
@@ -153,7 +153,7 @@ namespace WebAPI.Controllers
 
             await _DBContext.SaveChangesAsync();
 
-            return Ok();
+            return NoContent();
 
         }
     }
