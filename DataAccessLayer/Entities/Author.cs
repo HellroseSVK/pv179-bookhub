@@ -11,5 +11,7 @@ namespace DataAccessLayer.Entities
         public string Name { get; set; }
 
         public string Surname { get; set; }
+
+        public List<Book> Books { get; set; }
     }
 }

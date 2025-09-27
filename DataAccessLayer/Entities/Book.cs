@@ -15,21 +15,18 @@ namespace DataAccessLayer.Entities
         
         public decimal Price {  get; set; }
         
-        [ForeignKey("Author")]
-        public int AuthorId { get; set; }
-        
-        public Author Author { get; set; }
+        public List<Author> Authors { get; set; }
 
-        [ForeignKey("Genre")]
-        public int GenreId { get; set; }
+        public List<Genre> Genres { get; set; }
 
-        public Genre Genre { get; set; }
+        public List<Review> Reviews { get; set; }
+
+        public List<Wishlist> Wishlists { get; set; }
 
         [ForeignKey("Publisher")]
         public int PublisherId { get; set; }
 
         public Publisher Publisher { get; set; }
 
-        public List<Review> Reviews { get; set; }
     }
 }

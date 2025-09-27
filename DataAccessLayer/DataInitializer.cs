@@ -14,28 +14,28 @@ namespace DataAccessLayer
         {
             // TODO: Seed the data in correct order! (foreign keys)
 
-            var users = PrepareUsers();
-            var wishlists = PrepareWishlists();
-            var reviews = PrepareReviews();
-            var publishers = PreparePublishers();
             var genres = PrepareGenres();
-            var books = PrepareBooks();
+            var publishers = PreparePublishers();
             var authors = PrepareAuthors();
+            var wishlists = PrepareWishlists();
+            var users = PrepareUsers();
+            var books = PrepareBooks();
+            var reviews = PrepareReviews();
 
-            modelBuilder.Entity<User>()
-                .HasData(users);
-            modelBuilder.Entity<Wishlist>()
-                .HasData(wishlists);
-            modelBuilder.Entity<Review>()
-                .HasData(reviews);
-            modelBuilder.Entity<Publisher>()
-                .HasData(publishers);
             modelBuilder.Entity<Genre>()
                 .HasData(genres);
-            modelBuilder.Entity<Book>()
-                .HasData(books);
+            modelBuilder.Entity<Publisher>()
+                .HasData(publishers);
             modelBuilder.Entity<Author>()
                 .HasData(authors);
+            modelBuilder.Entity<Wishlist>()
+                .HasData(wishlists);
+            modelBuilder.Entity<User>()
+                .HasData(users);
+            modelBuilder.Entity<Book>()
+                .HasData(books);
+            modelBuilder.Entity<Review>()
+                .HasData(reviews);
         }
 
         private static List<Author> PrepareAuthors()
