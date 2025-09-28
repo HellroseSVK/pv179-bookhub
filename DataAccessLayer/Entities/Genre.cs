@@ -10,6 +10,6 @@ namespace DataAccessLayer.Entities
     {
         public string Name { get; set; }
 
-        public List<Book> Books { get; set; }
+        public List<BookGenre> BookGenres { get; set; }
     }
 }
