@@ -21,6 +21,8 @@ namespace DataAccessLayer
             var users = PrepareUsers();
             var books = PrepareBooks();
             var reviews = PrepareReviews();
+            var bookAuthors = LinkBooksAndAuthors(books, authors);
+            var bookGenres = LinkBooksAndGenres(books, genres);
 
             modelBuilder.Entity<Genre>()
                 .HasData(genres);
@@ -71,6 +73,16 @@ namespace DataAccessLayer
         private static List<Wishlist> PrepareWishlists()
         {
             return new List<Wishlist>() { };
+        }
+
+        private static List<BookAuthor> LinkBooksAndAuthors(List<Book> books, List<Author> authors)
+        {
+            return new List<BookAuthor>();
+        }
+
+        private static List<BookGenre> LinkBooksAndGenres(List<Book> books, List<Genre> genres)
+        {
+            return new List<BookGenre>();
         }
     }
 }

@@ -1,4 +1,5 @@
 using DataAccessLayer;
+using WebAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,5 +24,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<StatusCodeExceptionMiddleware>();
 
 app.Run();
