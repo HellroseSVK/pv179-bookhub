@@ -77,7 +77,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType<List<Book>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<Book>(StatusCodes.Status200OK)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateBook(BookModel model)
@@ -112,7 +112,7 @@ namespace WebAPI.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        [ProducesResponseType<List<Book>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<Book>(StatusCodes.Status200OK)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateBook(int id, BookModel model)
@@ -169,7 +169,7 @@ namespace WebAPI.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        [ProducesResponseType<List<Book>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteBook(int id)
