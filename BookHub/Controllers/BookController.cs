@@ -31,7 +31,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("filter")]
         [ProducesResponseType<List<Book>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetBooks([FromQuery] BookFilter filter)
+        public async Task<IActionResult> FilterBooks([FromQuery] BookFilter filter)
         {
             var query = _dbContext.Books.AsQueryable();
 
@@ -60,7 +60,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType<List<Book>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<Book>(StatusCodes.Status200OK)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetBook(int id)
         {
