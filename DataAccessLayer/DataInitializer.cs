@@ -21,6 +21,8 @@ namespace DataAccessLayer
             var users = PrepareUsers();
             var books = PrepareBooks();
             var reviews = PrepareReviews();
+            var bookAuthors = LinkBooksAndAuthors(books, authors);
+            var bookGenres = LinkBooksAndGenres(books, genres);
 
             modelBuilder.Entity<Genre>()
                 .HasData(genres);
@@ -55,7 +57,19 @@ namespace DataAccessLayer
 
         private static List<Publisher> PreparePublishers()
         {
-            return new List<Publisher>() { };
+            return new List<Publisher>()
+            {
+                new Publisher { Id = 1, Name = "Bloomsbury Publishing Plc" },
+                new Publisher { Id = 2, Name = "Harper & Brothers" },
+                new Publisher { Id = 3, Name = "Canongate Books" },
+                new Publisher { Id = 4, Name = "Ian Allan Publishing" },
+                new Publisher { Id = 5, Name = "Bison Books" },
+                new Publisher { Id = 6, Name = "Ladybird Books" },
+                new Publisher { Id = 7, Name = "Harlequin Enterprises Ltd" },
+                new Publisher { Id = 8, Name = "Medknow Publications" },
+                new Publisher { Id = 9, Name = "University of California Press" },
+                new Publisher { Id = 10, Name = "Emerald Group Publishing" }
+            };
         }
 
         private static List<Review> PrepareReviews()
@@ -71,6 +85,16 @@ namespace DataAccessLayer
         private static List<Wishlist> PrepareWishlists()
         {
             return new List<Wishlist>() { };
+        }
+
+        private static List<BookAuthor> LinkBooksAndAuthors(List<Book> books, List<Author> authors)
+        {
+            return new List<BookAuthor>();
+        }
+
+        private static List<BookGenre> LinkBooksAndGenres(List<Book> books, List<Genre> genres)
+        {
+            return new List<BookGenre>();
         }
     }
 }

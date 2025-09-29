@@ -8,9 +8,9 @@
 
         public decimal Price { get; set; }
 
-        public int AuthorId { get; set; }
+        public List<int> AuthorIds { get; set; }
 
-        public int GenreId { get; set; }
+        public List<int> GenreIds { get; set; }
 
         public int PublisherId { get; set; }
     }

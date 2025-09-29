@@ -12,6 +12,6 @@ namespace DataAccessLayer.Entities
 
         public string Surname { get; set; }
 
-        public List<Book> Books { get; set; }
+        public List<BookAuthor> BookAuthors { get; set; }
     }
 }
