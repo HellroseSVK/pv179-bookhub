@@ -25,6 +25,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseMiddleware<LoggingMiddleware>();
 app.UseMiddleware<StatusCodeExceptionMiddleware>();
 
 app.Run();
