@@ -34,6 +34,14 @@ namespace DataAccessLayer
                 relationship.DeleteBehavior = DeleteBehavior.SetNull;
             }
 
+            // Setup DB creation of timestamps
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                modelBuilder.Entity(entityType.ClrType)
+                    .Property(nameof(BaseEntity.CreatedAt))
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            }
+
             // TODO:
             /* one-to-many relationship */
 
