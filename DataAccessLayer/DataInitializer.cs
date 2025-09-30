@@ -79,7 +79,17 @@ namespace DataAccessLayer
 
         private static List<User> PrepareUsers()
         {
-            return new List<User>() { };
+            return new List<User>() 
+            { 
+                new User { Id = 1, Email = "james.miller92@gmail.com", Password = "pbkdf2_sha256$100000$2133ad0a4d31462ef5766ff6b03c7987$f919d3c6f899fe09d8f3158618e63988a1d09daea26e0aeed5219768f1e2d199", IsAdmin = false, WishlistId = 1 },
+                new User { Id = 2, Email = "sarah.lee@outlook.com", Password = "pbkdf2_sha256$100000$0acfd8d2ff40624052f26f2fb3495254$93857a9a6b61f8f9098e639f645f7143d92006ce925fc50e7af534567cafe07f", IsAdmin = false, WishlistId = 2 },
+                new User { Id = 3, Email = "marco.rossi89@yahoo.com", Password = "pbkdf2_sha256$100000$6190de7b0dda9c8235e0e55455d43f2b$f33f0dfb4085e26e30dd79b9c9959a0a01a033155b4cfe8b9e8b9baa9670b8c3", IsAdmin = false, WishlistId = 3 },
+                new User { Id = 4, Email = "emily_watson@icloud.com", Password = "pbkdf2_sha256$100000$84beb8171db67abbd93e38551e232120$d47e1668e7ced2fa8462c530ea3f8081e118c4eeb69ba9f7d640c2f6e860fae7", IsAdmin = false, WishlistId = 4 },
+                new User { Id = 5, Email = "david.nguyen@protonmail.com", Password = "pbkdf2_sha256$100000$6a9df2a924d667a1bd472317344c8f26$45a2a5bc1f82bb6a1c61c33e434fd1b0c0e66cadb6b1bb4d4bffa89bd2687a3b", IsAdmin = false, WishlistId = 5 },
+                new User { Id = 6, Email = "lucas-johnson@live.com", Password = "pbkdf2_sha256$100000$f67ad2c96b570f5e8c7def3da9f9cc7b$75b5631e544d43972e646d51ab14479771044310b42d0901cb4e2a067192e4fa", IsAdmin = false, WishlistId = 6 },
+                new User { Id = 7, Email = "maria.garcia23@bookhub.com", Password = "pbkdf2_sha256$100000$6973359e189c00dff9c42cc516cca724$17ae99a40f51d065b02ad1ded4959166e67499c1c6f1fe7a1dea1036b3530dd6", IsAdmin = true, WishlistId = 7 },
+                new User { Id = 8, Email = "andrew.smith@bookhub.com", Password = "pbkdf2_sha256$100000$463d7f87b63f4843bd6b899bced0acdd$cb8c5551c30f874fb846de9c7cb56595e12baa83c346ad6950504c500519c002", IsAdmin = true, WishlistId = 8 },
+            };
         }
 
         private static List<Wishlist> PrepareWishlists()
