@@ -10,6 +10,8 @@ namespace DataAccessLayer.Entities
     public class WishlistItem : BaseEntity
     {
         [ForeignKey("Book")]
+        public int BookId { get; set; }
+
         public Book Book { get; set; }
 
         [ForeignKey("User")]
