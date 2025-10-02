@@ -20,7 +20,7 @@ namespace DataAccessLayer.Entities
 
         public List<Review> Reviews { get; set; }
 
-        public List<Wishlist> Wishlists { get; set; }
+        public List<WishlistItem> WishlistItems { get; set; }
 
         [ForeignKey("Publisher")]
         public int PublisherId { get; set; }

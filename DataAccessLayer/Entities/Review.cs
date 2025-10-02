@@ -11,7 +11,7 @@ namespace DataAccessLayer.Entities
     public class Review : BaseEntity
     {
         [Range(1, 5)]
-        public double Rating { get; set; }
+        public int Rating { get; set; }
 
         public string Body { get; set; }
 

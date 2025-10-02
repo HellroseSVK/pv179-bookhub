@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Entities
 {
-    public class Wishlist : BaseEntity
+    public class OrderItem : BaseEntity
     {
-        public List<Book> Books { get; set; }
+        [ForeignKey("Book")]
+        public int BookId { get; set; }
+
+        public Book Book { get; set; }
 
         [ForeignKey("User")]
         public int UserId { get; set; }

@@ -17,9 +17,8 @@ namespace DataAccessLayer.Entities
 
         public List<Review> Reviews { get; set; }
 
-        [ForeignKey("Wishlist")]
-        public int WishlistId { get; set; }
+        public List<WishlistItem> WishlistItems { get; set; }
 
-        public Wishlist Wishlist { get; set; }
+        public List<OrderItem> OrderItems { get; set; }
     }
 }

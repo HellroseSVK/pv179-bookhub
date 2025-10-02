@@ -17,7 +17,7 @@ namespace DataAccessLayer
             var genres = PrepareGenres();
             var publishers = PreparePublishers();
             var authors = PrepareAuthors();
-            var wishlists = PrepareWishlists();
+            var wishlistItems = PrepareWishlistItems();
             var users = PrepareUsers();
             var books = PrepareBooks();
             var reviews = PrepareReviews();
@@ -30,8 +30,8 @@ namespace DataAccessLayer
                 .HasData(publishers);
             modelBuilder.Entity<Author>()
                 .HasData(authors);
-            modelBuilder.Entity<Wishlist>()
-                .HasData(wishlists);
+            modelBuilder.Entity<WishlistItem>()
+                .HasData(wishlistItems);
             modelBuilder.Entity<User>()
                 .HasData(users);
             modelBuilder.Entity<Book>()
@@ -74,7 +74,24 @@ namespace DataAccessLayer
 
         private static List<Review> PrepareReviews()
         {
-            return new List<Review>() { };
+            return new List<Review>()
+            {
+                new Review { Id = 1, Rating = 1, Body = "I kept waiting for the story to pick up, but it never really went anywhere.", BookId = 1, UserId = 1 },
+                new Review { Id = 2, Rating = 2, Body = "The premise sounded great, but the execution was flat and predictable.", BookId = 2, UserId = 1 },
+                new Review { Id = 3, Rating = 3, Body = "A fast-paced read that kept me hooked, though the ending felt a bit rushed.", BookId = 3, UserId = 2 },
+                new Review { Id = 4, Rating = 4, Body = "Beautiful writing, but I struggled with the slow middle chapters.", BookId = 4, UserId = 3 },
+                new Review { Id = 5, Rating = 5, Body = "Loved the characters — they felt real and flawed in the best way.", BookId = 4, UserId = 4 },
+                new Review { Id = 6, Rating = 1, Body = "The characters felt one-dimensional and I couldn’t connect with any of them.", BookId = 2, UserId = 4 },
+                new Review { Id = 7, Rating = 2, Body = "Too many clichés and not enough originality — I lost interest halfway through.", BookId = 7, UserId = 4 },
+                new Review { Id = 8, Rating = 3, Body = "A solid story, though I guessed the twist halfway through.", BookId = 8, UserId = 6 },
+                new Review { Id = 9, Rating = 4, Body = "Enjoyable overall, but I didn’t connect with the main character.", BookId = 3, UserId = 8 },
+                new Review { Id = 10, Rating = 5, Body = "An emotional rollercoaster — I cried more than once.", BookId = 1, UserId = 8 }
+            };
+        }
+
+        private static List<OrderItem> PrepareOrderItems()
+        {
+            return new List<OrderItem>() { };
         }
 
         private static List<User> PrepareUsers()
@@ -92,9 +109,9 @@ namespace DataAccessLayer
             };
         }
 
-        private static List<Wishlist> PrepareWishlists()
+        private static List<WishlistItem> PrepareWishlistItems()
         {
-            return new List<Wishlist>() { };
+            return new List<WishlistItem>() { };
         }
 
         private static List<BookAuthor> LinkBooksAndAuthors(List<Book> books, List<Author> authors)
