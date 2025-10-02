@@ -17,9 +17,10 @@ namespace DataAccessLayer
             var genres = PrepareGenres();
             var publishers = PreparePublishers();
             var authors = PrepareAuthors();
-            var wishlistItems = PrepareWishlistItems();
             var users = PrepareUsers();
             var books = PrepareBooks();
+            var wishlistItems = PrepareWishlistItems();
+            var orderItems = PrepareOrderItems();
             var reviews = PrepareReviews();
             var bookAuthors = LinkBooksAndAuthors(books, authors);
             var bookGenres = LinkBooksAndGenres(books, genres);
@@ -30,14 +31,20 @@ namespace DataAccessLayer
                 .HasData(publishers);
             modelBuilder.Entity<Author>()
                 .HasData(authors);
-            modelBuilder.Entity<WishlistItem>()
-                .HasData(wishlistItems);
             modelBuilder.Entity<User>()
                 .HasData(users);
             modelBuilder.Entity<Book>()
                 .HasData(books);
+            modelBuilder.Entity<WishlistItem>()
+                .HasData(wishlistItems);
+            modelBuilder.Entity<OrderItem>()
+                .HasData(orderItems);
             modelBuilder.Entity<Review>()
                 .HasData(reviews);
+            modelBuilder.Entity<BookAuthor>()
+                .HasData(bookAuthors);
+            modelBuilder.Entity<BookGenre>()
+                .HasData(bookGenres);
         }
 
         private static List<Author> PrepareAuthors()
@@ -91,27 +98,51 @@ namespace DataAccessLayer
 
         private static List<OrderItem> PrepareOrderItems()
         {
-            return new List<OrderItem>() { };
+            return new List<OrderItem>() 
+            {
+                new OrderItem { Id = 1, BookId = 1, UserId = 1},
+                new OrderItem { Id = 2, BookId = 2, UserId = 1},
+                new OrderItem { Id = 3, BookId = 3, UserId = 2},
+                new OrderItem { Id = 4, BookId = 4, UserId = 3},
+                new OrderItem { Id = 5, BookId = 5, UserId = 4},
+                new OrderItem { Id = 6, BookId = 6, UserId = 5},
+                new OrderItem { Id = 7, BookId = 3, UserId = 6},
+                new OrderItem { Id = 8, BookId = 4, UserId = 6},
+                new OrderItem { Id = 9, BookId = 7, UserId = 6},
+                new OrderItem { Id = 10, BookId = 8, UserId = 6},
+            };
         }
 
         private static List<User> PrepareUsers()
         {
             return new List<User>() 
             { 
-                new User { Id = 1, Email = "james.miller92@gmail.com", Password = "pbkdf2_sha256$100000$2133ad0a4d31462ef5766ff6b03c7987$f919d3c6f899fe09d8f3158618e63988a1d09daea26e0aeed5219768f1e2d199", IsAdmin = false, WishlistId = 1 },
-                new User { Id = 2, Email = "sarah.lee@outlook.com", Password = "pbkdf2_sha256$100000$0acfd8d2ff40624052f26f2fb3495254$93857a9a6b61f8f9098e639f645f7143d92006ce925fc50e7af534567cafe07f", IsAdmin = false, WishlistId = 2 },
-                new User { Id = 3, Email = "marco.rossi89@yahoo.com", Password = "pbkdf2_sha256$100000$6190de7b0dda9c8235e0e55455d43f2b$f33f0dfb4085e26e30dd79b9c9959a0a01a033155b4cfe8b9e8b9baa9670b8c3", IsAdmin = false, WishlistId = 3 },
-                new User { Id = 4, Email = "emily_watson@icloud.com", Password = "pbkdf2_sha256$100000$84beb8171db67abbd93e38551e232120$d47e1668e7ced2fa8462c530ea3f8081e118c4eeb69ba9f7d640c2f6e860fae7", IsAdmin = false, WishlistId = 4 },
-                new User { Id = 5, Email = "david.nguyen@protonmail.com", Password = "pbkdf2_sha256$100000$6a9df2a924d667a1bd472317344c8f26$45a2a5bc1f82bb6a1c61c33e434fd1b0c0e66cadb6b1bb4d4bffa89bd2687a3b", IsAdmin = false, WishlistId = 5 },
-                new User { Id = 6, Email = "lucas-johnson@live.com", Password = "pbkdf2_sha256$100000$f67ad2c96b570f5e8c7def3da9f9cc7b$75b5631e544d43972e646d51ab14479771044310b42d0901cb4e2a067192e4fa", IsAdmin = false, WishlistId = 6 },
-                new User { Id = 7, Email = "maria.garcia23@bookhub.com", Password = "pbkdf2_sha256$100000$6973359e189c00dff9c42cc516cca724$17ae99a40f51d065b02ad1ded4959166e67499c1c6f1fe7a1dea1036b3530dd6", IsAdmin = true, WishlistId = 7 },
-                new User { Id = 8, Email = "andrew.smith@bookhub.com", Password = "pbkdf2_sha256$100000$463d7f87b63f4843bd6b899bced0acdd$cb8c5551c30f874fb846de9c7cb56595e12baa83c346ad6950504c500519c002", IsAdmin = true, WishlistId = 8 },
+                new User { Id = 1, Email = "james.miller92@gmail.com", Password = "pbkdf2_sha256$100000$2133ad0a4d31462ef5766ff6b03c7987$f919d3c6f899fe09d8f3158618e63988a1d09daea26e0aeed5219768f1e2d199", IsAdmin = false },
+                new User { Id = 2, Email = "sarah.lee@outlook.com", Password = "pbkdf2_sha256$100000$0acfd8d2ff40624052f26f2fb3495254$93857a9a6b61f8f9098e639f645f7143d92006ce925fc50e7af534567cafe07f", IsAdmin = false },
+                new User { Id = 3, Email = "marco.rossi89@yahoo.com", Password = "pbkdf2_sha256$100000$6190de7b0dda9c8235e0e55455d43f2b$f33f0dfb4085e26e30dd79b9c9959a0a01a033155b4cfe8b9e8b9baa9670b8c3", IsAdmin = false },
+                new User { Id = 4, Email = "emily_watson@icloud.com", Password = "pbkdf2_sha256$100000$84beb8171db67abbd93e38551e232120$d47e1668e7ced2fa8462c530ea3f8081e118c4eeb69ba9f7d640c2f6e860fae7", IsAdmin = false },
+                new User { Id = 5, Email = "david.nguyen@protonmail.com", Password = "pbkdf2_sha256$100000$6a9df2a924d667a1bd472317344c8f26$45a2a5bc1f82bb6a1c61c33e434fd1b0c0e66cadb6b1bb4d4bffa89bd2687a3b", IsAdmin = false },
+                new User { Id = 6, Email = "lucas-johnson@live.com", Password = "pbkdf2_sha256$100000$f67ad2c96b570f5e8c7def3da9f9cc7b$75b5631e544d43972e646d51ab14479771044310b42d0901cb4e2a067192e4fa", IsAdmin = false },
+                new User { Id = 7, Email = "maria.garcia23@bookhub.com", Password = "pbkdf2_sha256$100000$6973359e189c00dff9c42cc516cca724$17ae99a40f51d065b02ad1ded4959166e67499c1c6f1fe7a1dea1036b3530dd6", IsAdmin = true },
+                new User { Id = 8, Email = "andrew.smith@bookhub.com", Password = "pbkdf2_sha256$100000$463d7f87b63f4843bd6b899bced0acdd$cb8c5551c30f874fb846de9c7cb56595e12baa83c346ad6950504c500519c002", IsAdmin = true },
             };
         }
 
         private static List<WishlistItem> PrepareWishlistItems()
         {
-            return new List<WishlistItem>() { };
+            return new List<WishlistItem>() 
+            {
+                new WishlistItem { Id = 1, BookId = 7, UserId = 3},
+                new WishlistItem { Id = 2, BookId = 6, UserId = 3},
+                new WishlistItem { Id = 3, BookId = 5, UserId = 1},
+                new WishlistItem { Id = 4, BookId = 4, UserId = 5},
+                new WishlistItem { Id = 5, BookId = 3, UserId = 4},
+                new WishlistItem { Id = 6, BookId = 2, UserId = 7},
+                new WishlistItem { Id = 7, BookId = 7, UserId = 8},
+                new WishlistItem { Id = 8, BookId = 6, UserId = 8},
+                new WishlistItem { Id = 9, BookId = 2, UserId = 8},
+                new WishlistItem { Id = 10, BookId = 1, UserId = 8},
+            };
         }
 
         private static List<BookAuthor> LinkBooksAndAuthors(List<Book> books, List<Author> authors)
