@@ -82,12 +82,15 @@ public class AuthorController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateAuthor([FromBody] AuthorModel model)
     {
         if (!ModelState.IsValid)
         {
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
+
+        var books = await FindBooks(model.BookIds);
 
         var author = new Author
         {
@@ -96,6 +99,8 @@ public class AuthorController : ControllerBase
         };
         
         _dbContext.Authors.Add(author);
+        
+        _dbContext.BookAuthors.AddRange(books.Select(book => new BookAuthor { AuthorId = author.Id, BookId = book.Id }));
         
         await _dbContext.SaveChangesAsync();
         
@@ -114,6 +119,20 @@ public class AuthorController : ControllerBase
         }
 
         var author = await FindAuthor(id);
+        
+        if (model.BookIds != null)
+        {
+            var books = await FindBooks(model.BookIds);
+            
+            _dbContext.BookAuthors.RemoveRange(author.BookAuthors.Where(ba => !model.BookIds.Contains(ba.BookId)));
+            var existingBookIds = author.BookAuthors.Select(ba => ba.BookId).ToList();
+            _dbContext.BookAuthors.AddRange(
+                model.BookIds
+                    .Except(existingBookIds)
+                    .Select(bookId => new BookAuthor { AuthorId = author.Id, BookId = bookId })
+            );
+        }
+        
         author.Name = model.Name ?? author.Name;
         author.Surname = model.Surname ?? author.Surname;
         
@@ -136,6 +155,16 @@ public class AuthorController : ControllerBase
         }
 
         var author = await FindAuthor(id);
+        var books = await FindBooks(model.BookIds);
+        
+        _dbContext.BookAuthors.RemoveRange(author.BookAuthors.Where(ba => !model.BookIds.Contains(ba.BookId)));
+        var existingBookIds = author.BookAuthors.Select(ba => ba.BookId).ToList();
+        _dbContext.BookAuthors.AddRange(
+            model.BookIds
+                .Except(existingBookIds)
+                .Select(bookId => new BookAuthor { AuthorId = author.Id, BookId = bookId })
+        );
+        
         author.Name = model.Name;
         author.Surname = model.Surname;
         
@@ -185,5 +214,20 @@ public class AuthorController : ControllerBase
         }
 
         return author;
+    }
+
+    private async Task<List<Book>> FindBooks(List<int> bookIds)
+    {
+        var books = await _dbContext.Books
+            .Where(b => bookIds.Contains(b.Id))
+            .ToListAsync();
+        var missingBookIds = bookIds.Except(books.Select(b => b.Id)).ToList();
+        if (missingBookIds.Any())
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                $"Books {{{string.Join(", ", missingBookIds)}}} not found.");
+        }
+
+        return books;
     }
 }
