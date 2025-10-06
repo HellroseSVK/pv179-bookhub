@@ -23,13 +23,16 @@ public class AuthorController : ControllerBase
     [ProducesResponseType<List<AuthorResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAuthors()
     {
-        var authors = await _dbContext.Authors.ToListAsync();
+        var authors = await _dbContext.Authors
+            .Include(a => a.BookAuthors)
+            .ToListAsync();
         var response = authors.Select(a => new AuthorResponse
         {
             Id = a.Id,
             Name = a.Name,
             Surname = a.Surname,
-            CreatedAt = a.CreatedAt
+            CreatedAt = a.CreatedAt,
+            BookIds = a.BookAuthors.Select(ba => ba.BookId).ToList()
         }).ToList();
         
         return Ok(response);
@@ -42,6 +45,7 @@ public class AuthorController : ControllerBase
     {
         var author = await _dbContext.Authors
             .Where(a => a.Id == id)
+            .Include(a => a.BookAuthors)
             .FirstOrDefaultAsync();
         if (author == null)
         {
@@ -53,7 +57,8 @@ public class AuthorController : ControllerBase
             Id = author.Id,
             Name = author.Name,
             Surname = author.Surname,
-            CreatedAt = author.CreatedAt
+            CreatedAt = author.CreatedAt,
+            BookIds = author.BookAuthors.Select(ba => ba.BookId).ToList()
         };
 
         return Ok(response);
@@ -80,7 +85,7 @@ public class AuthorController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<AuthorResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateAuthor([FromBody] AuthorModel model)
@@ -99,12 +104,24 @@ public class AuthorController : ControllerBase
         };
         
         _dbContext.Authors.Add(author);
-        
-        _dbContext.BookAuthors.AddRange(books.Select(book => new BookAuthor { AuthorId = author.Id, BookId = book.Id }));
-        
         await _dbContext.SaveChangesAsync();
         
-        return Created();
+        if (books.Any())
+        {
+            _dbContext.BookAuthors.AddRange(books.Select(book => new BookAuthor { AuthorId = author.Id, BookId = book.Id }));
+            await _dbContext.SaveChangesAsync();
+        }
+        
+        var response = new AuthorResponse
+        {
+            Id = author.Id,
+            Name = author.Name,
+            Surname = author.Surname,
+            CreatedAt = author.CreatedAt,
+            BookIds = model.BookIds
+        };
+        
+        return Created($"/author/{author.Id}", response);
     }
     
     [HttpPatch("{id}")]
