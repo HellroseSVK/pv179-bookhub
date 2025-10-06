@@ -59,7 +59,7 @@ public class AuthorController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("{id}/Books")]
+    [HttpGet("{id}/books")]
     [ProducesResponseType<List<Book>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAuthorBooks(int id)
