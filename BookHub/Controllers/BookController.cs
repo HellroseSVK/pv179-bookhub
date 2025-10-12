@@ -1,10 +1,12 @@
 ﻿using DataAccessLayer;
 using DataAccessLayer.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
+using WebAPI.Models.Response;
 
 namespace WebAPI.Controllers
 {
@@ -12,10 +14,13 @@ namespace WebAPI.Controllers
     {
         public string? Title { get; set; }
         public string? Description { get; set; }
-        public decimal? Price { get; set; }
-        public int? AuthorId { get; set; }
-        public int? GenreId { get; set; }
-        public int? PublisherId { get; set; }
+        public decimal? PriceMin { get; set; }
+        public decimal? PriceMax { get; set; }
+
+        public decimal? RatingMin { get; set; }
+        public List<int>? AuthorIds { get; set; }
+        public List<int>? GenreIds { get; set; }
+        public List<int>? PublisherIds { get; set; }
     }
 
     [ApiController]
@@ -30,7 +35,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("filter")]
-        [ProducesResponseType<List<Book>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<List<BookResponse>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> FilterBooks([FromQuery] BookFilter filter)
         {
             var query = _dbContext.Books.AsQueryable();
@@ -41,31 +46,50 @@ namespace WebAPI.Controllers
             if (!string.IsNullOrEmpty(filter.Description))
                 query = query.Where(p => p.Description.Contains(filter.Description));
 
-            if (filter.Price.HasValue)
-                query = query.Where(p => p.Price == filter.Price.Value);
+            if (filter.PriceMin.HasValue)
+                query = query.Where(p => p.Price >= filter.PriceMin.Value);
 
-            if (filter.AuthorId.HasValue)
-                query = query.Where(p => p.BookAuthors.Any(ba => ba.AuthorId == filter.AuthorId.Value));
+            if (filter.PriceMax.HasValue)
+                query = query.Where(p => p.Price <= filter.PriceMax.Value);
 
-            if (filter.GenreId.HasValue)
-                query = query.Where(p => p.BookGenres.Any(bg => bg.GenreId == filter.GenreId.Value));
-            if (filter.PublisherId.HasValue)
+            if (filter.RatingMin.HasValue)
+                query = query
+                    .Where(p => p.Reviews.Any()) // Ensure there is at least one review to avoid division by zero
+                    .Where(p => p.Reviews.Average(r => r.Rating) >= (double)filter.RatingMin.Value);
+
+            if (filter.AuthorIds is { Count: > 0 })
+                query = query.Where(p => p.BookAuthors.Any(ba => filter.AuthorIds.Contains(ba.AuthorId)));
+
+            if (filter.GenreIds is { Count: > 0 })
+                query = query.Where(p => p.BookGenres.Any(bg => filter.GenreIds.Contains(bg.GenreId)));
+
+            if (filter.PublisherIds is { Count: > 0 })
+                query = query.Where(p => filter.PublisherIds.Contains(p.PublisherId));
+
+            var result = await query
+                .Include(book => book.BookAuthors)
+                .Include(book => book.BookGenres)
+                .Include(book => book.Reviews)
+                .ToListAsync();
+
+            return Ok(result.Select(r => r.Adapt<BookResponse>() with
             {
-                query = query.Where(p => p.PublisherId == filter.PublisherId.Value);
-            }
-
-            var result = await query.ToListAsync();
-
-            return Ok(result);
+                AuthorIds = r.BookAuthors.Select(ba => ba.AuthorId).ToList(),
+                GenreIds = r.BookGenres.Select(bg => bg.GenreId).ToList(),
+                ReviewIds = r.Reviews.Select(rv => rv.Id).ToList()
+            }).ToList());
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType<Book>(StatusCodes.Status200OK)]
+        [ProducesResponseType<BookResponse>(StatusCodes.Status200OK)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetBook(int id)
         {
             var book = await _dbContext.Books
                 .Where(x => x.Id == id)
+                .Include(book => book.BookAuthors)
+                .Include(book => book.BookGenres)
+                .Include(book => book.Reviews)
                 .FirstOrDefaultAsync();
 
             if (book == null)
@@ -73,11 +97,16 @@ namespace WebAPI.Controllers
                 throw new StatusCodeException(StatusCodes.Status404NotFound, "No book was found.");
             }
 
-            return Ok(book);
+            return Ok(book.Adapt<BookResponse>() with
+            {
+                AuthorIds = book.BookAuthors.Select(ba => ba.AuthorId).ToList(),
+                GenreIds = book.BookGenres.Select(bg => bg.GenreId).ToList(),
+                ReviewIds = book.Reviews.Select(rv => rv.Id).ToList()
+            });
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType<BookResponse>(StatusCodes.Status201Created)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateBook(BookModel model)
@@ -87,9 +116,9 @@ namespace WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var authors = FindAuthors(model.AuthorIds);
-            var genres = FindGenres(model.GenreIds);
-            FindPublisher(model.PublisherId);
+            var authors = await FindAuthors(model.AuthorIds);
+            var genres = await FindGenres(model.GenreIds);
+            var publisher = await FindPublisher(model.PublisherId);
 
             var book = new Book()
             {
@@ -97,22 +126,74 @@ namespace WebAPI.Controllers
                 Description = model.Description,
                 Price = model.Price,
                 PublisherId = model.PublisherId,
+                Publisher = publisher,
+                BookAuthors = authors.Select(author => new BookAuthor { Author = author, AuthorId = author.Id })
+                    .ToList(),
+                BookGenres = genres.Select(genre => new BookGenre { Genre = genre, GenreId = genre.Id }).ToList()
             };
 
-            _dbContext.Books
-                .Add(book);
-
-            _dbContext.BookAuthors.AddRange(authors.Select(a => new BookAuthor { BookId = book.Id, AuthorId = a.Id }));
-            _dbContext.BookGenres.AddRange(genres.Select(g => new BookGenre { BookId = book.Id, GenreId = g.Id }));
+            _dbContext.Books.Add(book);
 
             await _dbContext.SaveChangesAsync();
 
-            return Created();
+            return Created($"book/{book.Id}", book.Adapt<BookResponse>() with
+            {
+                AuthorIds = book.BookAuthors.Select(ba => ba.AuthorId).ToList(),
+                GenreIds = book.BookGenres.Select(bg => bg.GenreId).ToList(),
+                ReviewIds = book.Reviews.Select(rv => rv.Id).ToList()
+            });
+        }
+
+        [HttpPatch]
+        [Route("{id}")]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> PatchBook(int id, BookModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var book = await _dbContext.Books
+                .Where(x => x.Id == id)
+                .Include(book => book.BookAuthors)
+                .Include(book => book.BookGenres)
+                .FirstOrDefaultAsync();
+
+            if (book == null)
+            {
+                throw new StatusCodeException(StatusCodes.Status404NotFound, "No book was found.");
+            }
+
+            var allAuthors = await FindAuthors(model.AuthorIds);
+            var allGenres = await FindGenres(model.GenreIds);
+            var publisher = await FindPublisher(model.PublisherId);
+
+            // map the model to the entity
+            book.Title = model.Title;
+            book.Description = model.Description;
+            book.Price = model.Price;
+            book.PublisherId = publisher.Id;
+            book.Publisher = publisher;
+
+            book.BookAuthors.AddRange(allAuthors
+                .Where(a => book.BookAuthors.All(ba => ba.AuthorId != a.Id))
+                .Select(a => new BookAuthor { AuthorId = a.Id, Author = a }));
+            book.BookGenres.AddRange(allGenres
+                .Where(g => book.BookGenres.All(bg => bg.GenreId != g.Id))
+                .Select(g => new BookGenre { GenreId = g.Id, Genre = g }));
+
+
+            _dbContext.Books.Update(book);
+
+            await _dbContext.SaveChangesAsync();
+
+            return NoContent();
         }
 
         [HttpPut]
         [Route("{id}")]
-        [ProducesResponseType<Book>(StatusCodes.Status200OK)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateBook(int id, BookModel model)
@@ -133,38 +214,32 @@ namespace WebAPI.Controllers
                 throw new StatusCodeException(StatusCodes.Status404NotFound, "No book was found.");
             }
 
-            FindAuthors(model.AuthorIds);
-            FindGenres(model.GenreIds);
-            FindPublisher(model.PublisherId);
-
-            _dbContext.BookAuthors.RemoveRange(book.BookAuthors.Where(ba => !model.AuthorIds.Contains(ba.AuthorId)));
-            var existingAuthorIds = book.BookAuthors.Select(ba => ba.AuthorId).ToList();
-            _dbContext.BookAuthors.AddRange(
-                model.AuthorIds
-                    .Except(existingAuthorIds)
-                    .Select(authorId => new BookAuthor { BookId = book.Id, AuthorId = authorId })
-            );
-
-            _dbContext.BookGenres.RemoveRange(book.BookGenres.Where(bg => !model.GenreIds.Contains(bg.GenreId)));
-            var existingGenreIds = book.BookGenres.Select(bg => bg.GenreId).ToList();
-            _dbContext.BookGenres.AddRange(
-                model.GenreIds
-                    .Except(existingGenreIds)
-                    .Select(genreId => new BookGenre { BookId = book.Id, GenreId = genreId })
-            );
+            var allAuthors = await FindAuthors(model.AuthorIds);
+            var allGenres = await FindGenres(model.GenreIds);
+            var publisher = await FindPublisher(model.PublisherId);
 
             // map the model to the entity
             book.Title = model.Title;
             book.Description = model.Description;
             book.Price = model.Price;
-            book.PublisherId = model.PublisherId;
+            book.PublisherId = publisher.Id;
+            book.Publisher = publisher;
 
-            _dbContext.Books
-                .Update(book);
+            book.BookAuthors = book.BookAuthors.Where(ba => allAuthors.Any(a => a.Id == ba.AuthorId)).ToList();
+            book.BookAuthors.AddRange(allAuthors
+                .Where(a => book.BookAuthors.All(ba => ba.AuthorId != a.Id))
+                .Select(a => new BookAuthor { AuthorId = a.Id, Author = a }));
+            book.BookGenres = book.BookGenres.Where(bg => allGenres.Any(a => a.Id == bg.GenreId)).ToList();
+            book.BookGenres.AddRange(allGenres
+                .Where(g => book.BookGenres.All(bg => bg.GenreId != g.Id))
+                .Select(g => new BookGenre { GenreId = g.Id, Genre = g }));
+
+
+            _dbContext.Books.Update(book);
 
             await _dbContext.SaveChangesAsync();
 
-            return Ok(book);
+            return NoContent();
         }
 
         [HttpDelete]
@@ -190,8 +265,6 @@ namespace WebAPI.Controllers
                 throw new StatusCodeException(StatusCodes.Status404NotFound, "No book was found.");
             }
 
-            _dbContext.BookAuthors.RemoveRange(book.BookAuthors);
-            _dbContext.BookGenres.RemoveRange(book.BookGenres);
             _dbContext.Books.Remove(book);
 
             await _dbContext.SaveChangesAsync();
@@ -199,11 +272,11 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        private List<Author> FindAuthors(List<int> authorIds)
+        private async Task<List<Author>> FindAuthors(List<int> authorIds)
         {
-            var authors = _dbContext.Authors
+            var authors = await _dbContext.Authors
                 .Where(a => authorIds.Contains(a.Id))
-                .ToList();
+                .ToListAsync();
             var missingAuthorIds = authorIds.Except(authors.Select(a => a.Id)).ToList();
             if (missingAuthorIds.Any())
             {
@@ -214,11 +287,11 @@ namespace WebAPI.Controllers
             return authors;
         }
 
-        private List<Genre> FindGenres(List<int> genreIds)
+        private async Task<List<Genre>> FindGenres(List<int> genreIds)
         {
-            var genres = _dbContext.Genres
+            var genres = await _dbContext.Genres
                 .Where(g => genreIds.Contains(g.Id))
-                .ToList();
+                .ToListAsync();
             var missingGenreIds = genreIds.Except(genres.Select(g => g.Id)).ToList();
             if (missingGenreIds.Any())
             {
@@ -229,10 +302,10 @@ namespace WebAPI.Controllers
             return genres;
         }
 
-        private Publisher FindPublisher(int publisherId)
+        private async Task<Publisher> FindPublisher(int publisherId)
         {
-            var publisher = _dbContext.Publishers
-                .FirstOrDefault(p => p.Id == publisherId);
+            var publisher = await _dbContext.Publishers
+                .FirstOrDefaultAsync(p => p.Id == publisherId);
             if (publisher == null)
             {
                 throw new StatusCodeException(StatusCodes.Status404NotFound,
