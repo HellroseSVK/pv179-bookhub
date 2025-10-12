@@ -1,10 +1,13 @@
 ﻿using DataAccessLayer;
 using DataAccessLayer.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
+using WebAPI.Models.Response;
+using WebAPI.Models.Response.Simplified;
 
 namespace WebAPI.Controllers;
 
@@ -20,26 +23,37 @@ public class WishlistItemController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType<List<WishlistItem>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<WishlistItemResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetWishlistItems()
     {
-        var wishlistItems = await _dbContext.WishlistItems.ToListAsync();
+        var wishlistItems = await _dbContext.WishlistItems
+            .Include(wishlistItem => wishlistItem.Book)
+            .Include(wishlistItem => wishlistItem.User)
+            .ToListAsync();
 
-        return Ok(wishlistItems);
+        return Ok(wishlistItems.Select(wi => wi.Adapt<WishlistItemResponse>() with
+        {
+            Book = wi.Book.Adapt<BookSimplifiedResponse>(),
+            User = wi.User.Adapt<UserSimplifiedResponse>()
+        }).ToList());
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType<WishlistItem>(StatusCodes.Status200OK)]
+    [ProducesResponseType<WishlistItemResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetWishlistItem(int id)
     {
         var wishlistItem = await FindWishlistItem(id);
 
-        return Ok(wishlistItem);
+        return Ok(wishlistItem.Adapt<WishlistItemResponse>() with
+        {
+            Book = wishlistItem.Book.Adapt<BookSimplifiedResponse>(),
+            User = wishlistItem.User.Adapt<UserSimplifiedResponse>()
+        });
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<WishlistItemResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateWishlistItem([FromBody] WishlistItemModel model)
     {
@@ -58,7 +72,11 @@ public class WishlistItemController : ControllerBase
 
         await _dbContext.SaveChangesAsync();
 
-        return Created();
+        return Created($"/WishlistItem/{wishlistItem.Id}", wishlistItem.Adapt<WishlistItemResponse>() with
+        {
+            Book = wishlistItem.Book.Adapt<BookSimplifiedResponse>(),
+            User = wishlistItem.User.Adapt<UserSimplifiedResponse>()
+        });
     }
 
     [HttpPatch("{id}")]

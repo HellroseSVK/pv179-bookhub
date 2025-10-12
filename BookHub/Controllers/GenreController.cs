@@ -7,6 +7,7 @@ using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
 using WebAPI.Models.Response;
+using WebAPI.Models.Response.Simplified;
 
 namespace WebAPI.Controllers;
 
@@ -26,12 +27,12 @@ public class GenreController : ControllerBase
     public async Task<IActionResult> GetGenres()
     {
         var result = await _dbContext.Genres
-            .Include(g => g.BookGenres)
+            .Include(g => g.BookGenres).ThenInclude(bookGenre => bookGenre.Book)
             .ToListAsync();
 
         return Ok(result.Select(r => r.Adapt<GenreResponse>() with
         {
-            BookIds = r.BookGenres.Select(bg => bg.BookId).ToList()
+            Books = r.BookGenres.Select(ba => ba.Book.Adapt<BookSimplifiedResponse>()).ToList()
         }).ToList());
     }
 
@@ -42,7 +43,7 @@ public class GenreController : ControllerBase
     {
         var genre = await _dbContext.Genres
             .Where(g => g.Id == id)
-            .Include(g => g.BookGenres)
+            .Include(g => g.BookGenres).ThenInclude(bookGenre => bookGenre.Book)
             .FirstOrDefaultAsync();
         if (genre == null)
         {
@@ -51,7 +52,7 @@ public class GenreController : ControllerBase
 
         return Ok(genre.Adapt<GenreResponse>() with
         {
-            BookIds = genre.BookGenres.Select(bg => bg.BookId).ToList()
+            Books = genre.BookGenres.Select(ba => ba.Book.Adapt<BookSimplifiedResponse>()).ToList()
         });
     }
 
@@ -73,16 +74,16 @@ public class GenreController : ControllerBase
             Name = model.Name,
             BookGenres = books.Select(book => new BookGenre { BookId = book.Id }).ToList()
         };
-        
+
         _dbContext.Genres.Add(genre);
         await _dbContext.SaveChangesAsync();
-        
-        return Created($"/genre/{genre.Id}", genre.Adapt<GenreResponse>() with
+
+        return Created($"/Genre/{genre.Id}", genre.Adapt<GenreResponse>() with
         {
-            BookIds = genre.BookGenres.Select(bg => bg.BookId).ToList()
+            Books = genre.BookGenres.Select(ba => ba.Book.Adapt<BookSimplifiedResponse>()).ToList()
         });
     }
-    
+
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
@@ -95,11 +96,11 @@ public class GenreController : ControllerBase
         }
 
         var genre = await FindGenre(id);
-        
+
         if (model.BookIds != null)
         {
             await FindBooks(model.BookIds);
-            
+
             _dbContext.BookGenres.RemoveRange(genre.BookGenres.Where(bg => !model.BookIds.Contains(bg.BookId)));
             var existingBookIds = genre.BookGenres.Select(bg => bg.BookId).ToList();
             _dbContext.BookGenres.AddRange(
@@ -108,9 +109,9 @@ public class GenreController : ControllerBase
                     .Select(bookId => new BookGenre { GenreId = genre.Id, BookId = bookId })
             );
         }
-        
+
         genre.Name = model.Name ?? genre.Name;
-        
+
         _dbContext.Genres.Update(genre);
 
         await _dbContext.SaveChangesAsync();
@@ -131,14 +132,14 @@ public class GenreController : ControllerBase
 
         var genre = await FindGenre(id);
         var books = await FindBooks(model.BookIds);
-        
+
         genre.Name = model.Name;
         genre.BookGenres = books.Select(book => new BookGenre { GenreId = genre.Id, BookId = book.Id }).ToList();
-        
+
         _dbContext.Genres.Update(genre);
-        
+
         await _dbContext.SaveChangesAsync();
-        
+
         return NoContent();
     }
 
@@ -152,13 +153,13 @@ public class GenreController : ControllerBase
         {
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
-        
+
         var genre = await FindGenre(id);
-        
+
         _dbContext.Genres.Remove(genre);
-        
+
         await _dbContext.SaveChangesAsync();
-        
+
         return NoContent();
     }
 

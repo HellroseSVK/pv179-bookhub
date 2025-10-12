@@ -7,6 +7,7 @@ using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
 using WebAPI.Models.Response;
+using WebAPI.Models.Response.Simplified;
 
 namespace WebAPI.Controllers
 {
@@ -67,16 +68,18 @@ namespace WebAPI.Controllers
                 query = query.Where(p => filter.PublisherIds.Contains(p.PublisherId));
 
             var result = await query
-                .Include(book => book.BookAuthors)
-                .Include(book => book.BookGenres)
+                .Include(book => book.BookAuthors).ThenInclude(bookAuthor => bookAuthor.Author)
+                .Include(book => book.BookGenres).ThenInclude(bookGenre => bookGenre.Genre)
                 .Include(book => book.Reviews)
+                .Include(book => book.Publisher)
                 .ToListAsync();
 
             return Ok(result.Select(r => r.Adapt<BookResponse>() with
             {
-                AuthorIds = r.BookAuthors.Select(ba => ba.AuthorId).ToList(),
-                GenreIds = r.BookGenres.Select(bg => bg.GenreId).ToList(),
-                ReviewIds = r.Reviews.Select(rv => rv.Id).ToList()
+                Authors = r.BookAuthors.Select(ba => ba.Author.Adapt<AuthorSimplifiedResponse>()).ToList(),
+                Genres = r.BookGenres.Select(bg => bg.Genre.Adapt<GenreSimplifiedResponse>()).ToList(),
+                Reviews = r.Reviews.Select(rv => rv.Adapt<ReviewSimplifiedResponse>()).ToList(),
+                Publisher = r.Publisher.Adapt<PublisherSimplifiedResponse>()
             }).ToList());
         }
 
@@ -87,9 +90,10 @@ namespace WebAPI.Controllers
         {
             var book = await _dbContext.Books
                 .Where(x => x.Id == id)
-                .Include(book => book.BookAuthors)
-                .Include(book => book.BookGenres)
+                .Include(book => book.BookAuthors).ThenInclude(bookAuthor => bookAuthor.Author)
+                .Include(book => book.BookGenres).ThenInclude(bookGenre => bookGenre.Genre)
                 .Include(book => book.Reviews)
+                .Include(book => book.Publisher)
                 .FirstOrDefaultAsync();
 
             if (book == null)
@@ -99,9 +103,10 @@ namespace WebAPI.Controllers
 
             return Ok(book.Adapt<BookResponse>() with
             {
-                AuthorIds = book.BookAuthors.Select(ba => ba.AuthorId).ToList(),
-                GenreIds = book.BookGenres.Select(bg => bg.GenreId).ToList(),
-                ReviewIds = book.Reviews.Select(rv => rv.Id).ToList()
+                Authors = book.BookAuthors.Select(ba => ba.Author.Adapt<AuthorSimplifiedResponse>()).ToList(),
+                Genres = book.BookGenres.Select(bg => bg.Genre.Adapt<GenreSimplifiedResponse>()).ToList(),
+                Reviews = book.Reviews.Select(rv => rv.Adapt<ReviewSimplifiedResponse>()).ToList(),
+                Publisher = book.Publisher.Adapt<PublisherSimplifiedResponse>()
             });
         }
 
@@ -136,11 +141,12 @@ namespace WebAPI.Controllers
 
             await _dbContext.SaveChangesAsync();
 
-            return Created($"book/{book.Id}", book.Adapt<BookResponse>() with
+            return Created($"/Book/{book.Id}", book.Adapt<BookResponse>() with
             {
-                AuthorIds = book.BookAuthors.Select(ba => ba.AuthorId).ToList(),
-                GenreIds = book.BookGenres.Select(bg => bg.GenreId).ToList(),
-                ReviewIds = book.Reviews.Select(rv => rv.Id).ToList()
+                Authors = book.BookAuthors.Select(ba => ba.Author.Adapt<AuthorSimplifiedResponse>()).ToList(),
+                Genres = book.BookGenres.Select(bg => bg.Genre.Adapt<GenreSimplifiedResponse>()).ToList(),
+                Reviews = book.Reviews.Select(rv => rv.Adapt<ReviewSimplifiedResponse>()).ToList(),
+                Publisher = book.Publisher.Adapt<PublisherSimplifiedResponse>()
             });
         }
 

@@ -1,3 +1,5 @@
+using WebAPI.Models.Response.Simplified;
+
 namespace WebAPI.Models.Response;
 
 public record AuthorResponse(
@@ -5,5 +7,5 @@ public record AuthorResponse(
     DateTime CreatedAt,
     string Name,
     string Surname,
-    List<int> BookIds
-) : BaseResponse(Id, CreatedAt);
+    List<BookSimplifiedResponse> Books
+) : AuthorSimplifiedResponse(Id, CreatedAt, Name, Surname);

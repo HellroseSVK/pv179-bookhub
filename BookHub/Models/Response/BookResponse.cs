@@ -1,4 +1,5 @@
 using DataAccessLayer.Entities;
+using WebAPI.Models.Response.Simplified;
 
 namespace WebAPI.Models.Response;
 
@@ -8,8 +9,8 @@ public record BookResponse(
     string Title,
     string Description,
     decimal Price,
-    List<int> AuthorIds,
-    List<int> GenreIds,
-    List<int> ReviewIds,
-    int PublisherId
-) : BaseResponse(Id, CreatedAt);
+    List<AuthorSimplifiedResponse> Authors,
+    List<GenreSimplifiedResponse> Genres,
+    List<ReviewSimplifiedResponse> Reviews,
+    PublisherSimplifiedResponse Publisher
+) : BookSimplifiedResponse(Id, CreatedAt, Title, Description, Price);
