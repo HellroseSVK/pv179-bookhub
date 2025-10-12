@@ -1,8 +1,9 @@
-namespace WebAPI.Models;
+namespace WebAPI.Models.Response;
 
-public class AuthorResponse : BaseResponse
-{
-    public string Name { get; set; }
-    public string Surname { get; set; }
-    public List<int> BookIds { get; set; }
-}
+public record AuthorResponse(
+    int Id,
+    DateTime CreatedAt,
+    string Name,
+    string Surname,
+    List<int> BookIds
+) : BaseResponse(Id, CreatedAt);

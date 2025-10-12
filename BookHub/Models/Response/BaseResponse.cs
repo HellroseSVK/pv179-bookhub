@@ -1,7 +1,3 @@
-namespace WebAPI.Models;
+namespace WebAPI.Models.Response;
 
-public class BaseResponse
-{
-    public int Id { get; set; }
-    public DateTime CreatedAt { get; set; }
-}
+public abstract record BaseResponse(int Id, DateTime CreatedAt);
