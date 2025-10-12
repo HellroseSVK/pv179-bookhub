@@ -1,10 +1,12 @@
 using DataAccessLayer;
 using DataAccessLayer.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
+using WebAPI.Models.Response;
 
 namespace WebAPI.Controllers;
 
@@ -23,18 +25,14 @@ public class GenreController : ControllerBase
     [ProducesResponseType<List<GenreResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetGenres()
     {
-        var genres = await _dbContext.Genres
+        var result = await _dbContext.Genres
             .Include(g => g.BookGenres)
             .ToListAsync();
-        var response = genres.Select(g => new GenreResponse
+
+        return Ok(result.Select(r => r.Adapt<GenreResponse>() with
         {
-            Id = g.Id,
-            Name = g.Name,
-            CreatedAt = g.CreatedAt,
-            BookIds = g.BookGenres.Select(bg => bg.BookId).ToList()
-        }).ToList();
-        
-        return Ok(response);
+            BookIds = r.BookGenres.Select(bg => bg.BookId).ToList()
+        }).ToList());
     }
 
     [HttpGet("{id}")]
@@ -51,15 +49,10 @@ public class GenreController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status404NotFound, "No genre was found.");
         }
 
-        var response = new GenreResponse
+        return Ok(genre.Adapt<GenreResponse>() with
         {
-            Id = genre.Id,
-            Name = genre.Name,
-            CreatedAt = genre.CreatedAt,
             BookIds = genre.BookGenres.Select(bg => bg.BookId).ToList()
-        };
-
-        return Ok(response);
+        });
     }
 
     [HttpPost]
@@ -77,27 +70,17 @@ public class GenreController : ControllerBase
 
         var genre = new Genre
         {
-            Name = model.Name
+            Name = model.Name,
+            BookGenres = books.Select(book => new BookGenre { BookId = book.Id }).ToList()
         };
         
         _dbContext.Genres.Add(genre);
         await _dbContext.SaveChangesAsync();
         
-        if (books.Any())
+        return Created($"/genre/{genre.Id}", genre.Adapt<GenreResponse>() with
         {
-            _dbContext.BookGenres.AddRange(books.Select(book => new BookGenre { GenreId = genre.Id, BookId = book.Id }));
-            await _dbContext.SaveChangesAsync();
-        }
-        
-        var response = new GenreResponse
-        {
-            Id = genre.Id,
-            Name = genre.Name,
-            CreatedAt = genre.CreatedAt,
-            BookIds = model.BookIds
-        };
-        
-        return Created($"/genre/{genre.Id}", response);
+            BookIds = genre.BookGenres.Select(bg => bg.BookId).ToList()
+        });
     }
     
     [HttpPatch("{id}")]
@@ -147,17 +130,10 @@ public class GenreController : ControllerBase
         }
 
         var genre = await FindGenre(id);
-        await FindBooks(model.BookIds);
-        
-        _dbContext.BookGenres.RemoveRange(genre.BookGenres.Where(bg => !model.BookIds.Contains(bg.BookId)));
-        var existingBookIds = genre.BookGenres.Select(bg => bg.BookId).ToList();
-        _dbContext.BookGenres.AddRange(
-            model.BookIds
-                .Except(existingBookIds)
-                .Select(bookId => new BookGenre { GenreId = genre.Id, BookId = bookId })
-        );
+        var books = await FindBooks(model.BookIds);
         
         genre.Name = model.Name;
+        genre.BookGenres = books.Select(book => new BookGenre { GenreId = genre.Id, BookId = book.Id }).ToList();
         
         _dbContext.Genres.Update(genre);
         
@@ -178,13 +154,7 @@ public class GenreController : ControllerBase
         }
         
         var genre = await FindGenre(id);
-
-        if (genre == null)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound, "No genre was found.");
-        }
         
-        _dbContext.BookGenres.RemoveRange(genre.BookGenres);
         _dbContext.Genres.Remove(genre);
         
         await _dbContext.SaveChangesAsync();
