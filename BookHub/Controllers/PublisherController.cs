@@ -1,10 +1,12 @@
 using DataAccessLayer;
 using DataAccessLayer.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
+using WebAPI.Models.Response;
 
 namespace WebAPI.Controllers;
 
@@ -20,30 +22,42 @@ public class PublisherController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType<List<Publisher>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<PublisherResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPublishers()
     {
-        return Ok(await _dbContext.Publishers.ToListAsync());
+        var result = await _dbContext.Publishers
+            .Include(publisher => publisher.Books)
+            .ToListAsync();
+
+        return Ok(result.Select(r => r.Adapt<PublisherResponse>() with
+        {
+            BookIds = r.Books.Select(b => b.Id).ToList()
+        }).ToList());
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType<Publisher>(StatusCodes.Status200OK)]
+    [ProducesResponseType<PublisherResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPublisher(int id)
     {
         var publisher = await _dbContext.Publishers
             .Where(p => p.Id == id)
+            .Include(publisher => publisher.Books)
             .FirstOrDefaultAsync();
+
         if (publisher == null)
         {
-            return NotFound(new ErrorResponse("Publisher not found"));
+            throw new StatusCodeException(StatusCodes.Status404NotFound, "Publisher not found");
         }
 
-        return Ok(publisher);
+        return Ok(publisher.Adapt<PublisherResponse>() with
+        {
+            BookIds = publisher.Books.Select(b => b.Id).ToList()
+        });
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<PublisherResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreatePublisher([FromBody] PublisherModel model)
     {
@@ -56,14 +70,17 @@ public class PublisherController : ControllerBase
         {
             Name = model.Name
         };
-        
+
         _dbContext.Publishers.Add(publisher);
-        
+
         await _dbContext.SaveChangesAsync();
-        
-        return Created();
+
+        return Created($"publisher/{publisher.Id}", publisher.Adapt<PublisherResponse>() with
+        {
+            BookIds = publisher.Books.Select(b => b.Id).ToList()
+        });
     }
-    
+
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
@@ -77,7 +94,7 @@ public class PublisherController : ControllerBase
 
         var publisher = FindPublisher(id);
         publisher.Name = model.Name;
-        
+
         _dbContext.Publishers.Update(publisher);
 
         await _dbContext.SaveChangesAsync();
@@ -98,11 +115,11 @@ public class PublisherController : ControllerBase
 
         var publisher = FindPublisher(id);
         publisher.Name = model.Name;
-        
+
         _dbContext.Publishers.Update(publisher);
-        
+
         await _dbContext.SaveChangesAsync();
-        
+
         return NoContent();
     }
 
@@ -116,13 +133,19 @@ public class PublisherController : ControllerBase
         {
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
-        
+
         var publisher = FindPublisher(id);
-        
+
+        if (_dbContext.Books.Any(b => b.PublisherId == id))
+        {
+            throw new StatusCodeException(StatusCodes.Status400BadRequest,
+                "Cannot delete publisher with associated books.");
+        }
+
         _dbContext.Publishers.Remove(publisher);
-        
+
         await _dbContext.SaveChangesAsync();
-        
+
         return NoContent();
     }
 
