@@ -99,18 +99,12 @@ public class AuthorController : ControllerBase
         var author = new Author
         {
             Name = model.Name,
-            Surname = model.Surname
+            Surname = model.Surname,
+            BookAuthors = books.Select(book => new BookAuthor { BookId = book.Id }).ToList()
         };
 
         _dbContext.Authors.Add(author);
         await _dbContext.SaveChangesAsync();
-
-        if (books.Any())
-        {
-            _dbContext.BookAuthors.AddRange(books.Select(book => new BookAuthor
-                { AuthorId = author.Id, BookId = book.Id }));
-            await _dbContext.SaveChangesAsync();
-        }
 
         return Created($"/author/{author.Id}", author.Adapt<AuthorResponse>() with
         {
@@ -168,16 +162,9 @@ public class AuthorController : ControllerBase
         var author = await FindAuthor(id);
         var books = await FindBooks(model.BookIds);
 
-        _dbContext.BookAuthors.RemoveRange(author.BookAuthors.Where(ba => !model.BookIds.Contains(ba.BookId)));
-        var existingBookIds = author.BookAuthors.Select(ba => ba.BookId).ToList();
-        _dbContext.BookAuthors.AddRange(
-            model.BookIds
-                .Except(existingBookIds)
-                .Select(bookId => new BookAuthor { AuthorId = author.Id, BookId = bookId })
-        );
-
         author.Name = model.Name;
         author.Surname = model.Surname;
+        author.BookAuthors = books.Select(book => new BookAuthor { AuthorId = author.Id, BookId = book.Id }).ToList();
 
         _dbContext.Authors.Update(author);
 
@@ -199,12 +186,6 @@ public class AuthorController : ControllerBase
 
         var author = await FindAuthor(id);
 
-        if (author == null)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound, "No author was found.");
-        }
-
-        _dbContext.BookAuthors.RemoveRange(author.BookAuthors);
         _dbContext.Authors.Remove(author);
 
         await _dbContext.SaveChangesAsync();

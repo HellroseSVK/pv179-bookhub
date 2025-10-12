@@ -83,7 +83,19 @@ namespace DataAccessLayer
 
         private static List<Genre> PrepareGenres()
         {
-            return new List<Genre>() { };
+            return new List<Genre>()
+            {
+                new Genre { Id = 1, Name = "Fantasy" },
+                new Genre { Id = 2, Name = "Science Fiction" },
+                new Genre { Id = 3, Name = "Mystery" },
+                new Genre { Id = 4, Name = "Romance" },
+                new Genre { Id = 5, Name = "Thriller" },
+                new Genre { Id = 6, Name = "Horror" },
+                new Genre { Id = 7, Name = "Historical Fiction" },
+                new Genre { Id = 8, Name = "Literary Fiction" },
+                new Genre { Id = 9, Name = "Adventure" },
+                new Genre { Id = 10, Name = "Classic" }
+            };
         }
 
         private static List<Publisher> PreparePublishers()
@@ -188,7 +200,19 @@ namespace DataAccessLayer
 
         private static List<BookGenre> LinkBooksAndGenres(List<Book> books, List<Genre> genres)
         {
-            return new List<BookGenre>();
+            return new List<BookGenre>()
+            {
+                new BookGenre { Id = 1, BookId = 1, GenreId = 1 }, // Harry Potter - Fantasy
+                new BookGenre { Id = 2, BookId = 2, GenreId = 2 }, // 1984 - Science Fiction
+                new BookGenre { Id = 3, BookId = 3, GenreId = 8 }, // To Kill a Mockingbird - Literary Fiction
+                new BookGenre { Id = 4, BookId = 4, GenreId = 10 }, // The Great Gatsby - Classic
+                new BookGenre { Id = 5, BookId = 5, GenreId = 4 }, // Pride and Prejudice - Romance
+                new BookGenre { Id = 6, BookId = 6, GenreId = 9 }, // Tom Sawyer - Adventure
+                new BookGenre { Id = 7, BookId = 7, GenreId = 8 }, // The Old Man and the Sea - Literary Fiction
+                new BookGenre { Id = 8, BookId = 8, GenreId = 3 }, // Murder on Orient Express - Mystery
+                new BookGenre { Id = 9, BookId = 9, GenreId = 6 }, // The Shining - Horror
+                new BookGenre { Id = 10, BookId = 10, GenreId = 8 } // Beloved - Literary Fiction
+            };
         }
     }
 }
