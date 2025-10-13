@@ -12,8 +12,6 @@ namespace DataAccessLayer
     {
         public static void Seed(this ModelBuilder modelBuilder)
         {
-            // TODO: Seed the data in correct order! (foreign keys)
-
             var genres = PrepareGenres();
             var publishers = PreparePublishers();
             var authors = PrepareAuthors();

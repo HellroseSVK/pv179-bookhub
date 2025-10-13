@@ -1,10 +1,13 @@
 ﻿using DataAccessLayer;
 using DataAccessLayer.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
+using WebAPI.Models.Response;
+using WebAPI.Models.Response.Simplified;
 
 namespace WebAPI.Controllers;
 
@@ -20,26 +23,40 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType<List<User>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<UserResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUsers()
     {
-        var users = await _dbContext.Users.ToListAsync();
+        var users = await _dbContext.Users
+            .Include(user => user.Reviews)
+            .Include(user => user.WishlistItems)
+            .Include(user => user.OrderItems)
+            .ToListAsync();
 
-        return Ok(users);
+        return Ok(users.Select(u => u.Adapt<UserResponse>() with
+        {
+            Reviews = u.Reviews.Select(r => r.Adapt<ReviewSimplifiedResponse>()).ToList(),
+            WishlistItems = u.WishlistItems.Select(wi => wi.Adapt<WishlistItemSimplifiedResponse>()).ToList(),
+            OrderItems = u.OrderItems.Select(oi => oi.Adapt<OrderItemSimplifiedResponse>()).ToList()
+        }).ToList());
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType<User>(StatusCodes.Status200OK)]
+    [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUser(int id)
     {
         var user = await (FindUser(id));
 
-        return Ok(user);
+        return Ok(user.Adapt<UserResponse>() with
+        {
+            Reviews = user.Reviews.Select(r => r.Adapt<ReviewSimplifiedResponse>()).ToList(),
+            WishlistItems = user.WishlistItems.Select(wi => wi.Adapt<WishlistItemSimplifiedResponse>()).ToList(),
+            OrderItems = user.OrderItems.Select(oi => oi.Adapt<OrderItemSimplifiedResponse>()).ToList()
+        });
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<UserResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateUser([FromBody] UserModel model)
     {
@@ -59,7 +76,12 @@ public class UserController : ControllerBase
 
         await _dbContext.SaveChangesAsync();
 
-        return Created();
+        return Created("/User/{user.Id}", user.Adapt<UserResponse>() with
+        {
+            Reviews = user.Reviews.Select(r => r.Adapt<ReviewSimplifiedResponse>()).ToList(),
+            WishlistItems = user.WishlistItems.Select(wi => wi.Adapt<WishlistItemSimplifiedResponse>()).ToList(),
+            OrderItems = user.OrderItems.Select(oi => oi.Adapt<OrderItemSimplifiedResponse>()).ToList()
+        });
     }
 
     [HttpPatch("{id}")]
@@ -100,7 +122,7 @@ public class UserController : ControllerBase
         var user = await FindUser(id);
 
         user.Email = model.Email;
-        user.Password  = model.Password;
+        user.Password = model.Password;
         user.IsAdmin = model.IsAdmin;
 
         _dbContext.Users.Update(user);

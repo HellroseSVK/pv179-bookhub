@@ -1,10 +1,13 @@
 ﻿using DataAccessLayer;
 using DataAccessLayer.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
+using WebAPI.Models.Response;
+using WebAPI.Models.Response.Simplified;
 
 namespace WebAPI.Controllers;
 
@@ -20,26 +23,37 @@ public class ReviewController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType<List<Review>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<ReviewResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetReviews()
     {
-        var reviews = await _dbContext.Reviews.ToListAsync();
+        var reviews = await _dbContext.Reviews
+            .Include(review => review.Book)
+            .Include(review => review.User)
+            .ToListAsync();
 
-        return Ok(reviews);
+        return Ok(reviews.Select(r => r.Adapt<ReviewResponse>() with
+        {
+            Book = r.Book.Adapt<BookSimplifiedResponse>(),
+            User = r.User.Adapt<UserSimplifiedResponse>()
+        }).ToList());
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType<Review>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ReviewResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetReview(int id)
     {
         var review = await (FindReview(id));
 
-        return Ok(review);
+        return Ok(review.Adapt<ReviewResponse>() with
+        {
+            Book = review.Book.Adapt<BookSimplifiedResponse>(),
+            User = review.User.Adapt<UserSimplifiedResponse>()
+        });
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<ReviewResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateReview([FromBody] ReviewModel model)
     {
@@ -60,7 +74,11 @@ public class ReviewController : ControllerBase
 
         await _dbContext.SaveChangesAsync();
 
-        return Created();
+        return Created($"/Review/{review.Id}", review.Adapt<ReviewResponse>() with
+        {
+            Book = review.Book.Adapt<BookSimplifiedResponse>(),
+            User = review.User.Adapt<UserSimplifiedResponse>()
+        });
     }
 
     [HttpPatch("{id}")]

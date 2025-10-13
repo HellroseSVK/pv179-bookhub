@@ -7,6 +7,7 @@ using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
 using WebAPI.Models.Response;
+using WebAPI.Models.Response.Simplified;
 
 namespace WebAPI.Controllers;
 
@@ -31,7 +32,7 @@ public class PublisherController : ControllerBase
 
         return Ok(result.Select(r => r.Adapt<PublisherResponse>() with
         {
-            BookIds = r.Books.Select(b => b.Id).ToList()
+            Books = r.Books.Select(b => b.Adapt<BookSimplifiedResponse>()).ToList()
         }).ToList());
     }
 
@@ -52,7 +53,7 @@ public class PublisherController : ControllerBase
 
         return Ok(publisher.Adapt<PublisherResponse>() with
         {
-            BookIds = publisher.Books.Select(b => b.Id).ToList()
+            Books = publisher.Books.Select(b => b.Adapt<BookSimplifiedResponse>()).ToList()
         });
     }
 
@@ -75,9 +76,9 @@ public class PublisherController : ControllerBase
 
         await _dbContext.SaveChangesAsync();
 
-        return Created($"publisher/{publisher.Id}", publisher.Adapt<PublisherResponse>() with
+        return Created($"/Publisher/{publisher.Id}", publisher.Adapt<PublisherResponse>() with
         {
-            BookIds = publisher.Books.Select(b => b.Id).ToList()
+            Books = publisher.Books.Select(b => b.Adapt<BookSimplifiedResponse>()).ToList()
         });
     }
 

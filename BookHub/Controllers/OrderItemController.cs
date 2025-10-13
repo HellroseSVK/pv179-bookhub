@@ -1,10 +1,13 @@
 ﻿using DataAccessLayer;
 using DataAccessLayer.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
+using WebAPI.Models.Response;
+using WebAPI.Models.Response.Simplified;
 
 namespace WebAPI.Controllers;
 
@@ -20,26 +23,37 @@ public class OrderItemController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType<List<OrderItem>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<OrderItemResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetOrderItems()
     {
-        var orderItems = await _dbContext.OrderItems.ToListAsync();
+        var orderItems = await _dbContext.OrderItems
+            .Include(orderItem => orderItem.Book)
+            .Include(orderItem => orderItem.User)
+            .ToListAsync();
 
-        return Ok(orderItems);
+        return Ok(orderItems.Select(ot => ot.Adapt<OrderItemResponse>() with
+        {
+            Book = ot.Book.Adapt<BookSimplifiedResponse>(),
+            User = ot.User.Adapt<UserSimplifiedResponse>()
+        }).ToList());
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType<OrderItem>(StatusCodes.Status200OK)]
+    [ProducesResponseType<OrderItemResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetOrderItem(int id)
     {
         var orderItem = await (FindOrderItem(id));
 
-        return Ok(orderItem);
+        return Ok(orderItem.Adapt<OrderItemResponse>() with
+        {
+            Book = orderItem.Book.Adapt<BookSimplifiedResponse>(),
+            User = orderItem.User.Adapt<UserSimplifiedResponse>()
+        });
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<OrderItemResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateOrderItem([FromBody] OrderItemModel model)
     {
@@ -58,7 +72,11 @@ public class OrderItemController : ControllerBase
 
         await _dbContext.SaveChangesAsync();
 
-        return Created();
+        return Created($"/OrderItem/{orderItem.Id}", orderItem.Adapt<OrderItemResponse>() with
+        {
+            Book = orderItem.Book.Adapt<BookSimplifiedResponse>(),
+            User = orderItem.User.Adapt<UserSimplifiedResponse>()
+        });
     }
 
     [HttpPatch("{id}")]
