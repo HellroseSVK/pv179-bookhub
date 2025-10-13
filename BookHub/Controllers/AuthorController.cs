@@ -24,6 +24,7 @@ public class AuthorController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType<List<AuthorResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAuthors()
     {
         var result = await _dbContext.Authors
@@ -39,6 +40,7 @@ public class AuthorController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType<AuthorResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAuthor(int id)
     {
         var author = await _dbContext.Authors
@@ -59,6 +61,7 @@ public class AuthorController : ControllerBase
     [HttpGet("{id}/books")]
     [ProducesResponseType<List<BookResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAuthorBooks(int id)
     {
         var author = await _dbContext.Authors
@@ -90,6 +93,7 @@ public class AuthorController : ControllerBase
     [ProducesResponseType<AuthorResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateAuthor([FromBody] AuthorModel model)
     {
         if (!ModelState.IsValid)
@@ -119,6 +123,7 @@ public class AuthorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> PatchAuthor(int id, [FromBody] AuthorPartialModel model)
     {
         if (!ModelState.IsValid)
@@ -155,6 +160,7 @@ public class AuthorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdateAuthor(int id, [FromBody] AuthorModel model)
     {
         if (!ModelState.IsValid)
@@ -180,6 +186,7 @@ public class AuthorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteAuthor(int id)
     {
         if (!ModelState.IsValid)

@@ -24,6 +24,7 @@ public class PublisherController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType<List<PublisherResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetPublishers()
     {
         var result = await _dbContext.Publishers
@@ -39,6 +40,7 @@ public class PublisherController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType<PublisherResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetPublisher(int id)
     {
         var publisher = await _dbContext.Publishers
@@ -60,6 +62,7 @@ public class PublisherController : ControllerBase
     [HttpPost]
     [ProducesResponseType<PublisherResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreatePublisher([FromBody] PublisherModel model)
     {
         if (!ModelState.IsValid)
@@ -86,6 +89,7 @@ public class PublisherController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> PatchPublisher(int id, [FromBody] PublisherModel model)
     {
         if (!ModelState.IsValid)
@@ -107,6 +111,7 @@ public class PublisherController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdatePublisher(int id, [FromBody] PublisherModel model)
     {
         if (!ModelState.IsValid)
@@ -128,6 +133,7 @@ public class PublisherController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeletePublisher(int id)
     {
         if (!ModelState.IsValid)
