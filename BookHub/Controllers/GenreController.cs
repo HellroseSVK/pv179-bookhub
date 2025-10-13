@@ -24,6 +24,7 @@ public class GenreController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType<List<GenreResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetGenres()
     {
         var result = await _dbContext.Genres
@@ -39,6 +40,7 @@ public class GenreController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType<GenreResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetGenre(int id)
     {
         var genre = await _dbContext.Genres
@@ -60,6 +62,7 @@ public class GenreController : ControllerBase
     [ProducesResponseType<GenreResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateGenre([FromBody] GenreModel model)
     {
         if (!ModelState.IsValid)
@@ -88,6 +91,7 @@ public class GenreController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> PatchGenre(int id, [FromBody] GenrePartialModel model)
     {
         if (!ModelState.IsValid)
@@ -123,6 +127,7 @@ public class GenreController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdateGenre(int id, [FromBody] GenreModel model)
     {
         if (!ModelState.IsValid)
@@ -147,6 +152,7 @@ public class GenreController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteGenre(int id)
     {
         if (!ModelState.IsValid)

@@ -37,6 +37,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("filter")]
         [ProducesResponseType<List<BookResponse>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> FilterBooks([FromQuery] BookFilter filter)
         {
             var query = _dbContext.Books.AsQueryable();
@@ -86,6 +87,7 @@ namespace WebAPI.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType<BookResponse>(StatusCodes.Status200OK)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetBook(int id)
         {
             var book = await _dbContext.Books
@@ -114,6 +116,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType<BookResponse>(StatusCodes.Status201Created)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateBook(BookModel model)
         {
             if (!ModelState.IsValid)
@@ -154,6 +157,7 @@ namespace WebAPI.Controllers
         [Route("{id}")]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> PatchBook(int id, BookModel model)
         {
             if (!ModelState.IsValid)
@@ -202,6 +206,7 @@ namespace WebAPI.Controllers
         [Route("{id}")]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateBook(int id, BookModel model)
         {
             if (!ModelState.IsValid)
@@ -253,6 +258,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> DeleteBook(int id)
         {
             if (!ModelState.IsValid)

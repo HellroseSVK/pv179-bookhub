@@ -24,6 +24,7 @@ public class ReviewController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType<List<ReviewResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetReviews()
     {
         var reviews = await _dbContext.Reviews
@@ -41,6 +42,7 @@ public class ReviewController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType<ReviewResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetReview(int id)
     {
         var review = await (FindReview(id));
@@ -55,6 +57,7 @@ public class ReviewController : ControllerBase
     [HttpPost]
     [ProducesResponseType<ReviewResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateReview([FromBody] ReviewModel model)
     {
         if (!ModelState.IsValid)
@@ -85,6 +88,7 @@ public class ReviewController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> PatchReview(int id, [FromBody] ReviewPartialModel model)
     {
         if (!ModelState.IsValid)
@@ -110,6 +114,7 @@ public class ReviewController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdateReview(int id, [FromBody] ReviewModel model)
     {
         if (!ModelState.IsValid)
@@ -135,6 +140,7 @@ public class ReviewController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteReview(int id)
     {
         if (!ModelState.IsValid)

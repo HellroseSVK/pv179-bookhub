@@ -24,6 +24,7 @@ public class OrderItemController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType<List<OrderItemResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetOrderItems()
     {
         var orderItems = await _dbContext.OrderItems
@@ -41,6 +42,7 @@ public class OrderItemController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType<OrderItemResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetOrderItem(int id)
     {
         var orderItem = await (FindOrderItem(id));
@@ -55,6 +57,7 @@ public class OrderItemController : ControllerBase
     [HttpPost]
     [ProducesResponseType<OrderItemResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateOrderItem([FromBody] OrderItemModel model)
     {
         if (!ModelState.IsValid)
@@ -83,6 +86,7 @@ public class OrderItemController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> PatchOrderItem(int id, [FromBody] OrderItemPartialModel model)
     {
         if (!ModelState.IsValid)
@@ -106,6 +110,7 @@ public class OrderItemController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdateOrderItem(int id, [FromBody] OrderItemModel model)
     {
         if (!ModelState.IsValid)
@@ -129,6 +134,7 @@ public class OrderItemController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteOrderItem(int id)
     {
         if (!ModelState.IsValid)
