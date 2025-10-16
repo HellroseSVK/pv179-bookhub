@@ -1,5 +1,5 @@
 ﻿using BusinessLayer.DTOs;
-using BusinessLayer.DTOs.Simplified;
+using BusinessLayer.DTOs.User;
 
 namespace BusinessLayer.Services
 {

@@ -1,5 +1,4 @@
-﻿
-namespace BusinessLayer.DTOs.Simplified
+﻿namespace BusinessLayer.DTOs.User
 {
     internal class UserSimplifiedNoPassword : BaseDTO
     {

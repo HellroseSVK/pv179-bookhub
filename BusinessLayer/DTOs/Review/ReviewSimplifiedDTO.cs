@@ -1,4 +1,4 @@
-﻿namespace BusinessLayer.DTOs.Simplified;
+﻿namespace BusinessLayer.DTOs.Review;
 
 public class ReviewSimplifiedDTO : BaseDTO
 {

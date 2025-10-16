@@ -1,6 +1,7 @@
-﻿using BusinessLayer.DTOs.Simplified;
+﻿using BusinessLayer.DTOs.Book;
+using BusinessLayer.DTOs.User;
 
-namespace BusinessLayer.DTOs;
+namespace BusinessLayer.DTOs.WishlistItem;
 
 public class WishlistItemDTO : BaseDTO
 {

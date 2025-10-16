@@ -1,4 +1,4 @@
-namespace BusinessLayer.DTOs.Simplified;
+namespace BusinessLayer.DTOs.User;
 
 public class UserSimplifiedDTO : BaseDTO
 {

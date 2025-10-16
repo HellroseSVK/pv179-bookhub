@@ -1,6 +1,8 @@
-using BusinessLayer.DTOs.Simplified;
+using BusinessLayer.DTOs.OrderItem;
+using BusinessLayer.DTOs.Review;
+using BusinessLayer.DTOs.WishlistItem;
 
-namespace BusinessLayer.DTOs;
+namespace BusinessLayer.DTOs.User;
 
 public class UserDTO : UserSimplifiedDTO
 {

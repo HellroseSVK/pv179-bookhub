@@ -1,5 +1,5 @@
 ﻿using BusinessLayer.DTOs;
-using BusinessLayer.DTOs.Simplified;
+using BusinessLayer.DTOs.User;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Mapster;
@@ -22,7 +22,7 @@ namespace BusinessLayer.Services
 
             await _dbContext.SaveChangesAsync();
 
-            return created.Adapt<UserSimplifiedDTO>();
+            return created.Entity.Adapt<UserSimplifiedDTO>();
         }
 
         public async Task<UserSimplifiedDTO?> GetUserAsync(int id, bool includeReviews = true, bool includeWishlistItems = true, bool includeOrderItems = true)

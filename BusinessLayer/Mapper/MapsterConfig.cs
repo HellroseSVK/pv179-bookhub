@@ -1,4 +1,4 @@
-﻿using BusinessLayer.DTOs.Simplified;
+﻿using BusinessLayer.DTOs.User;
 using Mapster;
 using Microsoft.Extensions.DependencyInjection;
 

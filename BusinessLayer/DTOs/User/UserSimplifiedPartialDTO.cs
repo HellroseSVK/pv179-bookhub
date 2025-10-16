@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessLayer.DTOs.Simplified
+namespace BusinessLayer.DTOs.User
 {
     public class UserSimplifiedPartialDTO
     {

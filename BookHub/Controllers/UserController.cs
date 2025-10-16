@@ -1,4 +1,4 @@
-﻿using BusinessLayer.DTOs.Simplified;
+﻿using BusinessLayer.DTOs.User;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -65,7 +65,7 @@ public class UserController : ControllerBase
 
         var result = await _userService.CreateUserAsync(model.Adapt<UserSimplifiedDTO>());
 
-        return Created("/User/{user.Id}", result);
+        return Created($"/User/{result.Id}", result);
     }
 
     [HttpPatch("{id}")]
