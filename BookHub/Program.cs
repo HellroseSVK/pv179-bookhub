@@ -1,11 +1,15 @@
 using DataAccessLayer;
 using Microsoft.OpenApi.Models;
 using WebAPI.Middlewares;
+using BusinessLayer;
+using BusinessLayer.Services;
+using BusinessLayer.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.RegisterMapsterConfiguration();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -40,6 +44,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddDbContext<CustomDBContext>();
+
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
