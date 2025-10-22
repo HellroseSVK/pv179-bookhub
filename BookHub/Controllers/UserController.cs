@@ -17,12 +17,10 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly CustomDBContext _dbContext;
     private readonly IUserService _userService;
 
-    public UserController(CustomDBContext dBContext, IUserService userService)
+    public UserController(IUserService userService)
     {
-        _dbContext = dBContext;
         _userService = userService;
     }
 
@@ -33,7 +31,7 @@ public class UserController : ControllerBase
     {
         var users = await _userService.GetUsersAsync();
 
-        return Ok(users);
+        return Ok(users.Adapt<List<UserSimplifiedResponse>>());
     }
 
     [HttpGet("{id}")]
@@ -49,7 +47,7 @@ public class UserController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {id} not found.");
         }
 
-        return Ok(user);
+        return Ok(user.Adapt<UserSimplifiedResponse>());
     }
 
     [HttpPost]
@@ -65,7 +63,7 @@ public class UserController : ControllerBase
 
         var result = await _userService.CreateUserAsync(model.Adapt<UserSimplifiedDTO>());
 
-        return Created($"/User/{result.Id}", result);
+        return Created($"/User/{result.Id}", result.Adapt<UserSimplifiedResponse>());
     }
 
     [HttpPatch("{id}")]
