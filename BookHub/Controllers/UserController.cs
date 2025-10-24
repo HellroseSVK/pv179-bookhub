@@ -1,4 +1,6 @@
-﻿using DataAccessLayer;
+﻿using BusinessLayer.DTOs.User;
+using BusinessLayer.Services;
+using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +17,11 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly CustomDBContext _dbContext;
+    private readonly IUserService _userService;
 
-    public UserController(CustomDBContext dBContext)
+    public UserController(IUserService userService)
     {
-        _dbContext = dBContext;
+        _userService = userService;
     }
 
     [HttpGet]
@@ -27,18 +29,9 @@ public class UserController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetUsers()
     {
-        var users = await _dbContext.Users
-            .Include(user => user.Reviews)
-            .Include(user => user.WishlistItems)
-            .Include(user => user.OrderItems)
-            .ToListAsync();
+        var users = await _userService.GetUsersAsync();
 
-        return Ok(users.Select(u => u.Adapt<UserResponse>() with
-        {
-            Reviews = u.Reviews.Select(r => r.Adapt<ReviewSimplifiedResponse>()).ToList(),
-            WishlistItems = u.WishlistItems.Select(wi => wi.Adapt<WishlistItemSimplifiedResponse>()).ToList(),
-            OrderItems = u.OrderItems.Select(oi => oi.Adapt<OrderItemSimplifiedResponse>()).ToList()
-        }).ToList());
+        return Ok(users.Adapt<List<UserSimplifiedResponse>>());
     }
 
     [HttpGet("{id}")]
@@ -47,14 +40,14 @@ public class UserController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetUser(int id)
     {
-        var user = await (FindUser(id));
+        var user = await _userService.GetUserAsync(id);
 
-        return Ok(user.Adapt<UserResponse>() with
+        if (user == null)
         {
-            Reviews = user.Reviews.Select(r => r.Adapt<ReviewSimplifiedResponse>()).ToList(),
-            WishlistItems = user.WishlistItems.Select(wi => wi.Adapt<WishlistItemSimplifiedResponse>()).ToList(),
-            OrderItems = user.OrderItems.Select(oi => oi.Adapt<OrderItemSimplifiedResponse>()).ToList()
-        });
+            throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {id} not found.");
+        }
+
+        return Ok(user.Adapt<UserSimplifiedResponse>());
     }
 
     [HttpPost]
@@ -68,23 +61,9 @@ public class UserController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var user = new User
-        {
-            Email = model.Email,
-            Password = model.Password,
-            IsAdmin = model.IsAdmin
-        };
+        var result = await _userService.CreateUserAsync(model.Adapt<UserSimplifiedDTO>());
 
-        _dbContext.Users.Add(user);
-
-        await _dbContext.SaveChangesAsync();
-
-        return Created("/User/{user.Id}", user.Adapt<UserResponse>() with
-        {
-            Reviews = user.Reviews.Select(r => r.Adapt<ReviewSimplifiedResponse>()).ToList(),
-            WishlistItems = user.WishlistItems.Select(wi => wi.Adapt<WishlistItemSimplifiedResponse>()).ToList(),
-            OrderItems = user.OrderItems.Select(oi => oi.Adapt<OrderItemSimplifiedResponse>()).ToList()
-        });
+        return Created($"/User/{result.Id}", result.Adapt<UserSimplifiedResponse>());
     }
 
     [HttpPatch("{id}")]
@@ -99,15 +78,12 @@ public class UserController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var user = await FindUser(id);
-
-        user.Email = model.Email ?? user.Email;
-        user.Password = model.Password ?? user.Password;
-        user.IsAdmin = model.IsAdmin ?? user.IsAdmin;
-
-        _dbContext.Users.Update(user);
-
-        await _dbContext.SaveChangesAsync();
+        var result = await _userService.PatchUserAsync(id, model.Adapt<UserSimplifiedPartialDTO>()); // TODO: examine mapping when something is null
+        
+        if (!result)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {id} not found.");
+        }
 
         return NoContent();
     }
@@ -124,15 +100,12 @@ public class UserController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var user = await FindUser(id);
+        var result = await _userService.UpdateUserAsync(id, model.Adapt<UserSimplifiedDTO>());
 
-        user.Email = model.Email;
-        user.Password = model.Password;
-        user.IsAdmin = model.IsAdmin;
-
-        _dbContext.Users.Update(user);
-
-        await _dbContext.SaveChangesAsync();
+        if (!result)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {id} not found.");
+        }
 
         return NoContent();
     }
@@ -149,26 +122,13 @@ public class UserController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var user = await FindUser(id);
+        var result = await _userService.DeleteUserAsync(id);
 
-        _dbContext.Users.Remove(user);
-
-        await _dbContext.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    private async Task<User> FindUser(int userId)
-    {
-        var user = await _dbContext.Users
-            .FirstOrDefaultAsync(p => p.Id == userId);
-
-        if (user == null)
+        if (!result)
         {
-            throw new StatusCodeException(StatusCodes.Status404NotFound,
-                $"User with id {userId} not found.");
+            throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {id} not found.");
         }
 
-        return user;
+        return NoContent();
     }
 }
