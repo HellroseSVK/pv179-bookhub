@@ -46,6 +46,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<CustomDBContext>();
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();
 
