@@ -151,15 +151,15 @@ public class WishlistItemController : ControllerBase
         return NoContent();
     }
 
-    private async Task<WishlistItem> FindWishlistItem(int WishlistItemId)
+    private async Task<WishlistItem> FindWishlistItem(int wishlistItemId)
     {
         var wishlistItem = await _dbContext.WishlistItems
-            .FirstOrDefaultAsync(p => p.Id == WishlistItemId);
+            .FirstOrDefaultAsync(p => p.Id == wishlistItemId);
 
         if (wishlistItem == null)
         {
             throw new StatusCodeException(StatusCodes.Status404NotFound,
-                $"WishlistItem with id {WishlistItemId} not found.");
+                $"WishlistItem with id {wishlistItemId} not found.");
         }
 
         return wishlistItem;
