@@ -60,7 +60,7 @@ documentation.
 
 ## Usage
 
-- The API is available at `https://localhost:5095` (port specified in [
+- The API is available at `http://localhost:5095` (port specified in [
   `launchSettings.json`](./BookHub/Properties/launchSettings.json))
 - Use the included [swagger](http://localhost:5095/swagger/index.html) or tools like Postman or curl to interact with
   the endpoints
