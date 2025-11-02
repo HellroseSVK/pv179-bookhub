@@ -7,30 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="obj\**" />
-      <Compile Include="obj\Debug\net9.0\.NETCoreApp,Version=v9.0.AssemblyAttributes.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Remove="obj\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Remove="obj\**" />
-      <Content Include="obj\BookHub.csproj.nuget.dgspec.json" />
-      <Content Include="obj\Debug\net9.0\BookHub.AssemblyInfoInputs.cache" />
-      <Content Include="obj\Debug\net9.0\BookHub.assets.cache" />
-      <Content Include="obj\project.assets.json" />
-      <Content Include="obj\project.nuget.cache" />
-      <Content Include="obj\project.packagespec.json" />
-      <Content Include="obj\rider.project.restore.info" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="obj\**" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="Mapster" Version="7.4.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
         <PrivateAssets>all</PrivateAssets>

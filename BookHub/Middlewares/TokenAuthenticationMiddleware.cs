@@ -4,7 +4,7 @@
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<TokenAuthenticationMiddleware> _logger;
-        private const string _API_TOKEN = "very_secret_token";
+        private const string ApiToken = "very_secret_token";
 
         public TokenAuthenticationMiddleware(RequestDelegate next, ILogger<TokenAuthenticationMiddleware> logger)
         {
@@ -14,9 +14,9 @@
 
         public async Task Invoke(HttpContext context)
         {
-            var req_token = context.Request.Headers["Authorization"];
+            var reqToken = context.Request.Headers["Authorization"];
 
-            if (!string.IsNullOrEmpty(req_token) && req_token == _API_TOKEN)
+            if (!string.IsNullOrEmpty(reqToken) && reqToken == ApiToken)
             {
                 await _next(context);
             }

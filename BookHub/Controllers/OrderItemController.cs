@@ -151,15 +151,15 @@ public class OrderItemController : ControllerBase
         return NoContent();
     }
 
-    private async Task<OrderItem> FindOrderItem(int OrderItemId)
+    private async Task<OrderItem> FindOrderItem(int orderItemId)
     {
         var orderItem = await _dbContext.OrderItems
-            .FirstOrDefaultAsync(p => p.Id == OrderItemId);
+            .FirstOrDefaultAsync(p => p.Id == orderItemId);
 
         if (orderItem == null)
         {
             throw new StatusCodeException(StatusCodes.Status404NotFound,
-                $"OrderItem with id {OrderItemId} not found.");
+                $"OrderItem with id {orderItemId} not found.");
         }
 
         return orderItem;
