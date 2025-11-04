@@ -1,0 +1,235 @@
+using DataAccessLayer;
+using DataAccessLayer.Entities;
+using Mapster;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Core;
+using WebAPI.Exception;
+using WebAPI.Models;
+using WebAPI.Models.Response;
+using WebAPI.Models.Response.Simplified;
+
+namespace WebAPI.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class AuthorController : ControllerBase
+{
+    private readonly CustomDBContext _dbContext;
+
+    public AuthorController(CustomDBContext dBContext)
+    {
+        _dbContext = dBContext;
+    }
+
+    [HttpGet]
+    [ProducesResponseType<List<AuthorResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetAuthors()
+    {
+        var result = await _dbContext.Authors
+            .Include(a => a.BookAuthors).ThenInclude(bookAuthor => bookAuthor.Book)
+            .ToListAsync();
+
+        return Ok(result.Select(r => r.Adapt<AuthorResponse>() with
+        {
+            Books = r.BookAuthors.Select(ba => ba.Book.Adapt<BookSimplifiedResponse>()).ToList()
+        }).ToList());
+    }
+
+    [HttpGet("{id}")]
+    [ProducesResponseType<AuthorResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetAuthor(int id)
+    {
+        var author = await _dbContext.Authors
+            .Where(a => a.Id == id)
+            .Include(a => a.BookAuthors).ThenInclude(bookAuthor => bookAuthor.Book)
+            .FirstOrDefaultAsync();
+        if (author == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound, "No author was found.");
+        }
+
+        return Ok(author.Adapt<AuthorResponse>() with
+        {
+            Books = author.BookAuthors.Select(ba => ba.Book.Adapt<BookSimplifiedResponse>()).ToList()
+        });
+    }
+
+    [HttpGet("{id}/books")]
+    [ProducesResponseType<List<BookResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetAuthorBooks(int id)
+    {
+        var author = await _dbContext.Authors
+            .Where(a => a.Id == id)
+            .FirstOrDefaultAsync();
+        if (author == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound, "No author was found.");
+        }
+
+        var books = await _dbContext.Books
+            .Where(b => b.BookAuthors.Any(ba => ba.AuthorId == id))
+            .Include(book => book.BookAuthors).ThenInclude(bookAuthor => bookAuthor.Author)
+            .Include(book => book.BookGenres).ThenInclude(bookGenre => bookGenre.Genre)
+            .Include(book => book.Reviews)
+            .Include(book => book.Publisher)
+            .ToListAsync();
+
+        return Ok(books.Select(b => b.Adapt<BookResponse>() with
+        {
+            Authors = b.BookAuthors.Select(ba => ba.Author.Adapt<AuthorSimplifiedResponse>()).ToList(),
+            Genres = b.BookGenres.Select(bg => bg.Genre.Adapt<GenreSimplifiedResponse>()).ToList(),
+            Reviews = b.Reviews.Select(rv => rv.Adapt<ReviewSimplifiedResponse>()).ToList(),
+            Publisher = b.Publisher.Adapt<PublisherSimplifiedResponse>()
+        }).ToList());
+    }
+
+    [HttpPost]
+    [ProducesResponseType<AuthorResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> CreateAuthor([FromBody] AuthorModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
+        }
+
+        var books = await FindBooks(model.BookIds);
+
+        var author = new Author
+        {
+            Name = model.Name,
+            Surname = model.Surname,
+            BookAuthors = books.Select(book => new BookAuthor { BookId = book.Id }).ToList()
+        };
+
+        _dbContext.Authors.Add(author);
+        await _dbContext.SaveChangesAsync();
+
+        return Created($"/Author/{author.Id}", author.Adapt<AuthorResponse>() with
+        {
+            Books = author.BookAuthors.Select(ba => ba.Book.Adapt<BookSimplifiedResponse>()).ToList()
+        });
+    }
+
+    [HttpPatch("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> PatchAuthor(int id, [FromBody] AuthorPartialModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
+        }
+
+        var author = await FindAuthor(id);
+
+        if (model.BookIds != null)
+        {
+            var books = await FindBooks(model.BookIds);
+
+            _dbContext.BookAuthors.RemoveRange(author.BookAuthors.Where(ba => !model.BookIds.Contains(ba.BookId)));
+            var existingBookIds = author.BookAuthors.Select(ba => ba.BookId).ToList();
+            _dbContext.BookAuthors.AddRange(
+                model.BookIds
+                    .Except(existingBookIds)
+                    .Select(bookId => new BookAuthor { AuthorId = author.Id, BookId = bookId })
+            );
+        }
+
+        author.Name = model.Name ?? author.Name;
+        author.Surname = model.Surname ?? author.Surname;
+
+        _dbContext.Authors.Update(author);
+
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UpdateAuthor(int id, [FromBody] AuthorModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
+        }
+
+        var author = await FindAuthor(id);
+        var books = await FindBooks(model.BookIds);
+
+        author.Name = model.Name;
+        author.Surname = model.Surname;
+        author.BookAuthors = books.Select(book => new BookAuthor { AuthorId = author.Id, BookId = book.Id }).ToList();
+
+        _dbContext.Authors.Update(author);
+
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> DeleteAuthor(int id)
+    {
+        if (!ModelState.IsValid)
+        {
+            throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
+        }
+
+        var author = await FindAuthor(id);
+
+        _dbContext.Authors.Remove(author);
+
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    private async Task<Author> FindAuthor(int authorId)
+    {
+        var author = await _dbContext.Authors
+            .Where(a => a.Id == authorId)
+            .Include(a => a.BookAuthors)
+            .FirstOrDefaultAsync();
+        if (author == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                $"Author with id {authorId} not found.");
+        }
+
+        return author;
+    }
+
+    private async Task<List<Book>> FindBooks(List<int> bookIds)
+    {
+        var books = await _dbContext.Books
+            .Where(b => bookIds.Contains(b.Id))
+            .ToListAsync();
+        var missingBookIds = bookIds.Except(books.Select(b => b.Id)).ToList();
+        if (missingBookIds.Any())
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                $"Books {{{string.Join(", ", missingBookIds)}}} not found.");
+        }
+
+        return books;
+    }
+}

@@ -1,93 +1,122 @@
-# PV179 BookHub
+# [BookHub](https://gitlab.fi.muni.cz/xsabo1/pv179-bookhub)
 
+BookHub is a C# Web API for managing books, authors, publishers, reviews, users, wishlists and orders.
+It uses Entity Framework Core for data access, Mapster for object mapping, and Swagger (OpenAPI) for interactive API
+documentation.
 
+## Team Members
 
-## Getting started
+- [Samuel Sabo](https://gitlab.fi.muni.cz/xsabo1) (https://gitlab.fi.muni.cz/xsabo1)
+- [Martin Gallik](https://gitlab.fi.muni.cz/xgallik) (https://gitlab.fi.muni.cz/xgallik)
+- [Michal Novák](https://gitlab.fi.muni.cz/xnovak9) (https://gitlab.fi.muni.cz/xnovak9)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Features
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- Use-case diagram and data model included in documentation
+- RESTful API to fetch products by name, description, price, category, and manufacturer
+- CRUD operations for books, authors, publishers, reviews, users, wishlist items, and order items
+- Database setup with a dedicated Data Access Layer (DAL)
+- Database seeded with realistic data
+- Error handling middleware
+- Token-based authentication (hard-coded access token)
+- Logging middleware for all incoming requests and outgoing responses
+- Interactive API documentation with Swagger (OpenAPI)
+- Team workflow with GitLab branching, merge requests, and code review
+- Object mapping with Mapster
 
-## Add your files
+## Project Structure
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+### WebAPI Project ([`BookHub/`](./BookHub/))
 
-```
-cd existing_repo
-git remote add origin https://gitlab.fi.muni.cz/xsabo1/pv179-bookhub.git
-git branch -M main
-git push -uf origin main
-```
+- [`Controllers/`](./BookHub/Controllers) – API controllers for each entity
+- [`Models/`](./BookHub/Models) – Data transfer objects (DTOs) and response models
+- [`Core/`](./BookHub/Core) – Core classes (e.g., error responses)
+- [`Exception/`](./BookHub/Exception) – Custom exception handling
+- [`Middlewares/`](./BookHub/Middlewares) – Custom middleware for logging, error handling and authentication
+- [`Program.cs`](./BookHub/Program.cs), [`appsettings.json`](./BookHub/appsettings.json), etc.
 
-## Integrate with your tools
+### DataAccessLayer Project ([`DataAccessLayer/`](./DataAccessLayer/))
 
-- [ ] [Set up project integrations](https://gitlab.fi.muni.cz/xsabo1/pv179-bookhub/-/settings/integrations)
+- [`Entities/`](./DataAccessLayer/Entities) – Entity classes
+- [`Migrations/`](./DataAccessLayer/Migrations) – Database migrations
+- [`CustomDBContext.cs`](./DataAccessLayer/CustomDBContext.cs) – Database context
+- [`DataInitializer.cs`](./DataAccessLayer/DataInitializer.cs) – Database seeding
 
-## Collaborate with your team
+## Getting Started
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### Prerequisites
 
-## Test and Deploy
+- .NET 9.0 SDK
+- SQL database (SQLite)
 
-Use the built-in continuous integration in GitLab.
+### Setup
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+1. Clone the [repository](https://gitlab.fi.muni.cz/xsabo1/pv179-bookhub)
+2. Navigate to the [`BookHub`](./) directory
+3. Restore dependencies
+4. Run database [migrations](./DataAccessLayer/Migrations) and seed the database
+5. Run the application
+6. Authorize using the hard-coded token: `very_secret_token`
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- The API is available at `http://localhost:5095` (port specified in [
+  `launchSettings.json`](./BookHub/Properties/launchSettings.json))
+- Use the included [swagger](http://localhost:5095/swagger/index.html) or tools like Postman or curl to interact with
+  the endpoints
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+## Technologies Used
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+- ASP.NET Core Web API
+- Entity Framework Core
+- Mapster
+- Microsoft SQLite
+- Swagger (Swashbuckle)
+- Git and GitLab for version control and collaboration
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+## Technical documentation
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+The technical documentation provides an overview of the system architecture, use-case diagram, and data model.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+### Diagrams
 
-## License
-For open source projects, say how it is licensed.
+All diagrams are located in the [`Diagrams/`](./Diagrams) folder:
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+#### Use-Case Diagram
+
+![Use Case Diagram](./Diagrams/use-case.png)
+
+* A Customer should be able to register himself, thereby becoming a User
+* A Customer should also be able to browse the catalog of Books, including the books related Authors, Genres, Reviews
+  and Publisher
+* A Customer should be able to filter in the catalog by its title, description, price range, min avg reviews, authors,
+  genres and
+  publisher
+
+
+* A User should be able to Log in and Log out
+* A User should be able to manage his Wishlist, including adding Books to it
+* A User should be able to purchase Books, thereby creating an Order
+* A User should be able to review his purchase history
+* A User should be able to write Reviews for Books
+
+* An Admin should be able to manage (CRUD) the catalog of Books, Authors, Genres, Publishers and other User Accounts
+
+#### Data Model (ER Diagram)
+
+![Entity Relation Diagram](./Diagrams/erd.png)
+
+* We decided to use integer primary keys for all entities for simplicity and consistency
+* Each Entity has a created at attribute to track when the record was created
+* The User entity has a role attribute to distinguish between regular users and admins
+* We decided to use connecting tables to represent many-to-many relationships, such as between Books and Authors
+
+### Overview
+
+- The application follows a layered architecture, separating the WebAPI and DataAccessLayer projects.
+- The WebAPI project handles HTTP requests, authentication, logging, and error handling.
+- The DataAccessLayer project manages database entities, context, migrations, and seeding.
+- Entity Framework Core is used for ORM and database migrations.
+- Mapster is used for object mapping between entities and DTOs.
+
+For detailed diagrams and further explanation, see the [`Diagrams/`](./Diagrams) folder.
