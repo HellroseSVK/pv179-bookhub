@@ -23,7 +23,7 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAuthors()
     {
-        var authors = await authorService.GetAuthorsAsync();
+        var authors = await authorService.GetAuthorsAsync(includeBookAuthors: true);
 
         return Ok(authors.Adapt<List<AuthorResponse>>());
     }
@@ -82,7 +82,7 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var author = await authorService.CreateAuthorAsync(model.Adapt<AuthorDTO>());
+        var author = await authorService.CreateAuthorAsync(model.Adapt<AuthorCreateDTO>());
 
         return Created($"/Author/{author.Id}", author.Adapt<AuthorResponse>());
     }
@@ -99,7 +99,7 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await authorService.PatchAuthorAsync(id, model.Adapt<AuthorSimplifiedPartialDTO>());
+        await authorService.PatchAuthorAsync(id, model.Adapt<AuthorPartialDTO>());
 
         return NoContent();
     }
@@ -116,7 +116,7 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await authorService.UpdateAuthorAsync(id, model.Adapt<AuthorDTO>());
+        await authorService.UpdateAuthorAsync(id, model.Adapt<AuthorUpdateDTO>());
 
         return NoContent();
     }

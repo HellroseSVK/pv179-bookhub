@@ -4,17 +4,17 @@ namespace BusinessLayer.Services.Interfaces;
 
 public interface IAuthorService
 {
-    public Task<AuthorSimplifiedDTO> CreateAuthorAsync(AuthorSimplifiedDTO author);
+    public Task<AuthorDTO> CreateAuthorAsync(AuthorCreateDTO authorDto);
 
-    public Task<List<AuthorSimplifiedDTO>> GetAuthorsAsync(
+    public Task<List<AuthorDTO>> GetAuthorsAsync(
         int[]? ids = null,
         bool includeBookAuthors = true);
 
-    public Task<AuthorSimplifiedDTO> GetAuthorAsync(
+    public Task<AuthorDTO> GetAuthorAsync(
         int id,
         bool includeBookAuthors = true);
 
-    public Task PatchAuthorAsync(int id, AuthorSimplifiedPartialDTO authorDto);
-    public Task UpdateAuthorAsync(int id, AuthorDTO authorDto);
+    public Task PatchAuthorAsync(int id, AuthorPartialDTO authorDto);
+    public Task UpdateAuthorAsync(int id, AuthorUpdateDTO authorDto);
     public Task DeleteAuthorAsync(int id);
 }
