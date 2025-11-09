@@ -16,7 +16,7 @@ build:
   tags:
     - shared-fi
   script:
-    - dotnet build --configuration Release
+    - dotnet build --configuration Release /p:TreatWarningsAsErrors=true
 
 test:
   stage: test
