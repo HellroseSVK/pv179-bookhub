@@ -6,6 +6,7 @@ public record ReviewResponse(
     int Id,
     DateTime CreatedAt,
     int Rating,
+    string Body,
     BookSimplifiedResponse Book,
     UserSimplifiedResponse User
-) : ReviewSimplifiedResponse(Id, CreatedAt, Rating);
+) : ReviewSimplifiedResponse(Id, CreatedAt, Rating, Body, Book, User);

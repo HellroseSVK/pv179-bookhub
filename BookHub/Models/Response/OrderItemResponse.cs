@@ -7,4 +7,4 @@ public record OrderItemResponse(
     DateTime CreatedAt,
     BookSimplifiedResponse Book,
     UserSimplifiedResponse User
-) : OrderItemSimplifiedResponse(Id, CreatedAt);
+) : OrderItemSimplifiedResponse(Id, CreatedAt, Book, User);

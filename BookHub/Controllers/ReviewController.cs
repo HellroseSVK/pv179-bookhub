@@ -44,7 +44,7 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var result = await reviewService.CreateReviewAsync(model.Adapt<ReviewCreateDTO>());
+        var result = await reviewService.CreateReviewAsync(model.Adapt<ReviewSimplifiedDTO>());
         return Created($"/Review/{result.Id}", result.Adapt<ReviewSimplifiedResponse>());
     }
 
@@ -76,7 +76,7 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await reviewService.UpdateReviewAsync(id, model.Adapt<ReviewUpdateDTO>());
+        await reviewService.UpdateReviewAsync(id, model.Adapt<ReviewSimplifiedDTO>());
         return NoContent();
     }
 

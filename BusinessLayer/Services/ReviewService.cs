@@ -11,7 +11,7 @@ namespace BusinessLayer.Services;
 
 public class ReviewService(CustomDBContext dbContext) : IReviewService
 {
-    public async Task<ReviewSimplifiedDTO> CreateReviewAsync(ReviewCreateDTO reviewDto)
+    public async Task<ReviewSimplifiedDTO> CreateReviewAsync(ReviewSimplifiedDTO reviewDto)
     {
         var created = dbContext.Reviews.Add(reviewDto.Adapt<Review>());
         await dbContext.SaveChangesAsync();
@@ -51,7 +51,7 @@ public class ReviewService(CustomDBContext dbContext) : IReviewService
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateReviewAsync(int id, ReviewUpdateDTO reviewDto)
+    public async Task UpdateReviewAsync(int id, ReviewSimplifiedDTO reviewDto)
     {
         var review = await FindReview(id);
 

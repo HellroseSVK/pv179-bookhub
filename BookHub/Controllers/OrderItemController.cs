@@ -44,7 +44,7 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var result = await orderService.CreateOrderItemAsync(model.Adapt<OrderItemCreateDTO>());
+        var result = await orderService.CreateOrderItemAsync(model.Adapt<OrderItemSimplifiedDTO>());
         return Created($"/OrderItem/{result.Id}", result.Adapt<OrderItemSimplifiedResponse>());
     }
 
@@ -76,7 +76,7 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await orderService.UpdateOrderItemAsync(id, model.Adapt<OrderItemUpdateDTO>());
+        await orderService.UpdateOrderItemAsync(id, model.Adapt<OrderItemSimplifiedDTO>());
         return NoContent();
     }
 

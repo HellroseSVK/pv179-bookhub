@@ -11,7 +11,7 @@ namespace BusinessLayer.Services;
 
 public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
 {
-    public async Task<OrderItemSimplifiedDTO> CreateOrderItemAsync(OrderItemCreateDTO orderItemDto)
+    public async Task<OrderItemSimplifiedDTO> CreateOrderItemAsync(OrderItemSimplifiedDTO orderItemDto)
     {
         var created = dbContext.OrderItems.Add(orderItemDto.Adapt<OrderItem>());
         await dbContext.SaveChangesAsync();
@@ -49,7 +49,7 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateOrderItemAsync(int id, OrderItemUpdateDTO orderItemDto)
+    public async Task UpdateOrderItemAsync(int id, OrderItemSimplifiedDTO orderItemDto)
     {
         var orderItem = await FindOrderItem(id);
 
