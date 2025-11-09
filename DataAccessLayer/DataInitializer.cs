@@ -132,7 +132,7 @@ namespace DataAccessLayer
 
         private static List<OrderItem> PrepareOrderItems()
         {
-            return new List<OrderItem>() 
+            return new List<OrderItem>()
             {
                 new OrderItem { Id = 1, BookId = 1, UserId = 1},
                 new OrderItem { Id = 2, BookId = 2, UserId = 1},
@@ -149,8 +149,8 @@ namespace DataAccessLayer
 
         private static List<User> PrepareUsers()
         {
-            return new List<User>() 
-            { 
+            return new List<User>()
+            {
                 new User { Id = 1, Email = "james.miller92@gmail.com", Password = "pbkdf2_sha256$100000$2133ad0a4d31462ef5766ff6b03c7987$f919d3c6f899fe09d8f3158618e63988a1d09daea26e0aeed5219768f1e2d199", IsAdmin = false },
                 new User { Id = 2, Email = "sarah.lee@outlook.com", Password = "pbkdf2_sha256$100000$0acfd8d2ff40624052f26f2fb3495254$93857a9a6b61f8f9098e639f645f7143d92006ce925fc50e7af534567cafe07f", IsAdmin = false },
                 new User { Id = 3, Email = "marco.rossi89@yahoo.com", Password = "pbkdf2_sha256$100000$6190de7b0dda9c8235e0e55455d43f2b$f33f0dfb4085e26e30dd79b9c9959a0a01a033155b4cfe8b9e8b9baa9670b8c3", IsAdmin = false },
@@ -164,7 +164,7 @@ namespace DataAccessLayer
 
         private static List<WishlistItem> PrepareWishlistItems()
         {
-            return new List<WishlistItem>() 
+            return new List<WishlistItem>()
             {
                 new WishlistItem { Id = 1, BookId = 7, UserId = 3},
                 new WishlistItem { Id = 2, BookId = 6, UserId = 3},

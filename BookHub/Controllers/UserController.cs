@@ -79,7 +79,7 @@ public class UserController : ControllerBase
         }
 
         var result = await _userService.PatchUserAsync(id, model.Adapt<UserSimplifiedPartialDTO>()); // TODO: examine mapping when something is null
-        
+
         if (!result)
         {
             throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {id} not found.");

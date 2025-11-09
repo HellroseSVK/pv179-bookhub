@@ -86,7 +86,7 @@ namespace DataAccessLayer
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<BookGenre>()
-                .HasOne<Genre>(bgenre=> bgenre.Genre)
+                .HasOne<Genre>(bgenre => bgenre.Genre)
                 .WithMany(genre => genre.BookGenres)
                 .OnDelete(DeleteBehavior.Cascade);
 
