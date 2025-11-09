@@ -68,15 +68,15 @@ public class AuthorService(CustomDBContext dBContext) : IAuthorService
 
         author.Name = authorDto.Name;
         author.Surname = authorDto.Surname;
-        
+
         var books = await FindBooks(authorDto.BookIds);
         var assignedBooks = author.BookAuthors.Select(ba => ba.Book);
-        
+
         var oldBooks = assignedBooks.Except(books);
         author.BookAuthors.RemoveAll(ba => oldBooks.Any(ob => ob.Id == ba.BookId));
         var newBooks = books.Except(assignedBooks);
         author.BookAuthors.AddRange(newBooks.Select(book => new BookAuthor { BookId = book.Id, Book = book }));
-        
+
         dBContext.Authors.Update(author);
 
         await dBContext.SaveChangesAsync();

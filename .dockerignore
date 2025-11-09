@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/.vscode/
+*.vsix
+*.user
+*.userosscache
+*.dbmdl
+*.jfm
+node_modules/
+npm-debug.log

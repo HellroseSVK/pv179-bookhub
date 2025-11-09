@@ -77,7 +77,7 @@ namespace BusinessLayer.Services
 
             await dBContext.SaveChangesAsync();
         }
-        
+
         private async Task<User> FindUser(int userId, bool includeReviews = false, bool includeWishlistItems = false, bool includeOrderItems = false)
         {
             var query = GetBaseQuery(includeReviews, includeWishlistItems, includeOrderItems);
