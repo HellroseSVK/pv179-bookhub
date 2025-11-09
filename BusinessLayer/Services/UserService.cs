@@ -1,125 +1,96 @@
-﻿using BusinessLayer.DTOs;
-using BusinessLayer.DTOs.User;
+﻿using BusinessLayer.DTOs.User;
+using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.Exception;
 
 namespace BusinessLayer.Services
 {
-    public class UserService : IUserService
+    public class UserService(CustomDBContext dBContext) : IUserService
     {
-        private readonly CustomDBContext _dbContext;
-
-        public UserService(CustomDBContext dBContext)
-        {
-            _dbContext = dBContext;
-        }
-
         public async Task<UserSimplifiedDTO> CreateUserAsync(UserSimplifiedDTO user)
         {
-            var created = _dbContext.Users.Add(user.Adapt<User>());
+            var created = dBContext.Users.Add(user.Adapt<User>());
 
-            await _dbContext.SaveChangesAsync();
+            await dBContext.SaveChangesAsync();
 
             return created.Entity.Adapt<UserSimplifiedDTO>();
         }
 
-        public async Task<UserSimplifiedDTO?> GetUserAsync(int id, bool includeReviews = true, bool includeWishlistItems = true, bool includeOrderItems = true)
+        public async Task<UserSimplifiedDTO> GetUserAsync(int id, bool includeReviews = true,
+            bool includeWishlistItems = true, bool includeOrderItems = true)
         {
-            var query = GetBaseQuery(includeReviews, includeWishlistItems, includeOrderItems);
-
-            var user = await query.FirstOrDefaultAsync(user => user.Id == id);
-
-            if (user == null)
-            {
-                return null;
-            }
+            var user = await FindUser(id, includeReviews, includeWishlistItems, includeOrderItems);
 
             return user.Adapt<UserSimplifiedDTO>();
-
         }
 
-        public async Task<List<UserSimplifiedDTO>> GetUsersAsync(int[]? ids = null, bool includeReviews = true, bool includeWishlistItems = true, bool includeOrderItems = true)
+        public async Task<List<UserSimplifiedDTO>> GetUsersAsync(int[]? ids = null, bool includeReviews = true,
+            bool includeWishlistItems = true, bool includeOrderItems = true)
         {
             var query = GetBaseQuery(includeReviews, includeWishlistItems, includeOrderItems);
 
-            if (ids != null && ids.Length > 0)
+            if (ids is { Length: > 0 })
             {
                 query = query.Where(a => ids.Contains(a.Id));
             }
 
             var users = await query.ToListAsync();
 
-            if (users == null)
-            {
-                return [];
-            }
-
             return users.Adapt<List<UserSimplifiedDTO>>();
         }
 
-        public async Task<bool> PatchUserAsync(int id, UserSimplifiedPartialDTO user)
+        public async Task PatchUserAsync(int id, UserSimplifiedPartialDTO user)
         {
-            var query = GetBaseQuery(false, false, false);
-            var loaded = await query.FirstOrDefaultAsync(user => user.Id == id);
-
-            if (loaded == null)
-            {
-                return false;
-            }
+            var loaded = await FindUser(id);
 
             loaded.Email = user.Email ?? loaded.Email;
             loaded.Password = user.Password ?? loaded.Password;
             loaded.IsAdmin = user.IsAdmin ?? loaded.IsAdmin;
 
-            _dbContext.Users.Update(loaded);
+            dBContext.Users.Update(loaded);
 
-            await _dbContext.SaveChangesAsync();
-
-            return true;
+            await dBContext.SaveChangesAsync();
         }
 
-        public async Task<bool> UpdateUserAsync(int id, UserSimplifiedDTO user)
+        public async Task UpdateUserAsync(int id, UserSimplifiedDTO user)
         {
-            var query = GetBaseQuery(false, false, false);
-            var loaded = await query.FirstOrDefaultAsync(user => user.Id == id);
-
-            if (loaded == null)
-            {
-                return false;
-            }
+            var loaded = await FindUser(id);
 
             loaded.Email = user.Email;
             loaded.Password = user.Password;
             loaded.IsAdmin = user.IsAdmin;
 
-            _dbContext.Users.Update(loaded);
+            dBContext.Users.Update(loaded);
 
-            await _dbContext.SaveChangesAsync();
-
-            return true;
+            await dBContext.SaveChangesAsync();
         }
 
-        public async Task<bool> DeleteUserAsync(int id)
+        public async Task DeleteUserAsync(int id)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(user => user.Id == id);
+            var user = await FindUser(id);
 
-            if (user == null)
-            {
-                return false;
-            }
+            dBContext.Users.Remove(user);
 
-            _dbContext.Users.Remove(user);
+            await dBContext.SaveChangesAsync();
+        }
 
-            await _dbContext.SaveChangesAsync();
+        private async Task<User> FindUser(int userId, bool includeReviews = false, bool includeWishlistItems = false, bool includeOrderItems = false)
+        {
+            var query = GetBaseQuery(includeReviews, includeWishlistItems, includeOrderItems);
 
-            return true;
+            var user = await query.FirstOrDefaultAsync(user => user.Id == userId);
+
+            return user ??
+                   throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {userId} not found.");
         }
 
         private IQueryable<User> GetBaseQuery(bool includeReviews, bool includeWishlistItems, bool includeOrderItems)
         {
-            IQueryable<User> userQuery = _dbContext.Users;
+            IQueryable<User> userQuery = dBContext.Users;
 
             if (includeReviews)
             {

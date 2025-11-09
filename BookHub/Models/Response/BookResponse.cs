@@ -1,4 +1,3 @@
-using DataAccessLayer.Entities;
 using WebAPI.Models.Response.Simplified;
 
 namespace WebAPI.Models.Response;

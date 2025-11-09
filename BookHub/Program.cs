@@ -4,6 +4,9 @@ using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using WebAPI.Middlewares;
+using BusinessLayer.Services;
+using BusinessLayer.Mapper;
+using BusinessLayer.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +68,7 @@ builder.Services.AddDbContextFactory<CustomDBContext>(options =>
 });
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
 
 var app = builder.Build();
 
