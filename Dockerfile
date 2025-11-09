@@ -10,6 +10,7 @@ WORKDIR /src
 COPY ["BookHub/WebAPI.csproj", "BookHub/"]
 COPY ["DataAccessLayer/DataAccessLayer.csproj", "DataAccessLayer/"]
 COPY ["BusinessLayer/BusinessLayer.csproj", "BusinessLayer/"]
+COPY ["Shared/Shared.csproj", "Shared/"]
 
 RUN dotnet restore "BookHub/WebAPI.csproj"
 COPY . .
