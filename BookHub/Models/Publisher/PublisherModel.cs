@@ -2,5 +2,5 @@ namespace WebAPI.Models.Publisher;
 
 public class PublisherModel
 {
-    public string Name { get; set; }
+    public required string Name { get; set; }
 }

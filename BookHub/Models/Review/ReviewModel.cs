@@ -4,7 +4,7 @@
     {
         public int Rating { get; set; }
 
-        public string Body { get; set; }
+        public required string Body { get; set; }
 
         public int BookId { get; set; }
 
