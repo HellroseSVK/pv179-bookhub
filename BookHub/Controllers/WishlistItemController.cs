@@ -13,21 +13,14 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WishlistItemController : ControllerBase
+public class WishlistItemController(CustomDBContext dBContext) : ControllerBase
 {
-    private readonly CustomDBContext _dbContext;
-
-    public WishlistItemController(CustomDBContext dBContext)
-    {
-        _dbContext = dBContext;
-    }
-
     [HttpGet]
     [ProducesResponseType<List<WishlistItemResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetWishlistItems()
     {
-        var wishlistItems = await _dbContext.WishlistItems
+        var wishlistItems = await dBContext.WishlistItems
             .Include(wishlistItem => wishlistItem.Book)
             .Include(wishlistItem => wishlistItem.User)
             .ToListAsync();
@@ -71,9 +64,9 @@ public class WishlistItemController : ControllerBase
             UserId = model.UserId
         };
 
-        _dbContext.WishlistItems.Add(wishlistItem);
+        dBContext.WishlistItems.Add(wishlistItem);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return Created($"/WishlistItem/{wishlistItem.Id}", wishlistItem.Adapt<WishlistItemResponse>() with
         {
@@ -99,9 +92,9 @@ public class WishlistItemController : ControllerBase
         wishlistItem.BookId = model.BookId ?? wishlistItem.BookId;
         wishlistItem.UserId = model.UserId ?? wishlistItem.UserId;
 
-        _dbContext.WishlistItems.Update(wishlistItem);
+        dBContext.WishlistItems.Update(wishlistItem);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
@@ -123,9 +116,9 @@ public class WishlistItemController : ControllerBase
         wishlistItem.BookId = model.BookId;
         wishlistItem.UserId = model.UserId;
 
-        _dbContext.WishlistItems.Update(wishlistItem);
+        dBContext.WishlistItems.Update(wishlistItem);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
@@ -144,16 +137,16 @@ public class WishlistItemController : ControllerBase
 
         var wishlistItem = await FindWishlistItem(id);
 
-        _dbContext.WishlistItems.Remove(wishlistItem);
+        dBContext.WishlistItems.Remove(wishlistItem);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
 
     private async Task<WishlistItem> FindWishlistItem(int WishlistItemId)
     {
-        var wishlistItem = await _dbContext.WishlistItems
+        var wishlistItem = await dBContext.WishlistItems
             .FirstOrDefaultAsync(p => p.Id == WishlistItemId);
 
         if (wishlistItem == null)

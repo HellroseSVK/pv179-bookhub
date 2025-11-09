@@ -12,21 +12,14 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PublisherController : ControllerBase
+public class PublisherController(CustomDBContext dBContext) : ControllerBase
 {
-    private readonly CustomDBContext _dbContext;
-
-    public PublisherController(CustomDBContext dBContext)
-    {
-        _dbContext = dBContext;
-    }
-
     [HttpGet]
     [ProducesResponseType<List<PublisherResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetPublishers()
     {
-        var result = await _dbContext.Publishers
+        var result = await dBContext.Publishers
             .Include(publisher => publisher.Books)
             .ToListAsync();
 
@@ -42,7 +35,7 @@ public class PublisherController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetPublisher(int id)
     {
-        var publisher = await _dbContext.Publishers
+        var publisher = await dBContext.Publishers
             .Where(p => p.Id == id)
             .Include(publisher => publisher.Books)
             .FirstOrDefaultAsync();
@@ -74,9 +67,9 @@ public class PublisherController : ControllerBase
             Name = model.Name
         };
 
-        _dbContext.Publishers.Add(publisher);
+        dBContext.Publishers.Add(publisher);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return Created($"/Publisher/{publisher.Id}", publisher.Adapt<PublisherResponse>() with
         {
@@ -99,9 +92,9 @@ public class PublisherController : ControllerBase
         var publisher = FindPublisher(id);
         publisher.Name = model.Name ?? publisher.Name;
 
-        _dbContext.Publishers.Update(publisher);
+        dBContext.Publishers.Update(publisher);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
@@ -121,9 +114,9 @@ public class PublisherController : ControllerBase
         var publisher = FindPublisher(id);
         publisher.Name = model.Name;
 
-        _dbContext.Publishers.Update(publisher);
+        dBContext.Publishers.Update(publisher);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
@@ -142,22 +135,22 @@ public class PublisherController : ControllerBase
 
         var publisher = FindPublisher(id);
 
-        if (_dbContext.Books.Any(b => b.PublisherId == id))
+        if (dBContext.Books.Any(b => b.PublisherId == id))
         {
             throw new StatusCodeException(StatusCodes.Status400BadRequest,
                 "Cannot delete publisher with associated books.");
         }
 
-        _dbContext.Publishers.Remove(publisher);
+        dBContext.Publishers.Remove(publisher);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
 
     private Publisher FindPublisher(int publisherId)
     {
-        var publisher = _dbContext.Publishers
+        var publisher = dBContext.Publishers
             .FirstOrDefault(p => p.Id == publisherId);
         if (publisher == null)
         {

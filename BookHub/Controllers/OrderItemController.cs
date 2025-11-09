@@ -13,21 +13,14 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class OrderItemController : ControllerBase
+public class OrderItemController(CustomDBContext dBContext) : ControllerBase
 {
-    private readonly CustomDBContext _dbContext;
-
-    public OrderItemController(CustomDBContext dBContext)
-    {
-        _dbContext = dBContext;
-    }
-
     [HttpGet]
     [ProducesResponseType<List<OrderItemResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetOrderItems()
     {
-        var orderItems = await _dbContext.OrderItems
+        var orderItems = await dBContext.OrderItems
             .Include(orderItem => orderItem.Book)
             .Include(orderItem => orderItem.User)
             .ToListAsync();
@@ -71,9 +64,9 @@ public class OrderItemController : ControllerBase
             UserId = model.UserId
         };
 
-        _dbContext.OrderItems.Add(orderItem);
+        dBContext.OrderItems.Add(orderItem);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return Created($"/OrderItem/{orderItem.Id}", orderItem.Adapt<OrderItemResponse>() with
         {
@@ -99,9 +92,9 @@ public class OrderItemController : ControllerBase
         orderItem.BookId = model.BookId ?? orderItem.BookId;
         orderItem.UserId = model.UserId ?? orderItem.UserId;
 
-        _dbContext.OrderItems.Update(orderItem);
+        dBContext.OrderItems.Update(orderItem);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
@@ -123,9 +116,9 @@ public class OrderItemController : ControllerBase
         orderItem.BookId = model.BookId;
         orderItem.UserId = model.UserId;
 
-        _dbContext.OrderItems.Update(orderItem);
+        dBContext.OrderItems.Update(orderItem);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
@@ -144,16 +137,16 @@ public class OrderItemController : ControllerBase
 
         var orderItem = await FindOrderItem(id);
 
-        _dbContext.OrderItems.Remove(orderItem);
+        dBContext.OrderItems.Remove(orderItem);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
 
     private async Task<OrderItem> FindOrderItem(int OrderItemId)
     {
-        var orderItem = await _dbContext.OrderItems
+        var orderItem = await dBContext.OrderItems
             .FirstOrDefaultAsync(p => p.Id == OrderItemId);
 
         if (orderItem == null)

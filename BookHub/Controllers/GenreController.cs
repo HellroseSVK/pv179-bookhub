@@ -11,7 +11,7 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class GenreController(CustomDBContext dBContext, IGenreService genreService) : ControllerBase
+public class GenreController(IGenreService genreService) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType<List<GenreResponse>>(StatusCodes.Status200OK)]

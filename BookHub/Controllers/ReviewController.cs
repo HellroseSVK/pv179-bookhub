@@ -13,21 +13,14 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ReviewController : ControllerBase
+public class ReviewController(CustomDBContext dBContext) : ControllerBase
 {
-    private readonly CustomDBContext _dbContext;
-
-    public ReviewController(CustomDBContext dBContext)
-    {
-        _dbContext = dBContext;
-    }
-
     [HttpGet]
     [ProducesResponseType<List<ReviewResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetReviews()
     {
-        var reviews = await _dbContext.Reviews
+        var reviews = await dBContext.Reviews
             .Include(review => review.Book)
             .Include(review => review.User)
             .ToListAsync();
@@ -73,9 +66,9 @@ public class ReviewController : ControllerBase
             UserId = model.UserId
         };
 
-        _dbContext.Reviews.Add(review);
+        dBContext.Reviews.Add(review);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return Created($"/Review/{review.Id}", review.Adapt<ReviewResponse>() with
         {
@@ -103,9 +96,9 @@ public class ReviewController : ControllerBase
         review.BookId = model.BookId ?? review.BookId;
         review.UserId = model.UserId ?? review.UserId;
 
-        _dbContext.Reviews.Update(review);
+        dBContext.Reviews.Update(review);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
@@ -129,9 +122,9 @@ public class ReviewController : ControllerBase
         review.BookId = model.BookId;
         review.UserId = model.UserId;
 
-        _dbContext.Reviews.Update(review);
+        dBContext.Reviews.Update(review);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
@@ -150,16 +143,16 @@ public class ReviewController : ControllerBase
 
         var review = await FindReview(id);
 
-        _dbContext.Reviews.Remove(review);
+        dBContext.Reviews.Remove(review);
 
-        await _dbContext.SaveChangesAsync();
+        await dBContext.SaveChangesAsync();
 
         return NoContent();
     }
 
     private async Task<Review> FindReview(int reviewId)
     {
-        var review = await _dbContext.Reviews
+        var review = await dBContext.Reviews
             .FirstOrDefaultAsync(p => p.Id == reviewId);
 
         if (review == null)
