@@ -4,6 +4,7 @@ using WebAPI.Middlewares;
 using BusinessLayer;
 using BusinessLayer.Services;
 using BusinessLayer.Mapper;
+using BusinessLayer.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<CustomDBContext>();
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();
