@@ -4,5 +4,5 @@ namespace BusinessLayer.DTOs.Genre;
 
 public class GenreDTO : GenreSimplifiedDTO
 {
-    public List<BookSimplifiedDTO> Books { get; set; }
+    public List<BookSimplifiedDTO> Books { get; set; } = [];
 }

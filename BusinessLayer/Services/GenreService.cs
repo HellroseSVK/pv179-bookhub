@@ -53,7 +53,7 @@ public class GenreService(CustomDBContext dBContext) : IGenreService
         {
             var books = await FindBooks(genreDto.BookIds);
             var newBooks = books.Except(genre.BookGenres.Select(bg => bg.Book));
-            genre.BookGenres.AddRange(newBooks.Select(book => new BookGenre { BookId = book.Id, Book = book }));
+            genre.BookGenres.AddRange(newBooks.Select(book => new BookGenre { Book = book }));
         }
 
         dBContext.Genres.Update(genre);
@@ -68,17 +68,16 @@ public class GenreService(CustomDBContext dBContext) : IGenreService
         genre.Name = genreDto.Name;
 
         var books = await FindBooks(genreDto.BookIds);
-        var assignedBooks = genre.BookGenres.Select(bg => bg.Book);
+        var assignedBooks = genre.BookGenres.Select(bg => bg.Book).ToList();
 
         var oldBooks = assignedBooks.Except(books).ToList();
-        genre.BookGenres.RemoveAll(bg => oldBooks.Any(ob => ob.Id == bg.BookId));
+        genre.BookGenres.RemoveAll(bg => oldBooks.Any(ob => ob != null && ob.Id == bg.BookId));
         var newBooks = books.Except(assignedBooks).ToList();
-        genre.BookGenres.AddRange(newBooks.Select(book => new BookGenre { BookId = book.Id, Book = book }));
+        genre.BookGenres.AddRange(newBooks.Select(book => new BookGenre { Book = book }));
 
         dBContext.Genres.Update(genre);
 
         await dBContext.SaveChangesAsync();
-
     }
 
     public async Task DeleteGenreAsync(int id)
