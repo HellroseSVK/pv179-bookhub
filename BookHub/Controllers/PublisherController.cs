@@ -3,11 +3,10 @@ using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
+using WebAPI.Models.Book;
+using WebAPI.Models.Publisher;
 
 namespace WebAPI.Controllers;
 
@@ -90,7 +89,7 @@ public class PublisherController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> PatchPublisher(int id, [FromBody] PublisherModel model)
+    public async Task<IActionResult> PatchPublisher(int id, [FromBody] PublisherPartialModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -98,7 +97,7 @@ public class PublisherController : ControllerBase
         }
 
         var publisher = FindPublisher(id);
-        publisher.Name = model.Name;
+        publisher.Name = model.Name ?? publisher.Name;
 
         _dbContext.Publishers.Update(publisher);
 

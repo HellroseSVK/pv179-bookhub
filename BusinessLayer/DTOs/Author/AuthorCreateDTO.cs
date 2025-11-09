@@ -1,5 +1,3 @@
-using BusinessLayer.DTOs.Book;
-
 namespace BusinessLayer.DTOs.Author;
 
 public class AuthorCreateDTO : AuthorSimplifiedDTO

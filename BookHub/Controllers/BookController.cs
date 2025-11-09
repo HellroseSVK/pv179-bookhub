@@ -3,11 +3,13 @@ using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
+using WebAPI.Models.Author;
+using WebAPI.Models.Book;
+using WebAPI.Models.Genre;
+using WebAPI.Models.Publisher;
+using WebAPI.Models.Review;
 
 namespace WebAPI.Controllers
 {
@@ -158,7 +160,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> PatchBook(int id, BookModel model)
+        public async Task<IActionResult> PatchBook(int id, BookPartialModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -178,14 +180,18 @@ namespace WebAPI.Controllers
 
             var allAuthors = await FindAuthors(model.AuthorIds);
             var allGenres = await FindGenres(model.GenreIds);
-            var publisher = await FindPublisher(model.PublisherId);
+
 
             // map the model to the entity
-            book.Title = model.Title;
-            book.Description = model.Description;
-            book.Price = model.Price;
-            book.PublisherId = publisher.Id;
-            book.Publisher = publisher;
+            book.Title = model.Title ?? book.Title;
+            book.Description = model.Description ?? book.Description;
+            book.Price = model.Price ?? book.Price;
+            if (model.PublisherId != null)
+            {
+                var publisher = await FindPublisher(model.PublisherId ?? 0);
+                book.PublisherId = publisher.Id;
+                book.Publisher = publisher;
+            }
 
             book.BookAuthors.AddRange(allAuthors
                 .Where(a => book.BookAuthors.All(ba => ba.AuthorId != a.Id))

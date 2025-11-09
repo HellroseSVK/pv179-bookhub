@@ -1,4 +1,4 @@
-namespace WebAPI.Exception;
+namespace Shared.Exception;
 
 public class StatusCodeException(int statusCode, string message) : System.Exception(message)
 {

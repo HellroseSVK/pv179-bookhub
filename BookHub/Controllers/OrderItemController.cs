@@ -3,11 +3,11 @@ using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
+using WebAPI.Models.Book;
+using WebAPI.Models.Order;
+using WebAPI.Models.User;
 
 namespace WebAPI.Controllers;
 
