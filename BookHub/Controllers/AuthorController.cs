@@ -1,3 +1,6 @@
+using BusinessLayer.DTOs.Author;
+using BusinessLayer.DTOs.User;
+using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Mapster;
@@ -13,28 +16,16 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AuthorController : ControllerBase
+public class AuthorController(CustomDBContext dBContext, IAuthorService authorService) : ControllerBase
 {
-    private readonly CustomDBContext _dbContext;
-
-    public AuthorController(CustomDBContext dBContext)
-    {
-        _dbContext = dBContext;
-    }
-
     [HttpGet]
     [ProducesResponseType<List<AuthorResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAuthors()
     {
-        var result = await _dbContext.Authors
-            .Include(a => a.BookAuthors).ThenInclude(bookAuthor => bookAuthor.Book)
-            .ToListAsync();
+        var authors = await authorService.GetAuthorsAsync(includeBookAuthors: true);
 
-        return Ok(result.Select(r => r.Adapt<AuthorResponse>() with
-        {
-            Books = r.BookAuthors.Select(ba => ba.Book.Adapt<BookSimplifiedResponse>()).ToList()
-        }).ToList());
+        return Ok(authors.Adapt<List<AuthorResponse>>());
     }
 
     [HttpGet("{id}")]
@@ -43,19 +34,9 @@ public class AuthorController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAuthor(int id)
     {
-        var author = await _dbContext.Authors
-            .Where(a => a.Id == id)
-            .Include(a => a.BookAuthors).ThenInclude(bookAuthor => bookAuthor.Book)
-            .FirstOrDefaultAsync();
-        if (author == null)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound, "No author was found.");
-        }
+        var author = await authorService.GetAuthorAsync(id);
 
-        return Ok(author.Adapt<AuthorResponse>() with
-        {
-            Books = author.BookAuthors.Select(ba => ba.Book.Adapt<BookSimplifiedResponse>()).ToList()
-        });
+        return Ok(author.Adapt<AuthorResponse>());
     }
 
     [HttpGet("{id}/books")]
@@ -64,7 +45,7 @@ public class AuthorController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAuthorBooks(int id)
     {
-        var author = await _dbContext.Authors
+        var author = await dBContext.Authors
             .Where(a => a.Id == id)
             .FirstOrDefaultAsync();
         if (author == null)
@@ -72,7 +53,7 @@ public class AuthorController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status404NotFound, "No author was found.");
         }
 
-        var books = await _dbContext.Books
+        var books = await dBContext.Books
             .Where(b => b.BookAuthors.Any(ba => ba.AuthorId == id))
             .Include(book => book.BookAuthors).ThenInclude(bookAuthor => bookAuthor.Author)
             .Include(book => book.BookGenres).ThenInclude(bookGenre => bookGenre.Genre)
@@ -101,22 +82,9 @@ public class AuthorController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var books = await FindBooks(model.BookIds);
+        var author = await authorService.CreateAuthorAsync(model.Adapt<AuthorCreateDTO>());
 
-        var author = new Author
-        {
-            Name = model.Name,
-            Surname = model.Surname,
-            BookAuthors = books.Select(book => new BookAuthor { BookId = book.Id }).ToList()
-        };
-
-        _dbContext.Authors.Add(author);
-        await _dbContext.SaveChangesAsync();
-
-        return Created($"/Author/{author.Id}", author.Adapt<AuthorResponse>() with
-        {
-            Books = author.BookAuthors.Select(ba => ba.Book.Adapt<BookSimplifiedResponse>()).ToList()
-        });
+        return Created($"/Author/{author.Id}", author.Adapt<AuthorResponse>());
     }
 
     [HttpPatch("{id}")]
@@ -131,27 +99,7 @@ public class AuthorController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var author = await FindAuthor(id);
-
-        if (model.BookIds != null)
-        {
-            var books = await FindBooks(model.BookIds);
-
-            _dbContext.BookAuthors.RemoveRange(author.BookAuthors.Where(ba => !model.BookIds.Contains(ba.BookId)));
-            var existingBookIds = author.BookAuthors.Select(ba => ba.BookId).ToList();
-            _dbContext.BookAuthors.AddRange(
-                model.BookIds
-                    .Except(existingBookIds)
-                    .Select(bookId => new BookAuthor { AuthorId = author.Id, BookId = bookId })
-            );
-        }
-
-        author.Name = model.Name ?? author.Name;
-        author.Surname = model.Surname ?? author.Surname;
-
-        _dbContext.Authors.Update(author);
-
-        await _dbContext.SaveChangesAsync();
+        await authorService.PatchAuthorAsync(id, model.Adapt<AuthorPartialDTO>());
 
         return NoContent();
     }
@@ -168,16 +116,7 @@ public class AuthorController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var author = await FindAuthor(id);
-        var books = await FindBooks(model.BookIds);
-
-        author.Name = model.Name;
-        author.Surname = model.Surname;
-        author.BookAuthors = books.Select(book => new BookAuthor { AuthorId = author.Id, BookId = book.Id }).ToList();
-
-        _dbContext.Authors.Update(author);
-
-        await _dbContext.SaveChangesAsync();
+        await authorService.UpdateAuthorAsync(id, model.Adapt<AuthorUpdateDTO>());
 
         return NoContent();
     }
@@ -194,42 +133,8 @@ public class AuthorController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var author = await FindAuthor(id);
-
-        _dbContext.Authors.Remove(author);
-
-        await _dbContext.SaveChangesAsync();
+        await authorService.DeleteAuthorAsync(id);
 
         return NoContent();
-    }
-
-    private async Task<Author> FindAuthor(int authorId)
-    {
-        var author = await _dbContext.Authors
-            .Where(a => a.Id == authorId)
-            .Include(a => a.BookAuthors)
-            .FirstOrDefaultAsync();
-        if (author == null)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound,
-                $"Author with id {authorId} not found.");
-        }
-
-        return author;
-    }
-
-    private async Task<List<Book>> FindBooks(List<int> bookIds)
-    {
-        var books = await _dbContext.Books
-            .Where(b => bookIds.Contains(b.Id))
-            .ToListAsync();
-        var missingBookIds = bookIds.Except(books.Select(b => b.Id)).ToList();
-        if (missingBookIds.Any())
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound,
-                $"Books {{{string.Join(", ", missingBookIds)}}} not found.");
-        }
-
-        return books;
     }
 }

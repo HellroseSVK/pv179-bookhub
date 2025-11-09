@@ -1,10 +1,7 @@
 ﻿using BusinessLayer.DTOs.User;
-using BusinessLayer.Services;
-using DataAccessLayer;
-using DataAccessLayer.Entities;
+using BusinessLayer.Services.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
@@ -15,21 +12,14 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UserController : ControllerBase
+public class UserController(IUserService userService) : ControllerBase
 {
-    private readonly IUserService _userService;
-
-    public UserController(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     [HttpGet]
     [ProducesResponseType<List<UserResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetUsers()
     {
-        var users = await _userService.GetUsersAsync();
+        var users = await userService.GetUsersAsync();
 
         return Ok(users.Adapt<List<UserSimplifiedResponse>>());
     }
@@ -40,12 +30,7 @@ public class UserController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetUser(int id)
     {
-        var user = await _userService.GetUserAsync(id);
-
-        if (user == null)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {id} not found.");
-        }
+        var user = await userService.GetUserAsync(id);
 
         return Ok(user.Adapt<UserSimplifiedResponse>());
     }
@@ -61,7 +46,7 @@ public class UserController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var result = await _userService.CreateUserAsync(model.Adapt<UserSimplifiedDTO>());
+        var result = await userService.CreateUserAsync(model.Adapt<UserSimplifiedDTO>());
 
         return Created($"/User/{result.Id}", result.Adapt<UserSimplifiedResponse>());
     }
@@ -78,12 +63,7 @@ public class UserController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var result = await _userService.PatchUserAsync(id, model.Adapt<UserSimplifiedPartialDTO>()); // TODO: examine mapping when something is null
-        
-        if (!result)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {id} not found.");
-        }
+        await userService.PatchUserAsync(id, model.Adapt<UserSimplifiedPartialDTO>());
 
         return NoContent();
     }
@@ -100,12 +80,7 @@ public class UserController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var result = await _userService.UpdateUserAsync(id, model.Adapt<UserSimplifiedDTO>());
-
-        if (!result)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {id} not found.");
-        }
+        await userService.UpdateUserAsync(id, model.Adapt<UserSimplifiedDTO>());
 
         return NoContent();
     }
@@ -122,12 +97,7 @@ public class UserController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var result = await _userService.DeleteUserAsync(id);
-
-        if (!result)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {id} not found.");
-        }
+        await userService.DeleteUserAsync(id);
 
         return NoContent();
     }
