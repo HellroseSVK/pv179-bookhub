@@ -1,12 +1,11 @@
 using BusinessLayer.DTOs.Book;
-using BusinessLayer.Services;
+using BusinessLayer.Services.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Core;
 using WebAPI.Exception;
 using WebAPI.Models;
 using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
 
 namespace WebAPI.Controllers
 {
@@ -25,21 +24,14 @@ namespace WebAPI.Controllers
 
     [ApiController]
     [Route("[controller]")]
-    public class BookController : ControllerBase
+    public class BookController(IBookService bookService) : ControllerBase 
     {
-        private readonly IBookService _bookService;
-
-        public BookController(IBookService bookService)
-        {
-            _bookService = bookService;
-        }
-
         [HttpGet("filter")]
         [ProducesResponseType<List<BookResponse>>(StatusCodes.Status200OK)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> FilterBooks([FromQuery] BookFilter filter)
         {
-            var books = await _bookService.FilterBooksAsync(filter.Adapt<BookFilterDTO>());
+            var books = await bookService.FilterBooksAsync(filter.Adapt<BookFilterDTO>());
             return Ok(books.Adapt<List<BookResponse>>());
         }
 
@@ -49,13 +41,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetBook(int id)
         {
-            var book = await _bookService.GetBookAsync(id);
-
-            if (book == null)
-            {
-                throw new StatusCodeException(StatusCodes.Status404NotFound, $"Book with id {id} not found.");
-            }
-
+            var book = await bookService.GetBookAsync(id);
             return Ok(book.Adapt<BookResponse>());
         }
 
@@ -71,7 +57,7 @@ namespace WebAPI.Controllers
                 throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
             }
 
-            var result = await _bookService.CreateBookAsync(model.Adapt<BookCreateDTO>());
+            var result = await bookService.CreateBookAsync(model.Adapt<BookCreateDTO>());
 
             return Created($"/Book/{result.Id}", result.Adapt<BookResponse>());
         }
@@ -88,13 +74,7 @@ namespace WebAPI.Controllers
                 throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
             }
 
-            var result = await _bookService.PatchBookAsync(id, model.Adapt<BookPartialDTO>());
-
-            if (!result)
-            {
-                throw new StatusCodeException(StatusCodes.Status404NotFound, $"Book with id {id} not found.");
-            }
-
+            await bookService.PatchBookAsync(id, model.Adapt<BookPartialDTO>());
             return NoContent();
         }
 
@@ -110,13 +90,7 @@ namespace WebAPI.Controllers
                 throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
             }
 
-            var result = await _bookService.UpdateBookAsync(id, model.Adapt<BookUpdateDTO>());
-
-            if (!result)
-            {
-                throw new StatusCodeException(StatusCodes.Status404NotFound, $"Book with id {id} not found.");
-            }
-
+            await bookService.UpdateBookAsync(id, model.Adapt<BookUpdateDTO>());
             return NoContent();
         }
 
@@ -127,13 +101,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            var result = await _bookService.DeleteBookAsync(id);
-
-            if (!result)
-            {
-                throw new StatusCodeException(StatusCodes.Status404NotFound, $"Book with id {id} not found.");
-            }
-
+            await bookService.DeleteBookAsync(id);
             return NoContent();
         }
 
