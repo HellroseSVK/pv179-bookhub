@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
                 throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
             }
 
-            var result = await bookService.CreateBookAsync(model.Adapt<BookCreateDTO>());
+            var result = await bookService.CreateBookAsync(model.Adapt<BookUpsertDTO>());
 
             return Created($"/Book/{result.Id}", result.Adapt<BookResponse>());
         }
@@ -90,7 +90,7 @@ namespace WebAPI.Controllers
                 throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
             }
 
-            await bookService.UpdateBookAsync(id, model.Adapt<BookUpdateDTO>());
+            await bookService.UpdateBookAsync(id, model.Adapt<BookUpsertDTO>());
             return NoContent();
         }
 

@@ -35,27 +35,11 @@ namespace BusinessLayer.Mapper
                 .NewConfig()
                 .Map(dest => dest.BookGenres, src => src.BookIds.Select(id => new BookGenre { BookId = id }));
 
-            // Book to BookDTO mapping with many-to-many relationships
+            // Book mappings
             TypeAdapterConfig<Book, BookDTO>
                 .NewConfig()
                 .Map(dest => dest.Authors, src => src.BookAuthors.Select(ba => ba.Author))
                 .Map(dest => dest.Genres, src => src.BookGenres.Select(bg => bg.Genre));
-
-            // BookCreateDTO to Book mapping with many-to-many relationships
-            TypeAdapterConfig<BookCreateDTO, Book>
-                .NewConfig()
-                .Map(dest => dest.BookAuthors, src => src.AuthorIds.Select(id => new BookAuthor { AuthorId = id }))
-                .Map(dest => dest.BookGenres, src => src.GenreIds.Select(id => new BookGenre { GenreId = id }));
-
-            // OrderItem to OrderItemDTO mapping with navigation properties
-            TypeAdapterConfig<OrderItem, OrderItemDTO>
-                .NewConfig()
-                .Map(dest => dest.Book, src => src.Book)
-                .Map(dest => dest.User, src => src.User);
-
-            // Book to BookSimplifiedDTO mapping
-            TypeAdapterConfig<Book, BookSimplifiedDTO>
-                .NewConfig();
         }
     }
 }

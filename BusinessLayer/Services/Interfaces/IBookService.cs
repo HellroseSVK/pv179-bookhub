@@ -4,7 +4,7 @@ namespace BusinessLayer.Services.Interfaces;
 
 public interface IBookService
 {
-    Task<BookDTO> CreateBookAsync(BookCreateDTO book);
+    Task<BookDTO> CreateBookAsync(BookUpsertDTO book);
     Task<List<BookDTO>> FilterBooksAsync(BookFilterDTO filter);
     Task<BookDTO> GetBookAsync(
         int id,
@@ -15,6 +15,6 @@ public interface IBookService
         bool includeWishlistItems = false,
         bool includeOrderItems = false);
     Task PatchBookAsync(int id, BookPartialDTO book);
-    Task UpdateBookAsync(int id, BookUpdateDTO book);
+    Task UpdateBookAsync(int id, BookUpsertDTO book);
     Task DeleteBookAsync(int id);
 }

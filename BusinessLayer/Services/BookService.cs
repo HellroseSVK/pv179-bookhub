@@ -11,13 +11,18 @@ namespace BusinessLayer.Services;
 
 public class BookService(CustomDBContext dbContext) : IBookService
 {
-    public async Task<BookDTO> CreateBookAsync(BookCreateDTO bookDto)
+    public async Task<BookDTO> CreateBookAsync(BookUpsertDTO bookDto)
     {
-        await FindAuthors(bookDto.AuthorIds);
-        await FindGenres(bookDto.GenreIds);
-        await FindPublisher(bookDto.PublisherId);
+        var authors = await FindAuthors(bookDto.AuthorIds);
+        var genres = await FindGenres(bookDto.GenreIds);
+        var publisher = await FindPublisher(bookDto.PublisherId);
 
-        var created = dbContext.Books.Add(bookDto.Adapt<Book>());
+        var book = bookDto.Adapt<Book>();
+        book.BookAuthors = authors.Select(a => new BookAuthor { AuthorId = a.Id, Author = a, Book = book }).ToList();
+        book.BookGenres = genres.Select(g => new BookGenre { GenreId = g.Id, Genre = g, Book = book }).ToList();
+        book.PublisherId = publisher.Id;
+
+        var created = dbContext.Books.Add(book);
         await dbContext.SaveChangesAsync();
 
         return created.Entity.Adapt<BookDTO>();
@@ -66,14 +71,15 @@ public class BookService(CustomDBContext dbContext) : IBookService
         bool includeWishlistItems = false,
         bool includeOrderItems = false)
     {
-        var book = await FindBook(id, includeAuthors, includeGenres, includePublisher, includeReviews, includeWishlistItems, includeOrderItems);
+        var book = await FindBook(id, includeAuthors, includeGenres, includePublisher, includeReviews,
+            includeWishlistItems, includeOrderItems);
         return book.Adapt<BookDTO>();
     }
 
     public async Task PatchBookAsync(int id, BookPartialDTO bookDto)
     {
-        var book = await FindBook(id, true, true, true, false, false, false);
-    
+        var book = await FindBook(id, includeAuthors: true, includeGenres: true);
+
         book.Title = bookDto.Title ?? book.Title;
         book.Description = bookDto.Description ?? book.Description;
         book.Price = bookDto.Price ?? book.Price;
@@ -88,26 +94,24 @@ public class BookService(CustomDBContext dbContext) : IBookService
         if (bookDto.AuthorIds != null)
         {
             var authors = await FindAuthors(bookDto.AuthorIds);
-            var assignedAuthors = book.BookAuthors.Select(ba => ba.Author).OfType<Author>().ToList();
-            var newAuthors = authors.Except(assignedAuthors);
-            book.BookAuthors.AddRange(newAuthors.Select(a => new BookAuthor { AuthorId = a.Id, Author = a }));
+            var newAuthors = authors.Except(book.BookAuthors.Select(ba => ba.Author));
+            book.BookAuthors.AddRange(newAuthors.Select(a => new BookAuthor { Author = a }));
         }
 
         if (bookDto.GenreIds != null)
         {
             var genres = await FindGenres(bookDto.GenreIds);
-            var assignedGenres = book.BookGenres.Select(bg => bg.Genre).OfType<Genre>().ToList();
-            var newGenres = genres.Except(assignedGenres);
-            book.BookGenres.AddRange(newGenres.Select(g => new BookGenre { GenreId = g.Id, Genre = g }));
+            var newGenres = genres.Except(book.BookGenres.Select(bg => bg.Genre));
+            book.BookGenres.AddRange(newGenres.Select(g => new BookGenre { Genre = g }));
         }
 
         dbContext.Books.Update(book);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateBookAsync(int id, BookUpdateDTO bookDto)
+    public async Task UpdateBookAsync(int id, BookUpsertDTO bookDto)
     {
-        var book = await FindBook(id, true, true, true, false, false, false);
+        var book = await FindBook(id, includeAuthors: true, includeGenres: true);
 
         var authors = await FindAuthors(bookDto.AuthorIds);
         var genres = await FindGenres(bookDto.GenreIds);
@@ -118,18 +122,18 @@ public class BookService(CustomDBContext dbContext) : IBookService
         book.Price = bookDto.Price;
         book.PublisherId = publisher.Id;
         book.Publisher = publisher;
-        
-        var assignedAuthors = book.BookAuthors.Select(ba => ba.Author).OfType<Author>().ToList();
+
+        var assignedAuthors = book.BookAuthors.Select(ba => ba.Author).ToList();
         var oldAuthors = assignedAuthors.Except(authors);
-        book.BookAuthors.RemoveAll(ba => oldAuthors.Any(oa => oa.Id == ba.AuthorId));
+        book.BookAuthors.RemoveAll(ba => oldAuthors.Any(ob => ob != null && ob.Id == ba.AuthorId));
         var newAuthors = authors.Except(assignedAuthors);
-        book.BookAuthors.AddRange(newAuthors.Select(author => new BookAuthor { AuthorId = author.Id, Author = author }));
-        
-        var assignedGenres = book.BookGenres.Select(bg => bg.Genre).OfType<Genre>().ToList();
+        book.BookAuthors.AddRange(newAuthors.Select(author => new BookAuthor { Author = author }));
+
+        var assignedGenres = book.BookGenres.Select(bg => bg.Genre).ToList();
         var oldGenres = assignedGenres.Except(genres);
-        book.BookGenres.RemoveAll(bg => oldGenres.Any(og => og.Id == bg.GenreId));
+        book.BookGenres.RemoveAll(bg => oldGenres.Any(og => og != null && og.Id == bg.GenreId));
         var newGenres = genres.Except(assignedGenres);
-        book.BookGenres.AddRange(newGenres.Select(genre => new BookGenre { GenreId = genre.Id, Genre = genre }));
+        book.BookGenres.AddRange(newGenres.Select(genre => new BookGenre { Genre = genre }));
 
         dbContext.Books.Update(book);
         await dbContext.SaveChangesAsync();
@@ -138,7 +142,7 @@ public class BookService(CustomDBContext dbContext) : IBookService
     public async Task DeleteBookAsync(int id)
     {
         var book = await FindBook(id, false, false, false, false, false, false);
-        
+
         dbContext.Books.Remove(book);
         await dbContext.SaveChangesAsync();
     }
@@ -187,15 +191,16 @@ public class BookService(CustomDBContext dbContext) : IBookService
     }
 
     private async Task<Book> FindBook(
-        int bookId, 
-        bool includeAuthors = true,
-        bool includeGenres = true,
-        bool includePublisher = true,
-        bool includeReviews = true,
+        int bookId,
+        bool includeAuthors = false,
+        bool includeGenres = false,
+        bool includePublisher = false,
+        bool includeReviews = false,
         bool includeWishlistItems = false,
         bool includeOrderItems = false)
     {
-        var query = GetBaseQuery(includeAuthors, includeGenres, includePublisher, includeReviews, includeWishlistItems, includeOrderItems);
+        var query = GetBaseQuery(includeAuthors, includeGenres, includePublisher, includeReviews, includeWishlistItems,
+            includeOrderItems);
         var book = await query.FirstOrDefaultAsync(b => b.Id == bookId);
 
         return book ??

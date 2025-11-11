@@ -13,7 +13,16 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
 {
     public async Task<OrderItemDTO> CreateOrderItemAsync(OrderItemUpsertDTO orderItemDto)
     {
-        var created = dbContext.OrderItems.Add(orderItemDto.Adapt<OrderItem>());
+        var book = await FindBook(orderItemDto.BookId);
+        var user = await FindUser(orderItemDto.UserId);
+
+        var orderItem = orderItemDto.Adapt<OrderItem>();
+        orderItem.BookId = book.Id;
+        orderItem.Book = book;
+        orderItem.UserId = user.Id;
+        orderItem.User = user;
+
+        var created = dbContext.OrderItems.Add(orderItem);
         await dbContext.SaveChangesAsync();
 
         return created.Entity.Adapt<OrderItemDTO>();
@@ -25,7 +34,8 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
         return orderItem.Adapt<OrderItemDTO>();
     }
 
-    public async Task<List<OrderItemDTO>> GetOrderItemsAsync(int[]? ids = null, bool includeBook = true, bool includeUser = true)
+    public async Task<List<OrderItemDTO>> GetOrderItemsAsync(int[]? ids = null, bool includeBook = true,
+        bool includeUser = true)
     {
         var query = GetBaseQuery(includeBook, includeUser);
 
@@ -42,8 +52,19 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
     {
         var orderItem = await FindOrderItem(id);
 
-        orderItem.BookId = orderItemDto.BookId ?? orderItem.BookId;
-        orderItem.UserId = orderItemDto.UserId ?? orderItem.UserId;
+        if (orderItemDto.BookId != null)
+        {
+            var book = await FindBook((int)orderItemDto.BookId);
+            orderItem.BookId = book.Id;
+            orderItem.Book = book;
+        }
+
+        if (orderItemDto.UserId != null)
+        {
+            var user = await FindUser((int)orderItemDto.UserId);
+            orderItem.UserId = user.Id;
+            orderItem.User = user;
+        }
 
         dbContext.OrderItems.Update(orderItem);
         await dbContext.SaveChangesAsync();
@@ -53,8 +74,13 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
     {
         var orderItem = await FindOrderItem(id);
 
-        orderItem.BookId = orderItemDto.BookId;
-        orderItem.UserId = orderItemDto.UserId;
+        var book = await FindBook(orderItemDto.BookId);
+        var user = await FindUser(orderItemDto.UserId);
+
+        orderItem.BookId = book.Id;
+        orderItem.Book = book;
+        orderItem.UserId = user.Id;
+        orderItem.User = user;
 
         dbContext.OrderItems.Update(orderItem);
         await dbContext.SaveChangesAsync();
@@ -63,7 +89,7 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
     public async Task DeleteOrderItemAsync(int id)
     {
         var orderItem = await FindOrderItem(id);
-        
+
         dbContext.OrderItems.Remove(orderItem);
         await dbContext.SaveChangesAsync();
     }
@@ -74,7 +100,8 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
         var orderItem = await query.FirstOrDefaultAsync(oi => oi.Id == orderItemId);
 
         return orderItem ??
-               throw new StatusCodeException(StatusCodes.Status404NotFound, $"OrderItem with id {orderItemId} not found.");
+               throw new StatusCodeException(StatusCodes.Status404NotFound,
+                   $"OrderItem with id {orderItemId} not found.");
     }
 
     private IQueryable<OrderItem> GetBaseQuery(bool includeBook, bool includeUser)
@@ -92,5 +119,35 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
         }
 
         return query;
+    }
+
+    private async Task<Book> FindBook(int userId)
+    {
+        var book = await dbContext.Books
+            .Where(book => userId.Equals(book.Id))
+            .FirstAsync();
+
+        if (book == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                $"Book with id {string.Join(", ", userId)} not found.");
+        }
+
+        return book;
+    }
+
+    private async Task<User> FindUser(int userId)
+    {
+        var user = await dbContext.Users
+            .Where(user => userId.Equals(user.Id))
+            .FirstAsync();
+
+        if (user == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                $"User with id {string.Join(", ", userId)} not found.");
+        }
+
+        return user;
     }
 }
