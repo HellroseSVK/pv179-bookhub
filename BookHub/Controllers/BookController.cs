@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
 
     [ApiController]
     [Route("[controller]")]
-    public class BookController(CustomDBContext dBContext, IBookService bookService) : ControllerBase
+    public class BookController(IBookService bookService) : ControllerBase
     {
         [HttpGet("filter")]
         [ProducesResponseType<List<BookResponse>>(StatusCodes.Status200OK)]

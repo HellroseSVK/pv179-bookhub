@@ -88,14 +88,16 @@ public class BookService(CustomDBContext dbContext) : IBookService
         if (bookDto.AuthorIds != null)
         {
             var authors = await FindAuthors(bookDto.AuthorIds);
-            var newAuthors = authors.Except(book.BookAuthors.Select(ba => ba.Author));
+            var assignedAuthors = book.BookAuthors.Select(ba => ba.Author).OfType<Author>().ToList();
+            var newAuthors = authors.Except(assignedAuthors);
             book.BookAuthors.AddRange(newAuthors.Select(a => new BookAuthor { AuthorId = a.Id, Author = a }));
         }
 
         if (bookDto.GenreIds != null)
         {
             var genres = await FindGenres(bookDto.GenreIds);
-            var newGenres = genres.Except(book.BookGenres.Select(bg => bg.Genre));
+            var assignedGenres = book.BookGenres.Select(bg => bg.Genre).OfType<Genre>().ToList();
+            var newGenres = genres.Except(assignedGenres);
             book.BookGenres.AddRange(newGenres.Select(g => new BookGenre { GenreId = g.Id, Genre = g }));
         }
 
@@ -117,13 +119,13 @@ public class BookService(CustomDBContext dbContext) : IBookService
         book.PublisherId = publisher.Id;
         book.Publisher = publisher;
         
-        var assignedAuthors = book.BookAuthors.Select(ba => ba.Author).ToList();
+        var assignedAuthors = book.BookAuthors.Select(ba => ba.Author).OfType<Author>().ToList();
         var oldAuthors = assignedAuthors.Except(authors);
         book.BookAuthors.RemoveAll(ba => oldAuthors.Any(oa => oa.Id == ba.AuthorId));
         var newAuthors = authors.Except(assignedAuthors);
         book.BookAuthors.AddRange(newAuthors.Select(author => new BookAuthor { AuthorId = author.Id, Author = author }));
         
-        var assignedGenres = book.BookGenres.Select(bg => bg.Genre).ToList();
+        var assignedGenres = book.BookGenres.Select(bg => bg.Genre).OfType<Genre>().ToList();
         var oldGenres = assignedGenres.Except(genres);
         book.BookGenres.RemoveAll(bg => oldGenres.Any(og => og.Id == bg.GenreId));
         var newGenres = genres.Except(assignedGenres);
