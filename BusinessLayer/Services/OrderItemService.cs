@@ -5,27 +5,27 @@ using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using WebAPI.Exception;
+using Shared.Exception;
 
 namespace BusinessLayer.Services;
 
 public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
 {
-    public async Task<OrderItemSimplifiedDTO> CreateOrderItemAsync(OrderItemSimplifiedDTO orderItemDto)
+    public async Task<OrderItemDTO> CreateOrderItemAsync(OrderItemUpsertDTO orderItemDto)
     {
         var created = dbContext.OrderItems.Add(orderItemDto.Adapt<OrderItem>());
         await dbContext.SaveChangesAsync();
 
-        return await GetOrderItemAsync(created.Entity.Id);
+        return created.Entity.Adapt<OrderItemDTO>();
     }
 
-    public async Task<OrderItemSimplifiedDTO> GetOrderItemAsync(int id, bool includeBook = true, bool includeUser = true)
+    public async Task<OrderItemDTO> GetOrderItemAsync(int id, bool includeBook = true, bool includeUser = true)
     {
         var orderItem = await FindOrderItem(id, includeBook, includeUser);
-        return orderItem.Adapt<OrderItemSimplifiedDTO>();
+        return orderItem.Adapt<OrderItemDTO>();
     }
 
-    public async Task<List<OrderItemSimplifiedDTO>> GetOrderItemsAsync(int[]? ids = null, bool includeBook = true, bool includeUser = true)
+    public async Task<List<OrderItemDTO>> GetOrderItemsAsync(int[]? ids = null, bool includeBook = true, bool includeUser = true)
     {
         var query = GetBaseQuery(includeBook, includeUser);
 
@@ -35,7 +35,7 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
         }
 
         var orderItems = await query.ToListAsync();
-        return orderItems.Adapt<List<OrderItemSimplifiedDTO>>();
+        return orderItems.Adapt<List<OrderItemDTO>>();
     }
 
     public async Task PatchOrderItemAsync(int id, OrderItemPartialDTO orderItemDto)
@@ -49,7 +49,7 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateOrderItemAsync(int id, OrderItemSimplifiedDTO orderItemDto)
+    public async Task UpdateOrderItemAsync(int id, OrderItemUpsertDTO orderItemDto)
     {
         var orderItem = await FindOrderItem(id);
 

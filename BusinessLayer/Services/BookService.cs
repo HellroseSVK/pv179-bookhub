@@ -5,7 +5,7 @@ using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using WebAPI.Exception;
+using Shared.Exception;
 
 namespace BusinessLayer.Services;
 

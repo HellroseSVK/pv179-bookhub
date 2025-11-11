@@ -14,6 +14,6 @@ public interface IReviewService
         bool includeBook = true,
         bool includeUser = true);
     Task PatchReviewAsync(int id, ReviewPartialDTO review);
-    Task UpdateReviewAsync(int id, ReviewSimplifiedDTO review);
+    Task UpdateReviewAsync(int id, ReviewDTO review);
     Task DeleteReviewAsync(int id);
 }

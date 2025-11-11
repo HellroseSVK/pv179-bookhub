@@ -5,7 +5,7 @@ using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using WebAPI.Exception;
+using Shared.Exception;
 
 namespace BusinessLayer.Services;
 
@@ -51,7 +51,7 @@ public class ReviewService(CustomDBContext dbContext) : IReviewService
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateReviewAsync(int id, ReviewSimplifiedDTO reviewDto)
+    public async Task UpdateReviewAsync(int id, ReviewDTO reviewDto)
     {
         var review = await FindReview(id);
 

@@ -1,7 +1,6 @@
 using DataAccessLayer;
 using Microsoft.OpenApi.Models;
 using WebAPI.Middlewares;
-using BusinessLayer;
 using BusinessLayer.Services;
 using BusinessLayer.Mapper;
 using BusinessLayer.Services.Interfaces;

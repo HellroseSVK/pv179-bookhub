@@ -51,19 +51,50 @@ documentation.
 
 ### Setup
 
+#### A
+
 1. Clone the [repository](https://gitlab.fi.muni.cz/xsabo1/pv179-bookhub)
 2. Navigate to the [`BookHub`](./) directory
 3. Restore dependencies
 4. Run database [migrations](./DataAccessLayer/Migrations) and seed the database
-5. Run the application
+5. Run the application, use the environment `Local`
+6. Authorize using the hard-coded token: `very_secret_token`
+
+#### B
+
+1. Clone the [repository](https://gitlab.fi.muni.cz/xsabo1/pv179-bookhub)
+2. Build docker image
+
+```shell
+docker build -t bookhub-webapi:latest . 
+```
+
+3. Run the docker container
+
+* you can change the port mapping if needed, default is `5000`
+
+```shell
+docker run -d --name bookhub-webapi -p 5000:8080 -e ASPNETCORE_ENVIRONMENT=Development bookhub-webapi
+```
+
+4. You can check the logs using
+
+```shell
+docker logs -f bookhub-webapi
+```
+
+5. Then you will have exposed the [API](http://localhost:5000) and [swagger](http://localhost:5000/swagger/index.html)
 6. Authorize using the hard-coded token: `very_secret_token`
 
 ## Usage
 
-- The API is available at `https://localhost:5095` (port specified in [
-  `launchSettings.json`](./BookHub/Properties/launchSettings.json))
-- Use the included [swagger](http://localhost:5095/swagger/index.html) or tools like Postman or curl to interact with
-  the endpoints
+- The API is available
+  at [http://localhost:5095](http://localhost:5095) / [https://localhost:5095](https://localhost:5095) (port specified
+  in [`launchSettings.json`](./BookHub/Properties/launchSettings.json)) or at the port you specified in the docker run
+  command, provided [http://localhost:5000](http://localhost:5000)
+- Use the
+  included [http swagger](http://localhost:5095/swagger/index.html) / [https swagger](https://localhost:5095/swagger/index.html) / [docker swagger](http://localhost:5000/swagger/index.html)
+  or tools like Postman or curl to interact with the endpoints
 
 ## Technologies Used
 

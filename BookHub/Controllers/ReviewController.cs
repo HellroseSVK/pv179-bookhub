@@ -1,12 +1,11 @@
 ﻿using BusinessLayer.DTOs.Review;
 using BusinessLayer.Services.Interfaces;
+using DataAccessLayer;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
+using WebAPI.Models.Review;
 
 namespace WebAPI.Controllers;
 
@@ -20,7 +19,7 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
     public async Task<IActionResult> GetReviews()
     {
         var reviews = await reviewService.GetReviewsAsync();
-        return Ok(reviews.Adapt<List<ReviewSimplifiedResponse>>());
+        return Ok(reviews.Adapt<List<ReviewResponse>>());
     }
 
     [HttpGet("{id}")]
@@ -30,7 +29,7 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
     public async Task<IActionResult> GetReview(int id)
     {
         var review = await reviewService.GetReviewAsync(id);
-        return Ok(review.Adapt<ReviewSimplifiedResponse>());
+        return Ok(review.Adapt<ReviewResponse>());
     }
 
     [HttpPost]
@@ -45,7 +44,7 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
         }
 
         var result = await reviewService.CreateReviewAsync(model.Adapt<ReviewSimplifiedDTO>());
-        return Created($"/Review/{result.Id}", result.Adapt<ReviewSimplifiedResponse>());
+        return Created($"/Review/{result.Id}", result.Adapt<ReviewResponse>());
     }
 
     [HttpPatch("{id}")]
@@ -76,7 +75,7 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await reviewService.UpdateReviewAsync(id, model.Adapt<ReviewSimplifiedDTO>());
+        await reviewService.UpdateReviewAsync(id, model.Adapt<ReviewDTO>());
         return NoContent();
     }
 

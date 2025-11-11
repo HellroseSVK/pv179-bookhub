@@ -10,14 +10,14 @@ namespace BusinessLayer.DTOs.Book;
 
 public class BookDTO : BaseDTO
 {
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public required string Title { get; set; }
+    public required string Description { get; set; }
     public decimal Price { get; set; }
     public int PublisherId { get; set; }
     public PublisherSimplifiedDTO? Publisher { get; set; }
-    public List<AuthorSimplifiedDTO> Authors { get; set; } = new();
-    public List<GenreSimplifiedDTO> Genres { get; set; } = new();
-    public List<ReviewSimplifiedDTO> Reviews { get; set; } = new();
-    public List<WishlistItemDTO> WishlistItems { get; set; } = new();
-    public List<OrderItemDTO> OrderItems { get; set; } = new();
+    public List<AuthorSimplifiedDTO> Authors { get; set; } = [];
+    public List<GenreSimplifiedDTO> Genres { get; set; } = [];
+    public List<ReviewSimplifiedDTO> Reviews { get; set; } = [];
+    public List<WishlistItemDTO> WishlistItems { get; set; } = [];
+    public List<OrderItemDTO> OrderItems { get; set; } = [];
 }

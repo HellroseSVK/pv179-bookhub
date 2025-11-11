@@ -4,5 +4,5 @@ namespace BusinessLayer.DTOs.Author;
 
 public class AuthorDTO : AuthorSimplifiedDTO
 {
-    public List<BookSimplifiedDTO> Books { get; set; }
+    public List<BookSimplifiedDTO> Books { get; set; } = [];
 }

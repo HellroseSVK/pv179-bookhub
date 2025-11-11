@@ -1,11 +1,11 @@
 using BusinessLayer.DTOs.Book;
 using BusinessLayer.Services.Interfaces;
+using DataAccessLayer;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
+using WebAPI.Models.Book;
 
 namespace WebAPI.Controllers
 {
@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
 
     [ApiController]
     [Route("[controller]")]
-    public class BookController(IBookService bookService) : ControllerBase 
+    public class BookController(CustomDBContext dBContext, IBookService bookService) : ControllerBase
     {
         [HttpGet("filter")]
         [ProducesResponseType<List<BookResponse>>(StatusCodes.Status200OK)]

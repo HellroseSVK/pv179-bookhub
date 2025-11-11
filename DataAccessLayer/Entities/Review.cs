@@ -8,16 +8,16 @@ namespace DataAccessLayer.Entities
         [Range(1, 5)]
         public int Rating { get; set; }
 
-        public string Body { get; set; }
+        public required string Body { get; set; }
 
         [ForeignKey("Book")]
         public int BookId { get; set; }
 
-        public Book Book { get; set; }
+        public Book? Book { get; set; }
 
         [ForeignKey("User")]
         public int UserId { get; set; }
 
-        public User User { get; set; }
+        public User? User { get; set; }
     }
 }

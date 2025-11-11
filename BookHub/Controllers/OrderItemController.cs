@@ -1,12 +1,11 @@
 ﻿using BusinessLayer.DTOs.OrderItem;
 using BusinessLayer.Services.Interfaces;
+using DataAccessLayer;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
+using WebAPI.Models.Order;
 
 namespace WebAPI.Controllers;
 
@@ -20,7 +19,7 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
     public async Task<IActionResult> GetOrderItems()
     {
         var orderItems = await orderService.GetOrderItemsAsync();
-        return Ok(orderItems.Adapt<List<OrderItemSimplifiedResponse>>());
+        return Ok(orderItems.Adapt<List<OrderItemResponse>>());
     }
 
     [HttpGet("{id}")]
@@ -30,7 +29,7 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
     public async Task<IActionResult> GetOrderItem(int id)
     {
         var orderItem = await orderService.GetOrderItemAsync(id);
-        return Ok(orderItem.Adapt<OrderItemSimplifiedResponse>());
+        return Ok(orderItem.Adapt<OrderItemResponse>());
     }
 
     [HttpPost]
@@ -44,8 +43,8 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var result = await orderService.CreateOrderItemAsync(model.Adapt<OrderItemSimplifiedDTO>());
-        return Created($"/OrderItem/{result.Id}", result.Adapt<OrderItemSimplifiedResponse>());
+        var result = await orderService.CreateOrderItemAsync(model.Adapt<OrderItemUpsertDTO>());
+        return Created($"/OrderItem/{result.Id}", result.Adapt<OrderItemResponse>());
     }
 
     [HttpPatch("{id}")]
@@ -76,7 +75,7 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await orderService.UpdateOrderItemAsync(id, model.Adapt<OrderItemSimplifiedDTO>());
+        await orderService.UpdateOrderItemAsync(id, model.Adapt<OrderItemUpsertDTO>());
         return NoContent();
     }
 

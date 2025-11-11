@@ -7,11 +7,11 @@ namespace DataAccessLayer.Entities
         [ForeignKey("Book")]
         public int BookId { get; set; }
 
-        public Book Book { get; set; }
+        public Book? Book { get; set; }
 
         [ForeignKey("User")]
         public int UserId { get; set; }
 
-        public User User { get; set; }
+        public User? User { get; set; }
     }
 }
