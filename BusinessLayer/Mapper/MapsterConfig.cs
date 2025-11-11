@@ -3,6 +3,8 @@ using BusinessLayer.DTOs.Book;
 using BusinessLayer.DTOs.Author;
 using BusinessLayer.DTOs.Genre;
 using BusinessLayer.DTOs.Publisher;
+using BusinessLayer.DTOs.Review;
+using BusinessLayer.DTOs.OrderItem;
 using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +31,18 @@ namespace BusinessLayer.Mapper
                 .NewConfig()
                 .Map(dest => dest.BookAuthors, src => src.AuthorIds.Select(id => new BookAuthor { AuthorId = id }))
                 .Map(dest => dest.BookGenres, src => src.GenreIds.Select(id => new BookGenre { GenreId = id }));
+
+            // Review to ReviewSimplifiedDTO mapping with navigation properties
+            TypeAdapterConfig<Review, ReviewSimplifiedDTO>
+                .NewConfig()
+                .Map(dest => dest.Book, src => src.Book)
+                .Map(dest => dest.User, src => src.User);
+
+            // OrderItem to OrderItemSimplifiedDTO mapping with navigation properties
+            TypeAdapterConfig<OrderItem, OrderItemSimplifiedDTO>
+                .NewConfig()
+                .Map(dest => dest.Book, src => src.Book)
+                .Map(dest => dest.User, src => src.User);
         }
     }
 }

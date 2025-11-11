@@ -16,7 +16,7 @@ public class ReviewService(CustomDBContext dbContext) : IReviewService
         var created = dbContext.Reviews.Add(reviewDto.Adapt<Review>());
         await dbContext.SaveChangesAsync();
 
-        return created.Entity.Adapt<ReviewSimplifiedDTO>();
+        return await GetReviewAsync(created.Entity.Id);
     }
 
     public async Task<ReviewSimplifiedDTO> GetReviewAsync(int id, bool includeBook = true, bool includeUser = true)

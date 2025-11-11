@@ -16,7 +16,7 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
         var created = dbContext.OrderItems.Add(orderItemDto.Adapt<OrderItem>());
         await dbContext.SaveChangesAsync();
 
-        return created.Entity.Adapt<OrderItemSimplifiedDTO>();
+        return await GetOrderItemAsync(created.Entity.Id);
     }
 
     public async Task<OrderItemSimplifiedDTO> GetOrderItemAsync(int id, bool includeBook = true, bool includeUser = true)
