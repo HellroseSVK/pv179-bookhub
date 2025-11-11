@@ -1,8 +1,8 @@
-using BusinessLayer.DTOs.Author;
-
 namespace BusinessLayer.DTOs.Genre;
 
-public class GenreCreateDTO : AuthorSimplifiedDTO
+public class GenreUpsertDTO : BaseDTO
 {
+    public required string Name { get; set; }
+
     public List<int> BookIds { get; set; } = [];
 }

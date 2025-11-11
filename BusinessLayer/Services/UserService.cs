@@ -9,13 +9,13 @@ using Shared.Exception;
 
 namespace BusinessLayer.Services
 {
-    public class UserService(CustomDBContext dBContext) : IUserService
+    public class UserService(CustomDBContext dbContext) : IUserService
     {
         public async Task<UserSimplifiedDTO> CreateUserAsync(UserSimplifiedDTO user)
         {
-            var created = dBContext.Users.Add(user.Adapt<User>());
+            var created = dbContext.Users.Add(user.Adapt<User>());
 
-            await dBContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
 
             return created.Entity.Adapt<UserSimplifiedDTO>();
         }
@@ -51,9 +51,9 @@ namespace BusinessLayer.Services
             loaded.Password = user.Password ?? loaded.Password;
             loaded.IsAdmin = user.IsAdmin ?? loaded.IsAdmin;
 
-            dBContext.Users.Update(loaded);
+            dbContext.Users.Update(loaded);
 
-            await dBContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task UpdateUserAsync(int id, UserSimplifiedDTO user)
@@ -64,18 +64,18 @@ namespace BusinessLayer.Services
             loaded.Password = user.Password;
             loaded.IsAdmin = user.IsAdmin;
 
-            dBContext.Users.Update(loaded);
+            dbContext.Users.Update(loaded);
 
-            await dBContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteUserAsync(int id)
         {
             var user = await FindUser(id);
 
-            dBContext.Users.Remove(user);
+            dbContext.Users.Remove(user);
 
-            await dBContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
 
         private async Task<User> FindUser(int userId, bool includeReviews = false, bool includeWishlistItems = false, bool includeOrderItems = false)
@@ -90,7 +90,7 @@ namespace BusinessLayer.Services
 
         private IQueryable<User> GetBaseQuery(bool includeReviews, bool includeWishlistItems, bool includeOrderItems)
         {
-            IQueryable<User> userQuery = dBContext.Users;
+            IQueryable<User> userQuery = dbContext.Users;
 
             if (includeReviews)
             {

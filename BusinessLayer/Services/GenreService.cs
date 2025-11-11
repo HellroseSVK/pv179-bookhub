@@ -9,15 +9,18 @@ using Shared.Exception;
 
 namespace BusinessLayer.Services;
 
-public class GenreService(CustomDBContext dBContext) : IGenreService
+public class GenreService(CustomDBContext dbContext) : IGenreService
 {
-    public async Task<GenreDTO> CreateGenreAsync(GenreCreateDTO genreDto)
+    public async Task<GenreDTO> CreateGenreAsync(GenreUpsertDTO genreDto)
     {
-        await FindBooks(genreDto.BookIds);
+        var books = await FindBooks(genreDto.BookIds);
 
-        var created = dBContext.Genres.Add(genreDto.Adapt<Genre>());
+        var genre = genreDto.Adapt<Genre>();
+        genre.BookGenres = books.Select(b => new BookGenre { BookId = b.Id, Book = b, Genre = genre }).ToList();
 
-        await dBContext.SaveChangesAsync();
+        var created = dbContext.Genres.Add(genre);
+
+        await dbContext.SaveChangesAsync();
 
         return created.Entity.Adapt<GenreDTO>();
     }
@@ -56,12 +59,12 @@ public class GenreService(CustomDBContext dBContext) : IGenreService
             genre.BookGenres.AddRange(newBooks.Select(book => new BookGenre { Book = book }));
         }
 
-        dBContext.Genres.Update(genre);
+        dbContext.Genres.Update(genre);
 
-        await dBContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateGenreAsync(int id, GenreUpdateDTO genreDto)
+    public async Task UpdateGenreAsync(int id, GenreUpsertDTO genreDto)
     {
         var genre = await FindGenre(id, true);
 
@@ -75,18 +78,18 @@ public class GenreService(CustomDBContext dBContext) : IGenreService
         var newBooks = books.Except(assignedBooks).ToList();
         genre.BookGenres.AddRange(newBooks.Select(book => new BookGenre { Book = book }));
 
-        dBContext.Genres.Update(genre);
+        dbContext.Genres.Update(genre);
 
-        await dBContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteGenreAsync(int id)
     {
         var genre = await FindGenre(id);
 
-        dBContext.Genres.Remove(genre);
+        dbContext.Genres.Remove(genre);
 
-        await dBContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
     }
 
     private async Task<Genre> FindGenre(int genreId, bool includeBookAuthors = false)
@@ -101,7 +104,7 @@ public class GenreService(CustomDBContext dBContext) : IGenreService
 
     private IQueryable<Genre> GetBaseQuery(bool includeBookGenres)
     {
-        IQueryable<Genre> userQuery = dBContext.Genres;
+        IQueryable<Genre> userQuery = dbContext.Genres;
 
         if (includeBookGenres)
         {
@@ -115,7 +118,7 @@ public class GenreService(CustomDBContext dBContext) : IGenreService
 
     private async Task<List<Book>> FindBooks(List<int> bookIds)
     {
-        var books = await dBContext.Books
+        var books = await dbContext.Books
             .Where(book => bookIds.Contains(book.Id))
             .ToListAsync();
 
