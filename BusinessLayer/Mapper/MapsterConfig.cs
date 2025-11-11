@@ -1,5 +1,8 @@
-﻿using BusinessLayer.DTOs.Author;
+using BusinessLayer.DTOs.Author;
+using BusinessLayer.DTOs.Book;
 using BusinessLayer.DTOs.Genre;
+using BusinessLayer.DTOs.OrderItem;
+using BusinessLayer.DTOs.Review;
 using BusinessLayer.DTOs.User;
 using DataAccessLayer.Entities;
 using Mapster;
@@ -31,6 +34,12 @@ namespace BusinessLayer.Mapper
             TypeAdapterConfig<GenreCreateDTO, Genre>
                 .NewConfig()
                 .Map(dest => dest.BookGenres, src => src.BookIds.Select(id => new BookGenre { BookId = id }));
+
+            // Book mappings
+            TypeAdapterConfig<Book, BookDTO>
+                .NewConfig()
+                .Map(dest => dest.Authors, src => src.BookAuthors.Select(ba => ba.Author))
+                .Map(dest => dest.Genres, src => src.BookGenres.Select(bg => bg.Genre));
         }
     }
 }

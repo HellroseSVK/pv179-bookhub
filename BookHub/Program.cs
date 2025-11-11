@@ -1,9 +1,8 @@
-using BusinessLayer.Mapper;
-using BusinessLayer.Services;
 using DataAccessLayer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using WebAPI.Middlewares;
+using BusinessLayer.Services;
+using BusinessLayer.Mapper;
 using BusinessLayer.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,46 +38,23 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "Bearer"
                 }
             },
-            new string[] { }
+            new string[] {}
         }
     });
 });
 
-var envName = builder.Environment.EnvironmentName;
-
-Console.WriteLine($"Env Name: {envName}");
-
-IConfigurationRoot configuration = new ConfigurationBuilder()
-    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-    .AddJsonFile("appsettings.json")
-    .AddJsonFile($"appsettings.{envName}.json", optional: true, reloadOnChange: true)
-    .Build();
-
-var sqliteConnectionString = configuration.GetConnectionString("DefaultConnection");
-
-builder.Services.AddDbContextFactory<CustomDBContext>(options =>
-{
-    options
-        .UseSqlite(sqliteConnectionString)
-        .LogTo(a => Console.WriteLine(a))
-        .EnableSensitiveDataLogging()
-        ;
-});
+builder.Services.AddDbContext<CustomDBContext>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 var app = builder.Build();
 
-if (envName != "Local")
-{
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<CustomDBContext>();
-    db.Database.Migrate();
-}
-
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || envName == "Local")
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
