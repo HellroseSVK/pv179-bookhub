@@ -5,6 +5,6 @@ namespace BusinessLayer.DTOs.WishlistItem;
 
 public class WishlistItemDTO : BaseDTO
 {
-    public BookSimplifiedDTO Book { get; set; }
-    public UserSimplifiedDTO User { get; set; }
+    public BookSimplifiedDTO? Book { get; set; }
+    public UserSimplifiedDTO? User { get; set; }
 }

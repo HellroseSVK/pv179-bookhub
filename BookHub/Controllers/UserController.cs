@@ -2,11 +2,9 @@
 using BusinessLayer.Services.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
+using WebAPI.Models.User;
 
 namespace WebAPI.Controllers;
 
@@ -92,11 +90,6 @@ public class UserController(IUserService userService) : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        if (!ModelState.IsValid)
-        {
-            throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
-        }
-
         await userService.DeleteUserAsync(id);
 
         return NoContent();

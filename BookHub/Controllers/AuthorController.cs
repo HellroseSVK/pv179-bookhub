@@ -1,16 +1,16 @@
 using BusinessLayer.DTOs.Author;
-using BusinessLayer.DTOs.User;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
-using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
+using WebAPI.Models.Author;
+using WebAPI.Models.Book;
+using WebAPI.Models.Genre;
+using WebAPI.Models.Publisher;
+using WebAPI.Models.Review;
 
 namespace WebAPI.Controllers;
 
@@ -128,11 +128,6 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteAuthor(int id)
     {
-        if (!ModelState.IsValid)
-        {
-            throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
-        }
-
         await authorService.DeleteAuthorAsync(id);
 
         return NoContent();

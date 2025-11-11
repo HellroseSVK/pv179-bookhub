@@ -5,7 +5,7 @@ using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using WebAPI.Exception;
+using Shared.Exception;
 
 namespace BusinessLayer.Services;
 
@@ -54,7 +54,7 @@ public class AuthorService(CustomDBContext dBContext) : IAuthorService
         {
             var books = await FindBooks(authorDto.BookIds);
             var newBooks = books.Except(author.BookAuthors.Select(ba => ba.Book));
-            author.BookAuthors.AddRange(newBooks.Select(book => new BookAuthor { BookId = book.Id, Book = book }));
+            author.BookAuthors.AddRange(newBooks.Select(book => new BookAuthor { Book = book }));
         }
 
         dBContext.Authors.Update(author);
@@ -70,12 +70,12 @@ public class AuthorService(CustomDBContext dBContext) : IAuthorService
         author.Surname = authorDto.Surname;
 
         var books = await FindBooks(authorDto.BookIds);
-        var assignedBooks = author.BookAuthors.Select(ba => ba.Book);
+        var assignedBooks = author.BookAuthors.Select(ba => ba.Book).ToList();
 
         var oldBooks = assignedBooks.Except(books);
-        author.BookAuthors.RemoveAll(ba => oldBooks.Any(ob => ob.Id == ba.BookId));
+        author.BookAuthors.RemoveAll(ba => oldBooks.Any(ob => ob != null && ob.Id == ba.BookId));
         var newBooks = books.Except(assignedBooks);
-        author.BookAuthors.AddRange(newBooks.Select(book => new BookAuthor { BookId = book.Id, Book = book }));
+        author.BookAuthors.AddRange(newBooks.Select(book => new BookAuthor { Book = book }));
 
         dBContext.Authors.Update(author);
 

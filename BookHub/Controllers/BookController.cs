@@ -3,11 +3,13 @@ using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
+using WebAPI.Models.Author;
+using WebAPI.Models.Book;
+using WebAPI.Models.Genre;
+using WebAPI.Models.Publisher;
+using WebAPI.Models.Review;
 
 namespace WebAPI.Controllers
 {
@@ -26,21 +28,14 @@ namespace WebAPI.Controllers
 
     [ApiController]
     [Route("[controller]")]
-    public class BookController : ControllerBase
+    public class BookController(CustomDBContext dBContext) : ControllerBase
     {
-        private readonly CustomDBContext _dbContext;
-
-        public BookController(CustomDBContext dBContext)
-        {
-            _dbContext = dBContext;
-        }
-
         [HttpGet("filter")]
         [ProducesResponseType<List<BookResponse>>(StatusCodes.Status200OK)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> FilterBooks([FromQuery] BookFilter filter)
         {
-            var query = _dbContext.Books.AsQueryable();
+            var query = dBContext.Books.AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.Title))
                 query = query.Where(p => p.Title.Contains(filter.Title)); // .Contains does partial matching
@@ -90,7 +85,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetBook(int id)
         {
-            var book = await _dbContext.Books
+            var book = await dBContext.Books
                 .Where(x => x.Id == id)
                 .Include(book => book.BookAuthors).ThenInclude(bookAuthor => bookAuthor.Author)
                 .Include(book => book.BookGenres).ThenInclude(bookGenre => bookGenre.Genre)
@@ -140,9 +135,9 @@ namespace WebAPI.Controllers
                 BookGenres = genres.Select(genre => new BookGenre { Genre = genre, GenreId = genre.Id }).ToList()
             };
 
-            _dbContext.Books.Add(book);
+            dBContext.Books.Add(book);
 
-            await _dbContext.SaveChangesAsync();
+            await dBContext.SaveChangesAsync();
 
             return Created($"/Book/{book.Id}", book.Adapt<BookResponse>() with
             {
@@ -158,14 +153,14 @@ namespace WebAPI.Controllers
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> PatchBook(int id, BookModel model)
+        public async Task<IActionResult> PatchBook(int id, BookPartialModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var book = await _dbContext.Books
+            var book = await dBContext.Books
                 .Where(x => x.Id == id)
                 .Include(book => book.BookAuthors)
                 .Include(book => book.BookGenres)
@@ -178,14 +173,18 @@ namespace WebAPI.Controllers
 
             var allAuthors = await FindAuthors(model.AuthorIds);
             var allGenres = await FindGenres(model.GenreIds);
-            var publisher = await FindPublisher(model.PublisherId);
+
 
             // map the model to the entity
-            book.Title = model.Title;
-            book.Description = model.Description;
-            book.Price = model.Price;
-            book.PublisherId = publisher.Id;
-            book.Publisher = publisher;
+            book.Title = model.Title ?? book.Title;
+            book.Description = model.Description ?? book.Description;
+            book.Price = model.Price ?? book.Price;
+            if (model.PublisherId != null)
+            {
+                var publisher = await FindPublisher(model.PublisherId ?? 0);
+                book.PublisherId = publisher.Id;
+                book.Publisher = publisher;
+            }
 
             book.BookAuthors.AddRange(allAuthors
                 .Where(a => book.BookAuthors.All(ba => ba.AuthorId != a.Id))
@@ -195,9 +194,9 @@ namespace WebAPI.Controllers
                 .Select(g => new BookGenre { GenreId = g.Id, Genre = g }));
 
 
-            _dbContext.Books.Update(book);
+            dBContext.Books.Update(book);
 
-            await _dbContext.SaveChangesAsync();
+            await dBContext.SaveChangesAsync();
 
             return NoContent();
         }
@@ -214,7 +213,7 @@ namespace WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var book = await _dbContext.Books
+            var book = await dBContext.Books
                 .Where(x => x.Id == id)
                 .Include(book => book.BookAuthors)
                 .Include(book => book.BookGenres)
@@ -246,9 +245,9 @@ namespace WebAPI.Controllers
                 .Select(g => new BookGenre { GenreId = g.Id, Genre = g }));
 
 
-            _dbContext.Books.Update(book);
+            dBContext.Books.Update(book);
 
-            await _dbContext.SaveChangesAsync();
+            await dBContext.SaveChangesAsync();
 
             return NoContent();
         }
@@ -266,7 +265,7 @@ namespace WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var book = await _dbContext.Books
+            var book = await dBContext.Books
                 .Where(x => x.Id == id)
                 .Include(book => book.BookAuthors)
                 .Include(book => book.BookGenres)
@@ -277,16 +276,16 @@ namespace WebAPI.Controllers
                 throw new StatusCodeException(StatusCodes.Status404NotFound, "No book was found.");
             }
 
-            _dbContext.Books.Remove(book);
+            dBContext.Books.Remove(book);
 
-            await _dbContext.SaveChangesAsync();
+            await dBContext.SaveChangesAsync();
 
             return NoContent();
         }
 
         private async Task<List<Author>> FindAuthors(List<int> authorIds)
         {
-            var authors = await _dbContext.Authors
+            var authors = await dBContext.Authors
                 .Where(a => authorIds.Contains(a.Id))
                 .ToListAsync();
             var missingAuthorIds = authorIds.Except(authors.Select(a => a.Id)).ToList();
@@ -301,7 +300,7 @@ namespace WebAPI.Controllers
 
         private async Task<List<Genre>> FindGenres(List<int> genreIds)
         {
-            var genres = await _dbContext.Genres
+            var genres = await dBContext.Genres
                 .Where(g => genreIds.Contains(g.Id))
                 .ToListAsync();
             var missingGenreIds = genreIds.Except(genres.Select(g => g.Id)).ToList();
@@ -316,7 +315,7 @@ namespace WebAPI.Controllers
 
         private async Task<Publisher> FindPublisher(int publisherId)
         {
-            var publisher = await _dbContext.Publishers
+            var publisher = await dBContext.Publishers
                 .FirstOrDefaultAsync(p => p.Id == publisherId);
             if (publisher == null)
             {

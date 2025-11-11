@@ -2,8 +2,8 @@
 {
     public class Genre : BaseEntity
     {
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
-        public List<BookGenre> BookGenres { get; set; }
+        public List<BookGenre> BookGenres { get; set; } = [];
     }
 }

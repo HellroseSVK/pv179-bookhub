@@ -1,6 +1,6 @@
 using System.Text.Json;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
 
 namespace WebAPI.Middlewares;
 
