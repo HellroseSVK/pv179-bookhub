@@ -66,6 +66,8 @@ app.UseMiddleware<TokenAuthenticationMiddleware>();
 
 app.UseAuthorization();
 
+app.UseMiddleware<JsonToXmlMiddleware>();
+
 app.MapControllers();
 
 app.UseMiddleware<LoggingMiddleware>();
