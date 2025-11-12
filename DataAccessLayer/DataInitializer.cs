@@ -60,19 +60,95 @@ namespace DataAccessLayer
 
         private static List<Book> PrepareBooks()
         {
-            return new List<Book>()
+            var bookTitleTemplates = new[]
             {
-                new Book { Id = 1, Title = "Harry Potter and the Philosopher's Stone", Description = "A young wizard's journey begins at Hogwarts School of Witchcraft and Wizardry.", Price = 19.99m, PublisherId = 1 },
-                new Book { Id = 2, Title = "1984", Description = "A dystopian social science fiction novel about totalitarian surveillance.", Price = 15.99m, PublisherId = 2 },
-                new Book { Id = 3, Title = "To Kill a Mockingbird", Description = "A novel about racial injustice and childhood in the American South.", Price = 14.99m, PublisherId = 2 },
-                new Book { Id = 4, Title = "The Great Gatsby", Description = "A critique of the American Dream set in the Jazz Age.", Price = 12.99m, PublisherId = 2 },
-                new Book { Id = 5, Title = "Pride and Prejudice", Description = "A romantic novel about manners, upbringing, morality, and marriage.", Price = 13.99m, PublisherId = 3 },
-                new Book { Id = 6, Title = "The Adventures of Tom Sawyer", Description = "A boy's adventures along the Mississippi River.", Price = 11.99m, PublisherId = 2 },
-                new Book { Id = 7, Title = "The Old Man and the Sea", Description = "An aging Cuban fisherman's struggle with a giant marlin.", Price = 10.99m, PublisherId = 2 },
-                new Book { Id = 8, Title = "Murder on the Orient Express", Description = "A detective story featuring Hercule Poirot on a luxury train.", Price = 16.99m, PublisherId = 3 },
-                new Book { Id = 9, Title = "The Shining", Description = "A horror novel about a family isolated in a haunted hotel.", Price = 18.99m, PublisherId = 4 },
-                new Book { Id = 10, Title = "Beloved", Description = "A story about the legacy of slavery and trauma.", Price = 17.99m, PublisherId = 5 }
+                "The {adjective} {noun}",
+                "{adjective} {noun}",
+                "The {noun} of {place}",
+                "{person}'s {noun}",
+                "The {adjective} {person}",
+                "{noun} in {place}",
+                "Beyond the {noun}",
+                "Tales of {adjective} {noun}",
+                "The Last {noun}",
+                "Secrets of the {adjective} {noun}"
             };
+
+            var adjectives = new[] { "Silent", "Hidden", "Lost", "Forgotten", "Ancient", "Mysterious", "Eternal", "Sacred", "Dark", "Golden", "Silver", "Crimson", "Emerald", "Shadowed", "Bright" };
+            var nouns = new[] { "Journey", "Kingdom", "Dream", "Secret", "Memory", "Heart", "Soul", "Mind", "Story", "Legend", "Myth", "Tale", "Adventure", "Quest", "Destiny" };
+            var places = new[] { "London", "Paris", "Rome", "Venice", "Prague", "Istanbul", "Cairo", "Tokyo", "Vienna", "Barcelona", "Dublin", "Edinburgh", "Amsterdam", "Copenhagen" };
+            var people = new[] { "Alexander", "Victoria", "Napoleon", "Elizabeth", "Catherine", "Marcus", "Helena", "Adrienne", "Sebastian", "Isabella", "Theodore", "Evangeline" };
+
+            var faker = new Faker<Book>()
+                .UseSeed(98765)
+                .RuleFor(b => b.Id, f => f.IndexFaker + 1)
+                .RuleFor(b => b.Title, f => GenerateBookTitle(f, bookTitleTemplates, adjectives, nouns, places, people))
+                .RuleFor(b => b.Description, f => GenerateBookDescription(f))
+                .RuleFor(b => b.Price, f => Math.Round(f.Random.Decimal(8.99m, 29.99m), 2))
+                .RuleFor(b => b.PublisherId, f => f.Random.Int(1, 10));
+
+            return faker.Generate(25);
+        }
+
+        private static string GenerateBookTitle(Faker faker, string[] templates, string[] adjectives, string[] nouns, string[] places, string[] people)
+        {
+            var template = faker.PickRandom(templates);
+            return template
+                .Replace("{adjective}", faker.PickRandom(adjectives))
+                .Replace("{noun}", faker.PickRandom(nouns))
+                .Replace("{place}", faker.PickRandom(places))
+                .Replace("{person}", faker.PickRandom(people));
+        }
+
+        private static string GenerateBookDescription(Faker faker)
+        {
+            var openings = new[]
+            {
+                "A captivating tale of",
+                "An epic journey through",
+                "A haunting story about",
+                "A thrilling adventure featuring",
+                "A beautiful narrative exploring",
+                "A gripping saga of",
+                "An unforgettable story following",
+                "A masterful exploration of",
+                "A compelling tale that",
+                "A breathtaking story of"
+            };
+
+            var themes = new[]
+            {
+                "love and betrayal",
+                "courage and sacrifice",
+                "mystery and intrigue",
+                "friendship and loyalty",
+                "power and corruption",
+                "hope and redemption",
+                "loss and discovery",
+                "adventure and danger",
+                "family and tradition",
+                "dreams and reality"
+            };
+
+            var settings = new[]
+            {
+                "set in a world of magic and wonder",
+                "unfolding in the shadows of ancient cities",
+                "taking place across vast kingdoms",
+                "set against the backdrop of war",
+                "in a realm where nothing is as it seems",
+                "spanning generations of conflict",
+                "in a time of great change",
+                "where legends come to life",
+                "in a place forgotten by time",
+                "across mysterious landscapes"
+            };
+
+            var opening = faker.PickRandom(openings);
+            var theme = faker.PickRandom(themes);
+            var setting = faker.PickRandom(settings);
+
+            return $"{opening} {theme}, {setting}. {faker.Lorem.Sentence(faker.Random.Int(8, 15))}";
         }
 
         private static List<Genre> PrepareGenres()
