@@ -177,19 +177,19 @@ namespace DataAccessLayer
 
         private static List<OrderItem> PrepareOrderItems()
         {
-            return new List<OrderItem>()
-            {
-                new OrderItem { Id = 1, BookId = 1, UserId = 1},
-                new OrderItem { Id = 2, BookId = 2, UserId = 1},
-                new OrderItem { Id = 3, BookId = 3, UserId = 2},
-                new OrderItem { Id = 4, BookId = 4, UserId = 3},
-                new OrderItem { Id = 5, BookId = 5, UserId = 4},
-                new OrderItem { Id = 6, BookId = 6, UserId = 5},
-                new OrderItem { Id = 7, BookId = 3, UserId = 6},
-                new OrderItem { Id = 8, BookId = 4, UserId = 6},
-                new OrderItem { Id = 9, BookId = 7, UserId = 6},
-                new OrderItem { Id = 10, BookId = 8, UserId = 6},
-            };
+            var faker = new Faker<OrderItem>()
+                .UseSeed(54321)
+                .RuleFor(o => o.Id, f => f.IndexFaker + 1)
+                .RuleFor(o => o.BookId, f => f.Random.WeightedRandom(
+                    new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
+                    new[] { 0.15f, 0.12f, 0.12f, 0.10f, 0.12f, 0.08f, 0.08f, 0.10f, 0.08f, 0.05f }
+                ))
+                .RuleFor(o => o.UserId, f => f.Random.WeightedRandom(
+                    new[] { 1, 2, 3, 4, 5, 6, 7, 8 },
+                    new[] { 0.20f, 0.15f, 0.12f, 0.15f, 0.10f, 0.18f, 0.05f, 0.05f }
+                ));
+
+            return faker.Generate(30);
         }
 
         private static List<User> PrepareUsers()
