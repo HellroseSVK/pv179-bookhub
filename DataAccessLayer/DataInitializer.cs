@@ -1,5 +1,6 @@
 ﻿using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Bogus;
 
 namespace DataAccessLayer
 {
@@ -110,18 +111,67 @@ namespace DataAccessLayer
 
         private static List<Review> PrepareReviews()
         {
-            return new List<Review>()
+            var faker = new Faker<Review>()
+                .UseSeed(12345)
+                .RuleFor(r => r.Id, f => f.IndexFaker + 1)
+                .RuleFor(r => r.Rating, f => f.Random.WeightedRandom(
+                    new[] { 1, 2, 3, 4, 5 },
+                    new[] { 0.1f, 0.1f, 0.2f, 0.3f, 0.3f }
+                ))
+                .RuleFor(r => r.Body, (f, r) => GenerateReviewBody(f, r.Rating))
+                .RuleFor(r => r.BookId, f => f.Random.Int(1, 10))
+                .RuleFor(r => r.UserId, f => f.Random.Int(1, 8));
+
+            return faker.Generate(20);
+        }
+
+        private static string GenerateReviewBody(Faker faker, int rating)
+        {
+            var positiveAdjectives = new[] { "amazing", "fantastic", "brilliant", "wonderful", "excellent", "outstanding", "captivating", "engaging", "masterful", "beautiful" };
+            var negativeAdjectives = new[] { "disappointing", "boring", "confusing", "poorly written", "predictable", "slow", "uninteresting", "weak", "frustrating", "tedious" };
+            var neutralAdjectives = new[] { "decent", "okay", "average", "readable", "solid", "fine", "acceptable", "reasonable", "adequate", "satisfactory" };
+
+            var positiveComments = new[]
             {
-                new Review { Id = 1, Rating = 1, Body = "I kept waiting for the story to pick up, but it never really went anywhere.", BookId = 1, UserId = 1 },
-                new Review { Id = 2, Rating = 2, Body = "The premise sounded great, but the execution was flat and predictable.", BookId = 2, UserId = 1 },
-                new Review { Id = 3, Rating = 3, Body = "A fast-paced read that kept me hooked, though the ending felt a bit rushed.", BookId = 3, UserId = 2 },
-                new Review { Id = 4, Rating = 4, Body = "Beautiful writing, but I struggled with the slow middle chapters.", BookId = 4, UserId = 3 },
-                new Review { Id = 5, Rating = 5, Body = "Loved the characters — they felt real and flawed in the best way.", BookId = 4, UserId = 4 },
-                new Review { Id = 6, Rating = 1, Body = "The characters felt one-dimensional and I couldn’t connect with any of them.", BookId = 2, UserId = 4 },
-                new Review { Id = 7, Rating = 2, Body = "Too many clichés and not enough originality — I lost interest halfway through.", BookId = 7, UserId = 4 },
-                new Review { Id = 8, Rating = 3, Body = "A solid story, though I guessed the twist halfway through.", BookId = 8, UserId = 6 },
-                new Review { Id = 9, Rating = 4, Body = "Enjoyable overall, but I didn’t connect with the main character.", BookId = 3, UserId = 8 },
-                new Review { Id = 10, Rating = 5, Body = "An emotional rollercoaster — I cried more than once.", BookId = 1, UserId = 8 }
+                "I couldn't put this book down!",
+                "The characters felt real and well-developed.",
+                "The plot was engaging from start to finish.",
+                "Beautiful writing style that flows perfectly.",
+                "This book exceeded all my expectations.",
+                "The emotional depth really resonated with me.",
+                "A truly memorable reading experience."
+            };
+
+            var negativeComments = new[]
+            {
+                "I struggled to get through this one.",
+                "The characters felt one-dimensional.",
+                "The plot was too predictable for my taste.",
+                "I lost interest halfway through.",
+                "The pacing was really off.",
+                "Too many clichés and not enough originality.",
+                "The ending was disappointing."
+            };
+
+            var neutralComments = new[]
+            {
+                "A solid story, though not groundbreaking.",
+                "Some good moments but overall just okay.",
+                "It was fine, but didn't leave a lasting impression.",
+                "Decent read for passing time.",
+                "Had its moments but also some slow parts.",
+                "Worth reading but not a favorite.",
+                "Good enough to finish but wouldn't recommend highly."
+            };
+
+            return rating switch
+            {
+                5 => $"{faker.PickRandom(positiveComments)} {faker.PickRandom(positiveAdjectives).ToUpper()} book that I would definitely recommend.",
+                4 => $"Really {faker.PickRandom(positiveAdjectives)} book. {faker.PickRandom(positiveComments)} Just a few minor issues kept it from being perfect.",
+                3 => $"{faker.PickRandom(neutralComments)} {faker.PickRandom(neutralAdjectives).ToUpper()} overall.",
+                2 => $"Unfortunately {faker.PickRandom(negativeAdjectives)}. {faker.PickRandom(negativeComments)} Had some potential but didn't deliver.",
+                1 => $"Very {faker.PickRandom(negativeAdjectives)} read. {faker.PickRandom(negativeComments)} Would not recommend.",
+                _ => faker.Lorem.Sentence(faker.Random.Int(5, 15))
             };
         }
 

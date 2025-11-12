@@ -731,26 +731,26 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 1,
-                            Body = "I kept waiting for the story to pick up, but it never really went anywhere.",
-                            BookId = 1,
+                            Body = "Very disappointing read. Too many clichés and not enough originality. Would not recommend.",
+                            BookId = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 1,
-                            UserId = 1
+                            UserId = 7
                         },
                         new
                         {
                             Id = 2,
-                            Body = "The premise sounded great, but the execution was flat and predictable.",
-                            BookId = 2,
+                            Body = "The characters felt real and well-developed. ENGAGING book that I would definitely recommend.",
+                            BookId = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Rating = 2,
-                            UserId = 1
+                            Rating = 5,
+                            UserId = 5
                         },
                         new
                         {
                             Id = 3,
-                            Body = "A fast-paced read that kept me hooked, though the ending felt a bit rushed.",
-                            BookId = 3,
+                            Body = "It was fine, but didn't leave a lasting impression. AVERAGE overall.",
+                            BookId = 1,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 3,
                             UserId = 2
@@ -758,65 +758,155 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 4,
-                            Body = "Beautiful writing, but I struggled with the slow middle chapters.",
+                            Body = "The characters felt real and well-developed. MASTERFUL book that I would definitely recommend.",
+                            BookId = 9,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 5,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Body = "Unfortunately slow. The plot was too predictable for my taste. Had some potential but didn't deliver.",
+                            BookId = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 2,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Body = "Really engaging book. The emotional depth really resonated with me. Just a few minor issues kept it from being perfect.",
                             BookId = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 4,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Body = "Really brilliant book. Beautiful writing style that flows perfectly. Just a few minor issues kept it from being perfect.",
+                            BookId = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 4,
                             UserId = 3
                         },
                         new
                         {
-                            Id = 5,
-                            Body = "Loved the characters — they felt real and flawed in the best way.",
-                            BookId = 4,
+                            Id = 8,
+                            Body = "I couldn't put this book down! EXCELLENT book that I would definitely recommend.",
+                            BookId = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 5,
                             UserId = 4
                         },
                         new
                         {
-                            Id = 6,
-                            Body = "The characters felt one-dimensional and I couldn’t connect with any of them.",
+                            Id = 9,
+                            Body = "Beautiful writing style that flows perfectly. BRILLIANT book that I would definitely recommend.",
+                            BookId = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 5,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Body = "It was fine, but didn't leave a lasting impression. ADEQUATE overall.",
                             BookId = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 3,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Body = "Really captivating book. Beautiful writing style that flows perfectly. Just a few minor issues kept it from being perfect.",
+                            BookId = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 4,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Body = "Really engaging book. I couldn't put this book down! Just a few minor issues kept it from being perfect.",
+                            BookId = 10,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 4,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Body = "Very predictable read. The plot was too predictable for my taste. Would not recommend.",
+                            BookId = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 1,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Body = "Very frustrating read. Too many clichés and not enough originality. Would not recommend.",
+                            BookId = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 1,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Body = "This book exceeded all my expectations. EXCELLENT book that I would definitely recommend.",
+                            BookId = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 5,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Body = "Really brilliant book. I couldn't put this book down! Just a few minor issues kept it from being perfect.",
+                            BookId = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 4,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Body = "Good enough to finish but wouldn't recommend highly. FINE overall.",
+                            BookId = 6,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 3,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Body = "Very weak read. I struggled to get through this one. Would not recommend.",
+                            BookId = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 1,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Body = "Very tedious read. I lost interest halfway through. Would not recommend.",
+                            BookId = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 1,
                             UserId = 4
                         },
                         new
                         {
-                            Id = 7,
-                            Body = "Too many clichés and not enough originality — I lost interest halfway through.",
-                            BookId = 7,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Rating = 2,
-                            UserId = 4
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Body = "A solid story, though I guessed the twist halfway through.",
-                            BookId = 8,
+                            Id = 20,
+                            Body = "A solid story, though not groundbreaking. AVERAGE overall.",
+                            BookId = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 3,
-                            UserId = 6
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Body = "Enjoyable overall, but I didn’t connect with the main character.",
-                            BookId = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Rating = 4,
-                            UserId = 8
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Body = "An emotional rollercoaster — I cried more than once.",
-                            BookId = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Rating = 5,
-                            UserId = 8
+                            UserId = 5
                         });
                 });
 
