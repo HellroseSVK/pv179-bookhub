@@ -1,6 +1,3 @@
-using WebAPI.Models.Book;
-using WebAPI.Models.User;
-
 namespace WebAPI.Models.Review;
 
 public record ReviewSimplifiedResponse(

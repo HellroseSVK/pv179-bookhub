@@ -216,7 +216,7 @@ public class BookService(CustomDBContext dbContext) : IBookService
         var missingAuthorIds = authorIds.Except(authors.Select(a => a.Id)).ToList();
         if (missingAuthorIds.Any())
         {
-            throw new InvalidOperationException($"Authors {{{string.Join(", ", missingAuthorIds)}}} not found.");
+            throw new InvalidOperationException($"Authors with ids {string.Join(", ", missingAuthorIds)} not found.");
         }
 
         return authors;
@@ -231,7 +231,7 @@ public class BookService(CustomDBContext dbContext) : IBookService
         var missingGenreIds = genreIds.Except(genres.Select(g => g.Id)).ToList();
         if (missingGenreIds.Any())
         {
-            throw new InvalidOperationException($"Genres {{{string.Join(", ", missingGenreIds)}}} not found.");
+            throw new InvalidOperationException($"Genres  with ids {string.Join(", ", missingGenreIds)} not found.");
         }
 
         return genres;

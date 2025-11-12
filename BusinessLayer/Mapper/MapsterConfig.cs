@@ -1,8 +1,6 @@
 using BusinessLayer.DTOs.Author;
 using BusinessLayer.DTOs.Book;
 using BusinessLayer.DTOs.Genre;
-using BusinessLayer.DTOs.OrderItem;
-using BusinessLayer.DTOs.Review;
 using BusinessLayer.DTOs.User;
 using DataAccessLayer.Entities;
 using Mapster;
@@ -15,10 +13,6 @@ namespace BusinessLayer.Mapper
         // Custom mapping belongs here
         public static void RegisterMapsterConfiguration(this IServiceCollection services)
         {
-            TypeAdapterConfig<UserSimplifiedPartialDTO, UserSimplifiedDTO>
-                .NewConfig()
-                .IgnoreNullValues(true);
-
             // Author mappings
             TypeAdapterConfig<Author, AuthorDTO>
                 .NewConfig()
