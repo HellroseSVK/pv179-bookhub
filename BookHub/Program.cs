@@ -67,6 +67,7 @@ builder.Services.AddDbContextFactory<CustomDBContext>(options =>
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
 
 var app = builder.Build();
 
