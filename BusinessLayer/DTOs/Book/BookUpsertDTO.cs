@@ -8,4 +8,5 @@ public class BookUpsertDTO
     public int PublisherId { get; set; }
     public List<int> AuthorIds { get; set; } = [];
     public List<int> GenreIds { get; set; } = [];
+    public string? ImagePath { get; set; }
 }

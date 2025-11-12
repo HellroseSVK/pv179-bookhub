@@ -5,5 +5,6 @@ public record BookSimplifiedResponse(
     DateTime CreatedAt,
     string Title,
     string Description,
-    decimal Price
+    decimal Price,
+    string? ImageUrl
 ) : BaseResponse(Id, CreatedAt);

@@ -9,7 +9,7 @@ using Shared.Exception;
 
 namespace BusinessLayer.Services;
 
-public class BookService(CustomDBContext dbContext) : IBookService
+public class BookService(CustomDBContext dbContext, IImageService imageService) : IBookService
 {
     public async Task<BookDTO> CreateBookAsync(BookUpsertDTO bookDto)
     {
@@ -139,9 +139,43 @@ public class BookService(CustomDBContext dbContext) : IBookService
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task UpdateBookImageAsync(int id, string imagePath)
+    {
+        var book = await FindBook(id, false, false, false, false, false, false);
+        
+        if (!string.IsNullOrEmpty(book.ImagePath))
+        {
+            await imageService.DeleteBookImageAsync(book.ImagePath);
+        }
+        
+        book.ImagePath = imagePath;
+        
+        dbContext.Books.Update(book);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteBookImageAsync(int id)
+    {
+        var book = await FindBook(id, false, false, false, false, false, false);
+        
+        if (!string.IsNullOrEmpty(book.ImagePath))
+        {
+            await imageService.DeleteBookImageAsync(book.ImagePath);
+            book.ImagePath = null;
+            
+            dbContext.Books.Update(book);
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
     public async Task DeleteBookAsync(int id)
     {
         var book = await FindBook(id, false, false, false, false, false, false);
+
+        if (!string.IsNullOrEmpty(book.ImagePath))
+        {
+            await imageService.DeleteBookImageAsync(book.ImagePath);
+        }
 
         dbContext.Books.Remove(book);
         await dbContext.SaveChangesAsync();

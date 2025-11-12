@@ -39,7 +39,12 @@ namespace BusinessLayer.Mapper
             TypeAdapterConfig<Book, BookDTO>
                 .NewConfig()
                 .Map(dest => dest.Authors, src => src.BookAuthors.Select(ba => ba.Author))
-                .Map(dest => dest.Genres, src => src.BookGenres.Select(bg => bg.Genre));
+                .Map(dest => dest.Genres, src => src.BookGenres.Select(bg => bg.Genre))
+                .Map(dest => dest.ImageUrl, src => !string.IsNullOrEmpty(src.ImagePath) ? $"/images/books/{src.ImagePath}" : null);
+            
+            TypeAdapterConfig<Book, BookSimplifiedDTO>
+                .NewConfig()
+                .Map(dest => dest.ImageUrl, src => !string.IsNullOrEmpty(src.ImagePath) ? $"/images/books/{src.ImagePath}" : null);
         }
     }
 }
