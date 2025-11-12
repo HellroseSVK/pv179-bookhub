@@ -1,5 +1,4 @@
-﻿using BusinessLayer.DTOs.OrderItem;
-using BusinessLayer.DTOs.WishlistItem;
+﻿using BusinessLayer.DTOs.WishlistItem;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -17,11 +16,13 @@ namespace BusinessLayer.Services
             var book = await FindBook(wishlistItemDto.BookId);
             var user = await FindUser(wishlistItemDto.UserId);
 
-            var wishlistItem = wishlistItemDto.Adapt<WishlistItem>();
-            wishlistItem.BookId = book.Id;
-            wishlistItem.Book = book;
-            wishlistItem.UserId = user.Id;
-            wishlistItem.User = user;
+            var wishlistItem = new WishlistItem
+            {
+                // BookId = book.Id,
+                Book = book,
+                // UserId = user.Id,
+                User = user,
+            };
 
             var created = dbContext.WishlistItems.Add(wishlistItem);
             await dbContext.SaveChangesAsync();
@@ -57,22 +58,22 @@ namespace BusinessLayer.Services
 
             if (wishlistItemDto.BookId != null)
             {
-                var book = await FindBook((int)wishlistItemDto.BookId);
+                var book = await FindBook(wishlistItemDto.BookId.Value);
                 wishlistItem.BookId = book.Id;
                 wishlistItem.Book = book;
             }
 
             if (wishlistItemDto.UserId != null)
             {
-                var user = await FindUser((int)wishlistItemDto.UserId);
+                var user = await FindUser(wishlistItemDto.UserId.Value);
                 wishlistItem.UserId = user.Id;
                 wishlistItem.User = user;
             }
 
             dbContext.WishlistItems.Update(wishlistItem);
             await dbContext.SaveChangesAsync();
-
         }
+
         public async Task UpdateWishlistItemAsync(int id, WishlistItemUpsertDTO wishlistItemDto)
         {
             var wishlistItem = await FindWishlistItem(id);

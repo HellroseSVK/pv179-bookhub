@@ -1,6 +1,9 @@
-﻿using BusinessLayer.DTOs.Author;
+﻿using BusinessLayer.DTOs;
+using BusinessLayer.DTOs.Author;
+using BusinessLayer.DTOs.Book;
 using BusinessLayer.DTOs.Genre;
 using BusinessLayer.DTOs.User;
+using BusinessLayer.DTOs.WishlistItem;
 using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +15,7 @@ namespace BusinessLayer.Mapper
         // Custom mapping belongs here
         public static void RegisterMapsterConfiguration(this IServiceCollection services)
         {
+            // User mappings
             TypeAdapterConfig<UserSimplifiedPartialDTO, UserSimplifiedDTO>
                 .NewConfig()
                 .IgnoreNullValues(true);
