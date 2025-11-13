@@ -72,7 +72,7 @@ public class JsonToXmlMiddleware
         }
     }
 
-    private static bool ShouldReturnXml(string acceptHeader)
+    private bool ShouldReturnXml(string acceptHeader)
     {
         if (string.IsNullOrWhiteSpace(acceptHeader))
             return false;
