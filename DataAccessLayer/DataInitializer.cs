@@ -1,11 +1,21 @@
 ﻿using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Bogus;
+using Microsoft.AspNetCore.Identity;
 
 namespace DataAccessLayer
 {
     public static class DataInitializer
     {
+        private const int GenreCount = 10;
+        private const int PublisherCount = 6;
+        private const int AuthorCount = 20;
+        private const int UserCount = 8;
+        private const int BookCount = 25;
+        private const int WishlistItemCount = 20;
+        private const int OrderItemCount = 30;
+        private const int ReviewCount = 20;
+
         public static void Seed(this ModelBuilder modelBuilder)
         {
             var genres = PrepareGenres();
@@ -16,8 +26,8 @@ namespace DataAccessLayer
             var wishlistItems = PrepareWishlistItems();
             var orderItems = PrepareOrderItems();
             var reviews = PrepareReviews();
-            var bookAuthors = LinkBooksAndAuthors(books, authors);
-            var bookGenres = LinkBooksAndGenres(books, genres);
+            var bookAuthors = LinkBooksAndAuthors();
+            var bookGenres = LinkBooksAndGenres();
 
             modelBuilder.Entity<Genre>()
                 .HasData(genres);
@@ -87,7 +97,7 @@ namespace DataAccessLayer
                 .RuleFor(b => b.Price, f => Math.Round(f.Random.Decimal(8.99m, 29.99m), 2))
                 .RuleFor(b => b.PublisherId, f => f.Random.Int(1, 10));
 
-            return faker.Generate(25);
+            return faker.Generate(BookCount);
         }
 
         private static string GenerateBookTitle(Faker faker, string[] templates, string[] adjectives, string[] nouns, string[] places, string[] people)
@@ -198,7 +208,7 @@ namespace DataAccessLayer
                 .RuleFor(r => r.BookId, f => f.Random.Int(1, 10))
                 .RuleFor(r => r.UserId, f => f.Random.Int(1, 8));
 
-            return faker.Generate(20);
+            return faker.Generate(ReviewCount);
         }
 
         private static string GenerateReviewBody(Faker faker, int rating)
@@ -265,42 +275,38 @@ namespace DataAccessLayer
                     new[] { 0.20f, 0.15f, 0.12f, 0.15f, 0.10f, 0.18f, 0.05f, 0.05f }
                 ));
 
-            return faker.Generate(30);
+            return faker.Generate(OrderItemCount);
         }
 
         private static List<User> PrepareUsers()
         {
-            return new List<User>()
-            {
-                new User { Id = 1, Email = "james.miller92@gmail.com", Password = "pbkdf2_sha256$100000$2133ad0a4d31462ef5766ff6b03c7987$f919d3c6f899fe09d8f3158618e63988a1d09daea26e0aeed5219768f1e2d199", IsAdmin = false },
-                new User { Id = 2, Email = "sarah.lee@outlook.com", Password = "pbkdf2_sha256$100000$0acfd8d2ff40624052f26f2fb3495254$93857a9a6b61f8f9098e639f645f7143d92006ce925fc50e7af534567cafe07f", IsAdmin = false },
-                new User { Id = 3, Email = "marco.rossi89@yahoo.com", Password = "pbkdf2_sha256$100000$6190de7b0dda9c8235e0e55455d43f2b$f33f0dfb4085e26e30dd79b9c9959a0a01a033155b4cfe8b9e8b9baa9670b8c3", IsAdmin = false },
-                new User { Id = 4, Email = "emily_watson@icloud.com", Password = "pbkdf2_sha256$100000$84beb8171db67abbd93e38551e232120$d47e1668e7ced2fa8462c530ea3f8081e118c4eeb69ba9f7d640c2f6e860fae7", IsAdmin = false },
-                new User { Id = 5, Email = "david.nguyen@protonmail.com", Password = "pbkdf2_sha256$100000$6a9df2a924d667a1bd472317344c8f26$45a2a5bc1f82bb6a1c61c33e434fd1b0c0e66cadb6b1bb4d4bffa89bd2687a3b", IsAdmin = false },
-                new User { Id = 6, Email = "lucas-johnson@live.com", Password = "pbkdf2_sha256$100000$f67ad2c96b570f5e8c7def3da9f9cc7b$75b5631e544d43972e646d51ab14479771044310b42d0901cb4e2a067192e4fa", IsAdmin = false },
-                new User { Id = 7, Email = "maria.garcia23@bookhub.com", Password = "pbkdf2_sha256$100000$6973359e189c00dff9c42cc516cca724$17ae99a40f51d065b02ad1ded4959166e67499c1c6f1fe7a1dea1036b3530dd6", IsAdmin = true },
-                new User { Id = 8, Email = "andrew.smith@bookhub.com", Password = "pbkdf2_sha256$100000$463d7f87b63f4843bd6b899bced0acdd$cb8c5551c30f874fb846de9c7cb56595e12baa83c346ad6950504c500519c002", IsAdmin = true },
-            };
+            var passwordHasher = new PasswordHasher<User>();
+
+            var faker = new Faker<User>()
+                .UseSeed(666)
+                .RuleFor(u => u.Id, f => f.IndexFaker + 1)
+                .RuleFor(u => u.Email, f => f.Internet.Email())
+                .RuleFor(u => u.IsAdmin, f => f.Random.Bool(0.2f)) // 20% admins
+                .FinishWith((f, u) =>
+                 {
+                     u.Password = passwordHasher.HashPassword(u, f.Internet.Password());
+                 });
+
+            return faker.Generate(UserCount);
         }
 
         private static List<WishlistItem> PrepareWishlistItems()
         {
-            return new List<WishlistItem>()
-            {
-                new WishlistItem { Id = 1, BookId = 7, UserId = 3},
-                new WishlistItem { Id = 2, BookId = 6, UserId = 3},
-                new WishlistItem { Id = 3, BookId = 5, UserId = 1},
-                new WishlistItem { Id = 4, BookId = 4, UserId = 5},
-                new WishlistItem { Id = 5, BookId = 3, UserId = 4},
-                new WishlistItem { Id = 6, BookId = 2, UserId = 7},
-                new WishlistItem { Id = 7, BookId = 7, UserId = 8},
-                new WishlistItem { Id = 8, BookId = 6, UserId = 8},
-                new WishlistItem { Id = 9, BookId = 2, UserId = 8},
-                new WishlistItem { Id = 10, BookId = 1, UserId = 8},
-            };
+            var faker = new Faker<WishlistItem>()
+                .UseSeed(648651)
+                .RuleFor(w => w.Id, f => f.IndexFaker + 1)
+                .RuleFor(w => w.BookId, f => f.Random.Int(1, 25))
+                .RuleFor(w => w.UserId, f => f.Random.Int(1, 8));
+
+            return faker.Generate(WishlistItemCount);
         }
 
-        private static List<BookAuthor> LinkBooksAndAuthors(List<Book> books, List<Author> authors)
+        private static List<BookAuthor> LinkBooksAndAuthors()
         {
             return new List<BookAuthor>()
             {
@@ -317,7 +323,7 @@ namespace DataAccessLayer
             };
         }
 
-        private static List<BookGenre> LinkBooksAndGenres(List<Book> books, List<Genre> genres)
+        private static List<BookGenre> LinkBooksAndGenres()
         {
             return new List<BookGenre>()
             {
