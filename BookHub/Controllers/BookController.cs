@@ -57,14 +57,7 @@ namespace WebAPI.Controllers
             }
 
             var bookDto = model.Adapt<BookUpsertDTO>();
-            
-            if (model.Image != null && imageService.IsValidImageFile(model.Image))
-            {
-                var imagePath = await imageService.SaveBookImageAsync(model.Image, 0); // Temporary ID, will be updated
-                bookDto.ImagePath = imagePath;
-            }
-
-            var result = await bookService.CreateBookAsync(bookDto);
+            var result = await bookService.CreateBookWithImageAsync(bookDto, model.Image);
 
             return Created($"/Book/{result.Id}", result.Adapt<BookResponse>());
         }
@@ -119,14 +112,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UploadBookImage(int id, IFormFile image)
         {
-            if (!imageService.IsValidImageFile(image))
-            {
-                throw new StatusCodeException(StatusCodes.Status400BadRequest, "Invalid image file");
-            }
-
-            var imagePath = await imageService.SaveBookImageAsync(image, id);
-            await bookService.UpdateBookImageAsync(id, imagePath);
-
+            await bookService.UploadBookImageAsync(id, image);
             return NoContent();
         }
 
