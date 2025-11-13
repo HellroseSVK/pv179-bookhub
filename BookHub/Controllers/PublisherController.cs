@@ -17,7 +17,7 @@ public class PublisherController(IPublisherService publisherService) : Controlle
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetPublishers()
     {
-        var publishers = await publisherService.GetAuthorsAsync();
+        var publishers = await publisherService.GetPublishersAsync();
 
         return Ok(publishers.Adapt<List<PublisherResponse>>());
     }
@@ -28,7 +28,7 @@ public class PublisherController(IPublisherService publisherService) : Controlle
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetPublisher(int id)
     {
-        var publisher = await publisherService.GetAuthorAsync(id);
+        var publisher = await publisherService.GetPublisherAsync(id);
 
         return Ok(publisher.Adapt<PublisherResponse>());
     }
@@ -44,7 +44,7 @@ public class PublisherController(IPublisherService publisherService) : Controlle
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var publisher = await publisherService.CreateAuthorAsync(model.Adapt<PublisherUpsertDTO>());
+        var publisher = await publisherService.CreatePublisherAsync(model.Adapt<PublisherUpsertDTO>());
 
         return Created($"/Publisher/{publisher.Id}", publisher.Adapt<PublisherResponse>());
     }
@@ -61,7 +61,7 @@ public class PublisherController(IPublisherService publisherService) : Controlle
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await publisherService.PatchAuthorAsync(id, model.Adapt<PublisherPartialDTO>());
+        await publisherService.PatchPublisherAsync(id, model.Adapt<PublisherPartialDTO>());
 
         return NoContent();
     }
@@ -78,7 +78,7 @@ public class PublisherController(IPublisherService publisherService) : Controlle
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await publisherService.UpdateAuthorAsync(id, model.Adapt<PublisherUpsertDTO>());
+        await publisherService.UpdatePublisherAsync(id, model.Adapt<PublisherUpsertDTO>());
 
         return NoContent();
     }
@@ -95,7 +95,7 @@ public class PublisherController(IPublisherService publisherService) : Controlle
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await publisherService.DeleteAuthorAsync(id);
+        await publisherService.DeletePublisherAsync(id);
 
         return NoContent();
     }

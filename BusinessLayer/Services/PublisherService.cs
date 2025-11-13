@@ -11,7 +11,7 @@ namespace BusinessLayer.Services;
 
 public class PublisherService(CustomDBContext dbContext) : IPublisherService
 {
-    public async Task<PublisherDTO> CreateAuthorAsync(PublisherUpsertDTO publisherDto)
+    public async Task<PublisherDTO> CreatePublisherAsync(PublisherUpsertDTO publisherDto)
     {
         var books = await FindBooks(publisherDto.BookIds);
 
@@ -25,7 +25,7 @@ public class PublisherService(CustomDBContext dbContext) : IPublisherService
         return created.Entity.Adapt<PublisherDTO>();
     }
 
-    public async Task<List<PublisherDTO>> GetAuthorsAsync(int[]? ids = null, bool includeBooks = true)
+    public async Task<List<PublisherDTO>> GetPublishersAsync(int[]? ids = null, bool includeBooks = true)
     {
         var query = GetBaseQuery(includeBooks);
 
@@ -39,14 +39,14 @@ public class PublisherService(CustomDBContext dbContext) : IPublisherService
         return publishers.Adapt<List<PublisherDTO>>();
     }
 
-    public async Task<PublisherDTO> GetAuthorAsync(int id, bool includeBooks = true)
+    public async Task<PublisherDTO> GetPublisherAsync(int id, bool includeBooks = true)
     {
         var publisher = await FindPublisher(id, includeBooks);
 
         return publisher.Adapt<PublisherDTO>();
     }
 
-    public async Task PatchAuthorAsync(int id, PublisherPartialDTO publisherDto)
+    public async Task PatchPublisherAsync(int id, PublisherPartialDTO publisherDto)
     {
         var publisher = await FindPublisher(id, true);
 
@@ -64,7 +64,7 @@ public class PublisherService(CustomDBContext dbContext) : IPublisherService
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateAuthorAsync(int id, PublisherUpsertDTO publisherDto)
+    public async Task UpdatePublisherAsync(int id, PublisherUpsertDTO publisherDto)
     {
         var publisher = await FindPublisher(id, true);
 
@@ -82,7 +82,7 @@ public class PublisherService(CustomDBContext dbContext) : IPublisherService
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteAuthorAsync(int id)
+    public async Task DeletePublisherAsync(int id)
     {
         var publisher = await FindPublisher(id);
 

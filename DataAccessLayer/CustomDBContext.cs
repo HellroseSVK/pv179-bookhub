@@ -97,7 +97,7 @@ namespace DataAccessLayer
             modelBuilder.Entity<Book>()
                 .HasOne<Publisher>(book => book.Publisher)
                 .WithMany(publisher => publisher.Books)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Seed();
 
