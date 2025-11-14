@@ -2,8 +2,10 @@ using DataAccessLayer;
 using Microsoft.OpenApi.Models;
 using WebAPI.Middlewares;
 using BusinessLayer.Services;
+using BusinessLayer.Facades;
 using BusinessLayer.Mapper;
 using BusinessLayer.Services.Interfaces;
+using BusinessLayer.Facades.Interfaces;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.FileProviders;
 
@@ -50,6 +52,7 @@ builder.Services.AddDbContext<CustomDBContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookFacade, BookFacade>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IImageService, ImageService>();

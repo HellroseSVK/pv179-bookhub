@@ -9,7 +9,7 @@ using Shared.Exception;
 
 namespace BusinessLayer.Services;
 
-public class BookService(CustomDBContext dbContext, IImageService imageService) : IBookService
+public class BookService(CustomDBContext dbContext) : IBookService
 {
     public async Task<BookDTO> CreateBookAsync(BookUpsertDTO bookDto)
     {
@@ -28,34 +28,6 @@ public class BookService(CustomDBContext dbContext, IImageService imageService) 
         return created.Entity.Adapt<BookDTO>();
     }
 
-    public async Task<BookDTO> CreateBookWithImageAsync(BookUpsertDTO bookDto, IFormFile? image)
-    {
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        try
-        {
-            var createdBook = await CreateBookAsync(bookDto);
-            
-            if (image != null && imageService.IsValidImageFile(image))
-            {
-                var imagePath = await imageService.SaveBookImageAsync(image, createdBook.Id);
-                
-                var bookEntity = await FindBook(createdBook.Id, false, false, false, false, false, false);
-                bookEntity.ImagePath = imagePath;
-                dbContext.Books.Update(bookEntity);
-                await dbContext.SaveChangesAsync();
-                
-                createdBook = bookEntity.Adapt<BookDTO>();
-            }
-            
-            await transaction.CommitAsync();
-            return createdBook;
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
-    }
 
     public async Task<List<BookDTO>> FilterBooksAsync(BookFilterDTO filter)
     {
@@ -170,115 +142,28 @@ public class BookService(CustomDBContext dbContext, IImageService imageService) 
 
     public async Task UpdateBookImageAsync(int id, string imagePath)
     {
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        try
-        {
-            var book = await FindBook(id, false, false, false, false, false, false);
-            
-            var oldImagePath = book.ImagePath;
-            
-            book.ImagePath = imagePath;
-            dbContext.Books.Update(book);
-            await dbContext.SaveChangesAsync();
-            
-            if (!string.IsNullOrEmpty(oldImagePath))
-            {
-                await imageService.DeleteBookImageAsync(oldImagePath);
-            }
-            
-            await transaction.CommitAsync();
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        var book = await FindBook(id);
+        
+        book.ImagePath = imagePath;
+        dbContext.Books.Update(book);
+        await dbContext.SaveChangesAsync();
     }
 
-    public async Task UploadBookImageAsync(int id, IFormFile image)
+    public async Task RemoveBookImageAsync(int id)
     {
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        try
-        {
-            if (!imageService.IsValidImageFile(image))
-            {
-                throw new StatusCodeException(StatusCodes.Status400BadRequest, "Invalid image file");
-            }
-
-            var book = await FindBook(id, false, false, false, false, false, false);
-            var oldImagePath = book.ImagePath;
-            
-            var newImagePath = await imageService.SaveBookImageAsync(image, id);
-            
-            book.ImagePath = newImagePath;
-            dbContext.Books.Update(book);
-            await dbContext.SaveChangesAsync();
-            
-            if (!string.IsNullOrEmpty(oldImagePath))
-            {
-                await imageService.DeleteBookImageAsync(oldImagePath);
-            }
-            
-            await transaction.CommitAsync();
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
-    }
-
-    public async Task DeleteBookImageAsync(int id)
-    {
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        try
-        {
-            var book = await FindBook(id, false, false, false, false, false, false);
-            
-            if (!string.IsNullOrEmpty(book.ImagePath))
-            {
-                var imagePathToDelete = book.ImagePath;
-                
-                book.ImagePath = null;
-                dbContext.Books.Update(book);
-                await dbContext.SaveChangesAsync();
-                
-                await imageService.DeleteBookImageAsync(imagePathToDelete);
-            }
-            
-            await transaction.CommitAsync();
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        var book = await FindBook(id);
+        
+        book.ImagePath = null;
+        dbContext.Books.Update(book);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteBookAsync(int id)
     {
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        try
-        {
-            var book = await FindBook(id, false, false, false, false, false, false);
-
-            var imagePathToDelete = book.ImagePath;
-            
-            dbContext.Books.Remove(book);
-            await dbContext.SaveChangesAsync();
-            
-            if (!string.IsNullOrEmpty(imagePathToDelete))
-            {
-                await imageService.DeleteBookImageAsync(imagePathToDelete);
-            }
-
-            await transaction.CommitAsync();
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        var book = await FindBook(id);
+        
+        dbContext.Books.Remove(book);
+        await dbContext.SaveChangesAsync();
     }
 
     private IQueryable<Book> GetBaseQuery(
