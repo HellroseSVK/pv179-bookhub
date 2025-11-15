@@ -1,7 +1,6 @@
 ﻿using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Bogus;
-using Microsoft.AspNetCore.Identity;
 
 namespace DataAccessLayer
 {
@@ -95,7 +94,7 @@ namespace DataAccessLayer
                 .RuleFor(b => b.Title, f => GenerateBookTitle(f, bookTitleTemplates, adjectives, nouns, places, people))
                 .RuleFor(b => b.Description, f => GenerateBookDescription(f))
                 .RuleFor(b => b.Price, f => Math.Round(f.Random.Decimal(8.99m, 29.99m), 2))
-                .RuleFor(b => b.PublisherId, f => f.Random.Int(1, 10));
+                .RuleFor(b => b.PublisherId, f => f.Random.Int(1, PublisherCount));
 
             return faker.Generate(BookCount);
         }
@@ -205,8 +204,8 @@ namespace DataAccessLayer
                     new[] { 0.1f, 0.1f, 0.2f, 0.3f, 0.3f }
                 ))
                 .RuleFor(r => r.Body, (f, r) => GenerateReviewBody(f, r.Rating))
-                .RuleFor(r => r.BookId, f => f.Random.Int(1, 10))
-                .RuleFor(r => r.UserId, f => f.Random.Int(1, 8));
+                .RuleFor(r => r.BookId, f => f.Random.Int(1, BookCount))
+                .RuleFor(r => r.UserId, f => f.Random.Int(1, UserCount));
 
             return faker.Generate(ReviewCount);
         }
@@ -280,19 +279,43 @@ namespace DataAccessLayer
 
         private static List<User> PrepareUsers()
         {
-            var passwordHasher = new PasswordHasher<User>();
-
             var faker = new Faker<User>()
                 .UseSeed(666)
                 .RuleFor(u => u.Id, f => f.IndexFaker + 1)
-                .RuleFor(u => u.Email, f => f.Internet.Email())
+                .RuleFor(u => u.Email, f => GenerateEmail(f))
                 .RuleFor(u => u.IsAdmin, f => f.Random.Bool(0.2f)) // 20% admins
-                .FinishWith((f, u) =>
-                 {
-                     u.Password = passwordHasher.HashPassword(u, f.Internet.Password());
-                 });
+                .RuleFor(u => u.Password, f => GeneratePassword(f));
 
             return faker.Generate(UserCount);
+        }
+
+        private static string GeneratePassword(Faker faker)
+        {
+            var letters = faker.Random.String2(20, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            var digits = faker.Random.String2(5, "0123456789");
+
+            return letters + digits;
+        }
+
+        private static readonly string[] FirstNames =
+        {
+            "john", "jane", "michael", "sarah", "david",
+            "emily", "chris", "laura", "robert", "anna"
+        };
+
+        private static readonly string[] LastNames =
+        {
+            "smith", "johnson", "williams", "brown", "jones",
+            "garcia", "miller", "davis", "martinez", "lee"
+        };
+
+        private static string GenerateEmail(Faker faker)
+        {
+            var first = faker.Random.ArrayElement(FirstNames);
+            var last = faker.Random.ArrayElement(LastNames);
+            var domain = faker.Random.ArrayElement(["example.com", "test.com", "sample.org"]);
+
+            return $"{first}.{last}@{domain}";
         }
 
         private static List<WishlistItem> PrepareWishlistItems()
@@ -300,8 +323,8 @@ namespace DataAccessLayer
             var faker = new Faker<WishlistItem>()
                 .UseSeed(648651)
                 .RuleFor(w => w.Id, f => f.IndexFaker + 1)
-                .RuleFor(w => w.BookId, f => f.Random.Int(1, 25))
-                .RuleFor(w => w.UserId, f => f.Random.Int(1, 8));
+                .RuleFor(w => w.BookId, f => f.Random.Int(1, BookCount))
+                .RuleFor(w => w.UserId, f => f.Random.Int(1, UserCount));
 
             return faker.Generate(WishlistItemCount);
         }

@@ -15,7 +15,7 @@ namespace DataAccessLayer.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
 
             modelBuilder.Entity("DataAccessLayer.Entities.Author", b =>
                 {
@@ -151,7 +151,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A captivating tale of mystery and intrigue, set against the backdrop of war. Aut atque qui id deleniti nihil quo fuga tempora veniam id omnis non est.",
                             Price = 12.74m,
-                            PublisherId = 3,
+                            PublisherId = 2,
                             Title = "The Ancient Memory"
                         },
                         new
@@ -160,7 +160,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A captivating tale of family and tradition, set in a world of magic and wonder. Enim ipsa hic laborum eaque doloremque asperiores maiores.",
                             Price = 12.93m,
-                            PublisherId = 10,
+                            PublisherId = 6,
                             Title = "The Golden Marcus"
                         },
                         new
@@ -169,7 +169,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A breathtaking story of family and tradition, unfolding in the shadows of ancient cities. In debitis sed sed eos perferendis cumque blanditiis a culpa iusto hic et distinctio.",
                             Price = 22.59m,
-                            PublisherId = 3,
+                            PublisherId = 2,
                             Title = "Theodore's Memory"
                         },
                         new
@@ -178,7 +178,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An unforgettable story following adventure and danger, set against the backdrop of war. Consequatur eaque velit et ea autem iste debitis alias dolores non minus molestias consequatur.",
                             Price = 21.52m,
-                            PublisherId = 4,
+                            PublisherId = 3,
                             Title = "Beyond the Journey"
                         },
                         new
@@ -187,7 +187,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A masterful exploration of hope and redemption, in a time of great change. Sed ipsa pariatur a sunt delectus sunt adipisci soluta voluptas reiciendis.",
                             Price = 19.48m,
-                            PublisherId = 6,
+                            PublisherId = 4,
                             Title = "Soul in Dublin"
                         },
                         new
@@ -196,7 +196,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An epic journey through power and corruption, in a realm where nothing is as it seems. Architecto esse at soluta sunt vel officia necessitatibus explicabo.",
                             Price = 19.42m,
-                            PublisherId = 6,
+                            PublisherId = 4,
                             Title = "Quest in London"
                         },
                         new
@@ -214,7 +214,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A masterful exploration of loss and discovery, where legends come to life. Atque hic aspernatur ea aperiam quia voluptatem modi quidem.",
                             Price = 15.60m,
-                            PublisherId = 10,
+                            PublisherId = 6,
                             Title = "Secrets of the Eternal Kingdom"
                         },
                         new
@@ -223,7 +223,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A captivating tale of adventure and danger, where legends come to life. Aperiam quia suscipit nihil ratione repellendus enim vel ut dolores velit non eaque magnam dolores.",
                             Price = 27.66m,
-                            PublisherId = 10,
+                            PublisherId = 6,
                             Title = "Adrienne's Tale"
                         },
                         new
@@ -232,7 +232,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A masterful exploration of family and tradition, set in a world of magic and wonder. Quis harum explicabo dolore corporis tenetur necessitatibus quibusdam velit ea laborum cum non.",
                             Price = 14.18m,
-                            PublisherId = 10,
+                            PublisherId = 6,
                             Title = "Dark Myth"
                         },
                         new
@@ -241,7 +241,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A haunting story about friendship and loyalty, in a time of great change. Cumque ut dolorem voluptatem magnam velit eum odio.",
                             Price = 16.42m,
-                            PublisherId = 5,
+                            PublisherId = 3,
                             Title = "Alexander's Mind"
                         },
                         new
@@ -250,7 +250,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A beautiful narrative exploring love and betrayal, taking place across vast kingdoms. Omnis ad voluptatem voluptates nisi temporibus ea voluptatem.",
                             Price = 13.90m,
-                            PublisherId = 10,
+                            PublisherId = 6,
                             Title = "The Golden Isabella"
                         },
                         new
@@ -259,7 +259,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A gripping saga of friendship and loyalty, where legends come to life. Unde repellat aut quia quia temporibus fugiat ut dolorum reprehenderit tempore dignissimos ut ab.",
                             Price = 15.10m,
-                            PublisherId = 9,
+                            PublisherId = 6,
                             Title = "The Eternal Journey"
                         },
                         new
@@ -268,7 +268,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A compelling tale that love and betrayal, unfolding in the shadows of ancient cities. Exercitationem doloribus eum nam placeat maxime dolores tempore ipsum eligendi illo.",
                             Price = 25.80m,
-                            PublisherId = 2,
+                            PublisherId = 1,
                             Title = "The Last Journey"
                         },
                         new
@@ -277,7 +277,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A masterful exploration of hope and redemption, spanning generations of conflict. Vel id vitae quia odit enim delectus quidem.",
                             Price = 23.76m,
-                            PublisherId = 10,
+                            PublisherId = 6,
                             Title = "Secrets of the Hidden Mind"
                         },
                         new
@@ -295,7 +295,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An unforgettable story following hope and redemption, in a time of great change. Modi nihil provident doloribus aut aut quis repudiandae quia inventore et sint fugit.",
                             Price = 17.04m,
-                            PublisherId = 8,
+                            PublisherId = 5,
                             Title = "The Quest of Rome"
                         },
                         new
@@ -304,7 +304,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An unforgettable story following friendship and loyalty, in a time of great change. Facilis distinctio ut quo dolorem amet aut sit et consequatur tenetur et ut quis dolores.",
                             Price = 11.32m,
-                            PublisherId = 4,
+                            PublisherId = 3,
                             Title = "The Mind of Copenhagen"
                         },
                         new
@@ -313,7 +313,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An epic journey through mystery and intrigue, unfolding in the shadows of ancient cities. Officia qui qui dolore aperiam saepe ab id nisi odio quod provident dicta dolores magnam.",
                             Price = 27.92m,
-                            PublisherId = 7,
+                            PublisherId = 5,
                             Title = "Secret in Edinburgh"
                         },
                         new
@@ -322,7 +322,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A thrilling adventure featuring family and tradition, set in a world of magic and wonder. Porro ea eos et corrupti accusantium qui repudiandae.",
                             Price = 21.55m,
-                            PublisherId = 7,
+                            PublisherId = 4,
                             Title = "Eternal Myth"
                         },
                         new
@@ -331,7 +331,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An unforgettable story following love and betrayal, in a time of great change. Voluptas et deleniti alias rerum rem quasi omnis qui necessitatibus.",
                             Price = 28.72m,
-                            PublisherId = 8,
+                            PublisherId = 5,
                             Title = "The Bright Alexander"
                         },
                         new
@@ -340,7 +340,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A beautiful narrative exploring family and tradition, across mysterious landscapes. Aut quia sed officia totam tempore dolores quis optio consequatur dolorum cum sint.",
                             Price = 12.40m,
-                            PublisherId = 6,
+                            PublisherId = 4,
                             Title = "Beyond the Journey"
                         },
                         new
@@ -349,7 +349,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A haunting story about friendship and loyalty, set in a world of magic and wonder. Necessitatibus id facere sapiente aut consequatur adipisci amet id expedita eaque voluptas rerum.",
                             Price = 17.61m,
-                            PublisherId = 5,
+                            PublisherId = 3,
                             Title = "The Secret of London"
                         },
                         new
@@ -358,7 +358,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A thrilling adventure featuring love and betrayal, unfolding in the shadows of ancient cities. Corrupti rerum dolore non vel sed laudantium rem.",
                             Price = 12.12m,
-                            PublisherId = 9,
+                            PublisherId = 6,
                             Title = "Tales of Shadowed Soul"
                         },
                         new
@@ -367,7 +367,7 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A thrilling adventure featuring courage and sacrifice, in a realm where nothing is as it seems. Eos consequuntur adipisci quis doloribus fugiat incidunt atque nulla et et laboriosam autem omnis tempore.",
                             Price = 18.94m,
-                            PublisherId = 10,
+                            PublisherId = 6,
                             Title = "Beyond the Quest"
                         });
                 });
@@ -1007,7 +1007,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 1,
                             Body = "Very disappointing read. Too many clichés and not enough originality. Would not recommend.",
-                            BookId = 6,
+                            BookId = 13,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 1,
                             UserId = 7
@@ -1016,7 +1016,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 2,
                             Body = "The characters felt real and well-developed. ENGAGING book that I would definitely recommend.",
-                            BookId = 3,
+                            BookId = 7,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 5,
                             UserId = 5
@@ -1034,7 +1034,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 4,
                             Body = "The characters felt real and well-developed. MASTERFUL book that I would definitely recommend.",
-                            BookId = 9,
+                            BookId = 22,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 5,
                             UserId = 3
@@ -1043,7 +1043,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 5,
                             Body = "Unfortunately slow. The plot was too predictable for my taste. Had some potential but didn't deliver.",
-                            BookId = 8,
+                            BookId = 18,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 2,
                             UserId = 5
@@ -1052,7 +1052,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 6,
                             Body = "Really engaging book. The emotional depth really resonated with me. Just a few minor issues kept it from being perfect.",
-                            BookId = 4,
+                            BookId = 10,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 4,
                             UserId = 2
@@ -1061,7 +1061,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 7,
                             Body = "Really brilliant book. Beautiful writing style that flows perfectly. Just a few minor issues kept it from being perfect.",
-                            BookId = 5,
+                            BookId = 13,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 4,
                             UserId = 3
@@ -1070,7 +1070,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 8,
                             Body = "I couldn't put this book down! EXCELLENT book that I would definitely recommend.",
-                            BookId = 5,
+                            BookId = 12,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 5,
                             UserId = 4
@@ -1079,7 +1079,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 9,
                             Body = "Beautiful writing style that flows perfectly. BRILLIANT book that I would definitely recommend.",
-                            BookId = 3,
+                            BookId = 8,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 5,
                             UserId = 6
@@ -1088,7 +1088,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 10,
                             Body = "It was fine, but didn't leave a lasting impression. ADEQUATE overall.",
-                            BookId = 2,
+                            BookId = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 3,
                             UserId = 7
@@ -1097,7 +1097,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 11,
                             Body = "Really captivating book. Beautiful writing style that flows perfectly. Just a few minor issues kept it from being perfect.",
-                            BookId = 5,
+                            BookId = 13,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 4,
                             UserId = 1
@@ -1106,7 +1106,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 12,
                             Body = "Really engaging book. I couldn't put this book down! Just a few minor issues kept it from being perfect.",
-                            BookId = 10,
+                            BookId = 24,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 4,
                             UserId = 2
@@ -1124,7 +1124,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 14,
                             Body = "Very frustrating read. Too many clichés and not enough originality. Would not recommend.",
-                            BookId = 8,
+                            BookId = 20,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 1,
                             UserId = 3
@@ -1133,7 +1133,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 15,
                             Body = "This book exceeded all my expectations. EXCELLENT book that I would definitely recommend.",
-                            BookId = 4,
+                            BookId = 10,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 5,
                             UserId = 6
@@ -1142,7 +1142,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 16,
                             Body = "Really brilliant book. I couldn't put this book down! Just a few minor issues kept it from being perfect.",
-                            BookId = 1,
+                            BookId = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 4,
                             UserId = 3
@@ -1151,7 +1151,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 17,
                             Body = "Good enough to finish but wouldn't recommend highly. FINE overall.",
-                            BookId = 6,
+                            BookId = 14,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 3,
                             UserId = 5
@@ -1160,7 +1160,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 18,
                             Body = "Very weak read. I struggled to get through this one. Would not recommend.",
-                            BookId = 5,
+                            BookId = 12,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 1,
                             UserId = 6
@@ -1169,7 +1169,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 19,
                             Body = "Very tedious read. I lost interest halfway through. Would not recommend.",
-                            BookId = 3,
+                            BookId = 7,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 1,
                             UserId = 4
@@ -1178,7 +1178,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 20,
                             Body = "A solid story, though not groundbreaking. AVERAGE overall.",
-                            BookId = 5,
+                            BookId = 12,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 3,
                             UserId = 5
@@ -1216,65 +1216,65 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "james.miller92@gmail.com",
+                            Email = "chris.williams@example.com",
                             IsAdmin = false,
-                            Password = "pbkdf2_sha256$100000$2133ad0a4d31462ef5766ff6b03c7987$f919d3c6f899fe09d8f3158618e63988a1d09daea26e0aeed5219768f1e2d199"
+                            Password = "UDqDtSXwyXiXQVKkqmCK98535"
                         },
                         new
                         {
                             Id = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "sarah.lee@outlook.com",
-                            IsAdmin = false,
-                            Password = "pbkdf2_sha256$100000$0acfd8d2ff40624052f26f2fb3495254$93857a9a6b61f8f9098e639f645f7143d92006ce925fc50e7af534567cafe07f"
+                            Email = "david.smith@sample.org",
+                            IsAdmin = true,
+                            Password = "JkGKnufPMiHcpWUkmOUH15465"
                         },
                         new
                         {
                             Id = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "marco.rossi89@yahoo.com",
+                            Email = "laura.smith@example.com",
                             IsAdmin = false,
-                            Password = "pbkdf2_sha256$100000$6190de7b0dda9c8235e0e55455d43f2b$f33f0dfb4085e26e30dd79b9c9959a0a01a033155b4cfe8b9e8b9baa9670b8c3"
+                            Password = "dVPdqPNBnDAEuDdVHIYH12612"
                         },
                         new
                         {
                             Id = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "emily_watson@icloud.com",
+                            Email = "anna.johnson@sample.org",
                             IsAdmin = false,
-                            Password = "pbkdf2_sha256$100000$84beb8171db67abbd93e38551e232120$d47e1668e7ced2fa8462c530ea3f8081e118c4eeb69ba9f7d640c2f6e860fae7"
+                            Password = "fBueQJmRYZhgJZltcNZr79003"
                         },
                         new
                         {
                             Id = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "david.nguyen@protonmail.com",
+                            Email = "robert.martinez@example.com",
                             IsAdmin = false,
-                            Password = "pbkdf2_sha256$100000$6a9df2a924d667a1bd472317344c8f26$45a2a5bc1f82bb6a1c61c33e434fd1b0c0e66cadb6b1bb4d4bffa89bd2687a3b"
+                            Password = "RtHZEhcgAETRdJJQBynw81114"
                         },
                         new
                         {
                             Id = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "lucas-johnson@live.com",
+                            Email = "jane.johnson@test.com",
                             IsAdmin = false,
-                            Password = "pbkdf2_sha256$100000$f67ad2c96b570f5e8c7def3da9f9cc7b$75b5631e544d43972e646d51ab14479771044310b42d0901cb4e2a067192e4fa"
+                            Password = "JZUZkhGzheSjmBjfAKou28358"
                         },
                         new
                         {
                             Id = 7,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "maria.garcia23@bookhub.com",
-                            IsAdmin = true,
-                            Password = "pbkdf2_sha256$100000$6973359e189c00dff9c42cc516cca724$17ae99a40f51d065b02ad1ded4959166e67499c1c6f1fe7a1dea1036b3530dd6"
+                            Email = "robert.miller@example.com",
+                            IsAdmin = false,
+                            Password = "CwYEPREZRSBdrtuunDIZ09480"
                         },
                         new
                         {
                             Id = 8,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "andrew.smith@bookhub.com",
-                            IsAdmin = true,
-                            Password = "pbkdf2_sha256$100000$463d7f87b63f4843bd6b899bced0acdd$cb8c5551c30f874fb846de9c7cb56595e12baa83c346ad6950504c500519c002"
+                            Email = "jane.martinez@test.com",
+                            IsAdmin = false,
+                            Password = "juAwZEHUExKFgJRMqTzZ15292"
                         });
                 });
 
@@ -1307,70 +1307,140 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 1,
-                            BookId = 7,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 3
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BookId = 6,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 3
-                        },
-                        new
-                        {
-                            Id = 3,
-                            BookId = 5,
+                            BookId = 11,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 1
                         },
                         new
                         {
+                            Id = 2,
+                            BookId = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BookId = 23,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 2
+                        },
+                        new
+                        {
                             Id = 4,
-                            BookId = 4,
+                            BookId = 9,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 5
                         },
                         new
                         {
                             Id = 5,
-                            BookId = 3,
+                            BookId = 24,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 4
+                            UserId = 1
                         },
                         new
                         {
                             Id = 6,
-                            BookId = 2,
+                            BookId = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BookId = 12,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BookId = 11,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BookId = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BookId = 23,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 11,
+                            BookId = 11,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 12,
+                            BookId = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 13,
+                            BookId = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 7
                         },
                         new
                         {
-                            Id = 7,
-                            BookId = 7,
+                            Id = 14,
+                            BookId = 9,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 8
+                            UserId = 1
                         },
                         new
                         {
-                            Id = 8,
-                            BookId = 6,
+                            Id = 15,
+                            BookId = 10,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 8
+                            UserId = 4
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 16,
+                            BookId = 18,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 17,
+                            BookId = 11,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 18,
+                            BookId = 18,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 19,
+                            BookId = 16,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 20,
                             BookId = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 8
-                        },
-                        new
-                        {
-                            Id = 10,
-                            BookId = 1,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 8
                         });
