@@ -2,8 +2,12 @@ using DataAccessLayer;
 using Microsoft.OpenApi.Models;
 using WebAPI.Middlewares;
 using BusinessLayer.Services;
+using BusinessLayer.Facades;
 using BusinessLayer.Mapper;
 using BusinessLayer.Services.Interfaces;
+using BusinessLayer.Facades.Interfaces;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,12 +52,23 @@ builder.Services.AddDbContext<CustomDBContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookFacade, BookFacade>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IImageService, ImageService>();
+
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
+});
+
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -61,6 +76,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "wwwroot")),
+    RequestPath = ""
+});
 
 app.UseMiddleware<TokenAuthenticationMiddleware>();
 
