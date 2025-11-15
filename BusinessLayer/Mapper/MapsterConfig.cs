@@ -15,11 +15,6 @@ namespace BusinessLayer.Mapper
         // Custom mapping belongs here
         public static void RegisterMapsterConfiguration(this IServiceCollection services)
         {
-            // User mappings
-            TypeAdapterConfig<UserSimplifiedPartialDTO, UserSimplifiedDTO>
-                .NewConfig()
-                .IgnoreNullValues(true);
-
             // Author mappings
             TypeAdapterConfig<Author, AuthorDTO>
                 .NewConfig()

@@ -16,13 +16,12 @@ namespace BusinessLayer.Services
             var book = await FindBook(wishlistItemDto.BookId);
             var user = await FindUser(wishlistItemDto.UserId);
 
-            var wishlistItem = new WishlistItem
-            {
-                // BookId = book.Id,
-                Book = book,
-                // UserId = user.Id,
-                User = user,
-            };
+            var wishlistItem = wishlistItemDto.Adapt<WishlistItem>();
+            wishlistItem.BookId = book.Id;
+            wishlistItem.Book = book;
+            wishlistItem.UserId = user.Id;
+            wishlistItem.User = user;
+
 
             var created = dbContext.WishlistItems.Add(wishlistItem);
             await dbContext.SaveChangesAsync();
