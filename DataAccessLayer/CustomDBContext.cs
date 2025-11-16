@@ -5,6 +5,7 @@ namespace DataAccessLayer
 {
     public class CustomDBContext : DbContext
     {
+        public DbSet<HttpLog> HttpLogs { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
@@ -31,9 +32,15 @@ namespace DataAccessLayer
             // Setup DB creation of timestamps
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
-                modelBuilder.Entity(entityType.ClrType)
-                    .Property(nameof(BaseEntity.CreatedAt))
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                var clrType = entityType.ClrType;
+                var prop = clrType.GetProperty(nameof(BaseEntity.CreatedAt));
+
+                if (prop != null) // only configure if the property exists
+                {
+                    modelBuilder.Entity(clrType)
+                        .Property(nameof(BaseEntity.CreatedAt))
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                }
             }
 
             // one-to-many relationships
