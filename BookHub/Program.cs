@@ -1,9 +1,10 @@
+using BusinessLayer.Mapper;
+using BusinessLayer.Services;
 using DataAccessLayer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using WebAPI.Middlewares;
-using BusinessLayer.Services;
 using BusinessLayer.Facades;
-using BusinessLayer.Mapper;
 using BusinessLayer.Services.Interfaces;
 using BusinessLayer.Facades.Interfaces;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -42,12 +43,31 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            []
         }
     });
 });
 
-builder.Services.AddDbContext<CustomDBContext>();
+var envName = builder.Environment.EnvironmentName;
+
+Console.WriteLine($"Env Name: {envName}");
+
+IConfigurationRoot configuration = new ConfigurationBuilder()
+    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+    .AddJsonFile("appsettings.json")
+    .AddJsonFile($"appsettings.{envName}.json", optional: true, reloadOnChange: true)
+    .Build();
+
+var sqliteConnectionString = configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContextFactory<CustomDBContext>(options =>
+{
+    options
+        .UseSqlite(sqliteConnectionString)
+        .LogTo(a => Console.WriteLine(a))
+        .EnableSensitiveDataLogging()
+        ;
+});
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
@@ -71,7 +91,15 @@ builder.Services.Configure<KestrelServerOptions>(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (envName != "Local")
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<CustomDBContext>();
+    db.Database.Migrate();
+}
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment() || envName == "Local")
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -79,10 +107,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+var wwwRootPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
+
+if (!Directory.Exists(wwwRootPath))
+{
+    Directory.CreateDirectory(wwwRootPath);
+    Console.WriteLine($"Created missing static files folder at: {wwwRootPath}");
+}
+
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "wwwroot")),
+    FileProvider = new PhysicalFileProvider(wwwRootPath),
     RequestPath = ""
 });
 
