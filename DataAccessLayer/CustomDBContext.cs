@@ -16,8 +16,15 @@ namespace DataAccessLayer
         public DbSet<BookAuthor> BookAuthors { get; set; }
         public DbSet<BookGenre> BookGenres { get; set; }
 
+        public CustomDBContext(DbContextOptions<CustomDBContext> options) : base(options) { }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (optionsBuilder.IsConfigured)
+            {
+                return;
+            }
+
             var folder = Environment.SpecialFolder.LocalApplicationData;
             var dbPath = Path.Join(Environment.GetFolderPath(folder), "BookHub.db");
 
