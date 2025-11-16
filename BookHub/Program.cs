@@ -4,7 +4,11 @@ using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using WebAPI.Middlewares;
+using BusinessLayer.Facades;
 using BusinessLayer.Services.Interfaces;
+using BusinessLayer.Facades.Interfaces;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +43,7 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "Bearer"
                 }
             },
-            new string[] { }
+            []
         }
     });
 });
@@ -67,7 +71,24 @@ builder.Services.AddDbContextFactory<CustomDBContext>(options =>
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookFacade, BookFacade>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IPublisherService, PublisherService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
+
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
+});
+
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
+});
 
 var app = builder.Build();
 
@@ -87,9 +108,25 @@ if (app.Environment.IsDevelopment() || envName == "Local")
 
 app.UseHttpsRedirection();
 
+var wwwRootPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
+
+if (!Directory.Exists(wwwRootPath))
+{
+    Directory.CreateDirectory(wwwRootPath);
+    Console.WriteLine($"Created missing static files folder at: {wwwRootPath}");
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(wwwRootPath),
+    RequestPath = ""
+});
+
 app.UseMiddleware<TokenAuthenticationMiddleware>();
 
 app.UseAuthorization();
+
+app.UseMiddleware<JsonToXmlMiddleware>();
 
 app.MapControllers();
 

@@ -1,6 +1,5 @@
 using BusinessLayer.DTOs.Genre;
 using BusinessLayer.Services.Interfaces;
-using DataAccessLayer;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Exception;
@@ -46,7 +45,7 @@ public class GenreController(IGenreService genreService) : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var genre = await genreService.CreateGenreAsync(model.Adapt<GenreCreateDTO>());
+        var genre = await genreService.CreateGenreAsync(model.Adapt<GenreUpsertDTO>());
 
         return Created($"/Genre/{genre.Id}", genre.Adapt<GenreResponse>());
     }
@@ -80,7 +79,7 @@ public class GenreController(IGenreService genreService) : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await genreService.UpdateGenreAsync(id, model.Adapt<GenreUpdateDTO>());
+        await genreService.UpdateGenreAsync(id, model.Adapt<GenreUpsertDTO>());
 
         return NoContent();
     }

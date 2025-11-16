@@ -1,9 +1,6 @@
-﻿using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Author;
-using BusinessLayer.DTOs.Book;
 using BusinessLayer.DTOs.Genre;
 using BusinessLayer.DTOs.User;
-using BusinessLayer.DTOs.WishlistItem;
 using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,17 +16,22 @@ namespace BusinessLayer.Mapper
             TypeAdapterConfig<Author, AuthorDTO>
                 .NewConfig()
                 .Map(dest => dest.Books, src => src.BookAuthors.Select(ba => ba.Book));
-            TypeAdapterConfig<AuthorCreateDTO, Author>
-                .NewConfig()
-                .Map(dest => dest.BookAuthors, src => src.BookIds.Select(id => new BookAuthor { BookId = id }));
 
             // Genre mappings
             TypeAdapterConfig<Genre, GenreDTO>
                 .NewConfig()
                 .Map(dest => dest.Books, src => src.BookGenres.Select(bg => bg.Book));
-            TypeAdapterConfig<GenreCreateDTO, Genre>
+
+            // Book mappings
+            TypeAdapterConfig<Book, BookDTO>
                 .NewConfig()
-                .Map(dest => dest.BookGenres, src => src.BookIds.Select(id => new BookGenre { BookId = id }));
+                .Map(dest => dest.Authors, src => src.BookAuthors.Select(ba => ba.Author))
+                .Map(dest => dest.Genres, src => src.BookGenres.Select(bg => bg.Genre))
+                .Map(dest => dest.ImageUrl, src => !string.IsNullOrEmpty(src.ImagePath) ? $"/images/books/{src.ImagePath}" : null);
+
+            TypeAdapterConfig<Book, BookSimplifiedDTO>
+                .NewConfig()
+                .Map(dest => dest.ImageUrl, src => !string.IsNullOrEmpty(src.ImagePath) ? $"/images/books/{src.ImagePath}" : null);
         }
     }
 }

@@ -10,6 +10,8 @@ namespace DataAccessLayer.Entities
 
         public decimal Price { get; set; }
 
+        public string? ImagePath { get; set; }
+
         public List<BookAuthor> BookAuthors { get; set; } = [];
 
         public List<BookGenre> BookGenres { get; set; } = [];

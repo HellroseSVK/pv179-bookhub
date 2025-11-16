@@ -11,8 +11,9 @@ public record BookResponse(
     string Title,
     string Description,
     decimal Price,
+    string? ImageUrl,
     List<AuthorSimplifiedResponse> Authors,
     List<GenreSimplifiedResponse> Genres,
     List<ReviewSimplifiedResponse> Reviews,
     PublisherSimplifiedResponse Publisher
-) : BookSimplifiedResponse(Id, CreatedAt, Title, Description, Price);
+) : BookSimplifiedResponse(Id, CreatedAt, Title, Description, Price, ImageUrl);

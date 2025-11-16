@@ -47,7 +47,7 @@ public class WishlistItemController(IWishlistItemService wishlistService) : Cont
         }
 
         var result = await wishlistService.CreateWishlistItemAsync(model.Adapt<WishlistItemUpsertDTO>());
-       
+
         return Created($"/WishlistItem/{result.Id}", result.Adapt<WishlistItemResponse>());
     }
 
@@ -64,7 +64,7 @@ public class WishlistItemController(IWishlistItemService wishlistService) : Cont
         }
 
         await wishlistService.PatchWishlistItemAsync(id, model.Adapt<WishlistItemPartialDTO>());
-        
+
         return NoContent();
     }
 
@@ -81,7 +81,7 @@ public class WishlistItemController(IWishlistItemService wishlistService) : Cont
         }
 
         await wishlistService.UpdateWishlistItemAsync(id, model.Adapt<WishlistItemUpsertDTO>());
-       
+
         return NoContent();
     }
 

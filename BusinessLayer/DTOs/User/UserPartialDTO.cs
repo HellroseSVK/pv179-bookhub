@@ -1,6 +1,6 @@
 ﻿namespace BusinessLayer.DTOs.User
 {
-    public class UserSimplifiedPartialDTO
+    public class UserPartialDTO
     {
         public string? Email { get; set; }
 
