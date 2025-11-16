@@ -4,22 +4,22 @@ namespace BusinessLayer.Services.Interfaces
 {
     public interface IUserService
     {
-        public Task<UserSimplifiedDTO> CreateUserAsync(UserSimplifiedDTO user);
+        public Task<UserDTO> CreateUserAsync(UserUpsertDTO userDto);
 
-        public Task<List<UserSimplifiedDTO>> GetUsersAsync(
+        public Task<List<UserDTO>> GetUsersAsync(
             int[]? ids = null,
             bool includeReviews = true,
             bool includeWishlistItems = true,
             bool includeOrderItems = true);
 
-        public Task<UserSimplifiedDTO> GetUserAsync(
+        public Task<UserDTO> GetUserAsync(
             int id,
             bool includeReviews = true,
             bool includeWishlistItems = true,
             bool includeOrderItems = true);
 
-        public Task PatchUserAsync(int id, UserSimplifiedPartialDTO user);
-        public Task UpdateUserAsync(int id, UserSimplifiedDTO user);
+        public Task PatchUserAsync(int id, UserPartialDTO userDto);
+        public Task UpdateUserAsync(int id, UserUpsertDTO userDto);
         public Task DeleteUserAsync(int id);
     }
 }

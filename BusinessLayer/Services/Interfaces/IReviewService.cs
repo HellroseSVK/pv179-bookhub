@@ -4,7 +4,7 @@ namespace BusinessLayer.Services.Interfaces;
 
 public interface IReviewService
 {
-    Task<ReviewDTO> CreateReviewAsync(ReviewUpsertDTO review);
+    Task<ReviewDTO> CreateReviewAsync(ReviewUpsertDTO reviewDto);
     Task<List<ReviewDTO>> GetReviewsAsync(
         int[]? ids = null,
         bool includeBook = true,
@@ -13,7 +13,7 @@ public interface IReviewService
         int id,
         bool includeBook = true,
         bool includeUser = true);
-    Task PatchReviewAsync(int id, ReviewPartialDTO review);
-    Task UpdateReviewAsync(int id, ReviewUpsertDTO review);
+    Task PatchReviewAsync(int id, ReviewPartialDTO reviewDto);
+    Task UpdateReviewAsync(int id, ReviewUpsertDTO reviewDto);
     Task DeleteReviewAsync(int id);
 }

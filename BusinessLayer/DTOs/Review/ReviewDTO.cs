@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using BusinessLayer.DTOs.Book;
+﻿using BusinessLayer.DTOs.Book;
 using BusinessLayer.DTOs.User;
 
 namespace BusinessLayer.DTOs.Review;

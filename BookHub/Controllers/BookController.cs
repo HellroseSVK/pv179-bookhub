@@ -1,6 +1,5 @@
 using BusinessLayer.DTOs.Book;
-using BusinessLayer.Services.Interfaces;
-using DataAccessLayer;
+using BusinessLayer.Facades.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Exception;
@@ -9,29 +8,16 @@ using WebAPI.Models.Book;
 
 namespace WebAPI.Controllers
 {
-    public class BookFilter
-    {
-        public string? Title { get; set; }
-        public string? Description { get; set; }
-        public decimal? PriceMin { get; set; }
-        public decimal? PriceMax { get; set; }
-
-        public decimal? RatingMin { get; set; }
-        public List<int>? AuthorIds { get; set; }
-        public List<int>? GenreIds { get; set; }
-        public List<int>? PublisherIds { get; set; }
-    }
-
     [ApiController]
     [Route("[controller]")]
-    public class BookController(IBookService bookService) : ControllerBase
+    public class BookController(IBookFacade bookFacade) : ControllerBase
     {
         [HttpGet("filter")]
         [ProducesResponseType<List<BookResponse>>(StatusCodes.Status200OK)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> FilterBooks([FromQuery] BookFilter filter)
         {
-            var books = await bookService.FilterBooksAsync(filter.Adapt<BookFilterDTO>());
+            var books = await bookFacade.FilterBooksAsync(filter.Adapt<BookFilterDTO>());
             return Ok(books.Adapt<List<BookResponse>>());
         }
 
@@ -41,23 +27,23 @@ namespace WebAPI.Controllers
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetBook(int id)
         {
-            var book = await bookService.GetBookAsync(id);
+            var book = await bookFacade.GetBookAsync(id);
             return Ok(book.Adapt<BookResponse>());
         }
 
         [HttpPost]
         [ProducesResponseType<BookResponse>(StatusCodes.Status201Created)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> CreateBook([FromBody] BookModel model)
+        public async Task<IActionResult> CreateBook([FromForm] BookWithImageModel model)
         {
             if (!ModelState.IsValid)
             {
                 throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
             }
 
-            var result = await bookService.CreateBookAsync(model.Adapt<BookUpsertDTO>());
+            var bookDto = model.Adapt<BookUpsertDTO>();
+            var result = await bookFacade.CreateBookWithImageAsync(bookDto, model.Image);
 
             return Created($"/Book/{result.Id}", result.Adapt<BookResponse>());
         }
@@ -74,7 +60,7 @@ namespace WebAPI.Controllers
                 throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
             }
 
-            await bookService.PatchBookAsync(id, model.Adapt<BookPartialDTO>());
+            await bookFacade.PatchBookAsync(id, model.Adapt<BookPartialDTO>());
             return NoContent();
         }
 
@@ -90,7 +76,7 @@ namespace WebAPI.Controllers
                 throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
             }
 
-            await bookService.UpdateBookAsync(id, model.Adapt<BookUpsertDTO>());
+            await bookFacade.UpdateBookAsync(id, model.Adapt<BookUpsertDTO>());
             return NoContent();
         }
 
@@ -101,7 +87,28 @@ namespace WebAPI.Controllers
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            await bookService.DeleteBookAsync(id);
+            await bookFacade.DeleteBookAsync(id);
+            return NoContent();
+        }
+
+        [HttpPost("{id}/image")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UploadBookImage(int id, IFormFile image)
+        {
+            await bookFacade.UploadBookImageAsync(id, image);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}/image")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+        [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> DeleteBookImage(int id)
+        {
+            await bookFacade.DeleteBookImageAsync(id);
             return NoContent();
         }
 

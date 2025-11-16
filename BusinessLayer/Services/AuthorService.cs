@@ -9,15 +9,18 @@ using Shared.Exception;
 
 namespace BusinessLayer.Services;
 
-public class AuthorService(CustomDBContext dBContext) : IAuthorService
+public class AuthorService(CustomDBContext dbContext) : IAuthorService
 {
-    public async Task<AuthorDTO> CreateAuthorAsync(AuthorCreateDTO authorDto)
+    public async Task<AuthorDTO> CreateAuthorAsync(AuthorUpsertDTO authorDto)
     {
-        await FindBooks(authorDto.BookIds);
+        var books = await FindBooks(authorDto.BookIds);
 
-        var created = dBContext.Authors.Add(authorDto.Adapt<Author>());
+        var author = authorDto.Adapt<Author>();
+        author.BookAuthors = books.Select(b => new BookAuthor { BookId = b.Id, Book = b, Author = author }).ToList();
 
-        await dBContext.SaveChangesAsync();
+        var created = dbContext.Authors.Add(author);
+
+        await dbContext.SaveChangesAsync();
 
         return created.Entity.Adapt<AuthorDTO>();
     }
@@ -57,12 +60,12 @@ public class AuthorService(CustomDBContext dBContext) : IAuthorService
             author.BookAuthors.AddRange(newBooks.Select(book => new BookAuthor { Book = book }));
         }
 
-        dBContext.Authors.Update(author);
+        dbContext.Authors.Update(author);
 
-        await dBContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateAuthorAsync(int id, AuthorUpdateDTO authorDto)
+    public async Task UpdateAuthorAsync(int id, AuthorUpsertDTO authorDto)
     {
         var author = await FindAuthor(id, true);
 
@@ -77,18 +80,18 @@ public class AuthorService(CustomDBContext dBContext) : IAuthorService
         var newBooks = books.Except(assignedBooks);
         author.BookAuthors.AddRange(newBooks.Select(book => new BookAuthor { Book = book }));
 
-        dBContext.Authors.Update(author);
+        dbContext.Authors.Update(author);
 
-        await dBContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteAuthorAsync(int id)
     {
         var author = await FindAuthor(id);
 
-        dBContext.Authors.Remove(author);
+        dbContext.Authors.Remove(author);
 
-        await dBContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
     }
 
     private async Task<Author> FindAuthor(int authorId, bool includeBookAuthors = false)
@@ -103,7 +106,7 @@ public class AuthorService(CustomDBContext dBContext) : IAuthorService
 
     private IQueryable<Author> GetBaseQuery(bool includeBookAuthors)
     {
-        IQueryable<Author> userQuery = dBContext.Authors;
+        IQueryable<Author> userQuery = dbContext.Authors;
 
         if (includeBookAuthors)
         {
@@ -117,7 +120,7 @@ public class AuthorService(CustomDBContext dBContext) : IAuthorService
 
     private async Task<List<Book>> FindBooks(List<int> bookIds)
     {
-        var books = await dBContext.Books
+        var books = await dbContext.Books
             .Where(book => bookIds.Contains(book.Id))
             .ToListAsync();
 

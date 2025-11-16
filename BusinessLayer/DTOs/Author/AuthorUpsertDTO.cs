@@ -1,6 +1,6 @@
 namespace BusinessLayer.DTOs.Author;
 
-public class AuthorUpdateDTO : BaseDTO
+public class AuthorUpsertDTO
 {
     public required string Name { get; set; }
     public required string Surname { get; set; }
