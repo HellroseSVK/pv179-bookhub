@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using BusinessLayer.Mapper;
+using Microsoft.Extensions.DependencyInjection;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using BusinessLayer.Services.Interfaces;
@@ -29,8 +30,11 @@ namespace TestUtilities.MockedObjects
 
         public MockedDependencyInjectionBuilder AddServices()
         {
+            _serviceCollection.RegisterMapsterConfiguration();
+
             _serviceCollection = _serviceCollection
-                .AddScoped<IAuthorService, AuthorService>();
+                .AddScoped<IAuthorService, AuthorService>()
+                .AddScoped<IBookService, BookService>();
 
             return this;
         }
