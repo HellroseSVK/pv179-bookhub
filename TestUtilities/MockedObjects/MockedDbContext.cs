@@ -37,5 +37,19 @@ namespace TestUtilities.MockedObjects
 
             dbContext.SaveChanges();
         }
+
+        private static void PrepareDataAsync(CustomDBContext dbContext)
+        {
+            dbContext.Authors.AddRange(TestDataHelper.GetAuthors());
+            dbContext.Publishers.AddRange(TestDataHelper.GetPublishers());
+            dbContext.Genres.AddRange(TestDataHelper.GetGenres());
+            dbContext.Books.AddRange(TestDataHelper.GetBooks());
+            dbContext.Users.AddRange(TestDataHelper.GetUsers());
+            dbContext.Reviews.AddRange(TestDataHelper.GetReviews());
+            dbContext.WishlistItems.AddRange(TestDataHelper.GetWishlistItems());
+            dbContext.OrderItems.AddRange(TestDataHelper.GetOrderItems());
+
+            dbContext.SaveChangesAsync();
+        }
     }
 }

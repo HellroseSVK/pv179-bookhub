@@ -64,10 +64,10 @@ builder.Services.AddDbContextFactory<CustomDBContext>(options =>
 {
     options
         .UseSqlite(sqliteConnectionString)
-        .LogTo(a => Console.WriteLine(a))
-        .EnableSensitiveDataLogging()
-        ;
+        .LogTo(Console.WriteLine)
+        .EnableSensitiveDataLogging();
 });
+
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
@@ -92,15 +92,12 @@ builder.Services.Configure<KestrelServerOptions>(options =>
 
 var app = builder.Build();
 
-if (envName != "Local")
-{
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<CustomDBContext>();
-    db.Database.Migrate();
-}
+using var scope = app.Services.CreateScope();
+var db = scope.ServiceProvider.GetRequiredService<CustomDBContext>();
+db.Database.Migrate();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || envName == "Local")
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
