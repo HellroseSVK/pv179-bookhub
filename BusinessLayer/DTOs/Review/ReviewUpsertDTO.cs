@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BusinessLayer.DTOs.Review;
 
-public class ReviewUpsertDTO : BaseDTO
+public class ReviewUpsertDTO
 {
     [Range(1, 5)]
     public int Rating { get; set; }

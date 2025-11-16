@@ -4,7 +4,7 @@ namespace BusinessLayer.Services.Interfaces;
 
 public interface IOrderItemService
 {
-    Task<OrderItemDTO> CreateOrderItemAsync(OrderItemUpsertDTO orderItem);
+    Task<OrderItemDTO> CreateOrderItemAsync(OrderItemUpsertDTO orderItemDto);
     Task<List<OrderItemDTO>> GetOrderItemsAsync(
         int[]? ids = null,
         bool includeBook = true,
@@ -13,7 +13,7 @@ public interface IOrderItemService
         int id,
         bool includeBook = true,
         bool includeUser = true);
-    Task PatchOrderItemAsync(int id, OrderItemPartialDTO orderItem);
-    Task UpdateOrderItemAsync(int id, OrderItemUpsertDTO orderItem);
+    Task PatchOrderItemAsync(int id, OrderItemPartialDTO orderItemDto);
+    Task UpdateOrderItemAsync(int id, OrderItemUpsertDTO orderItemDto);
     Task DeleteOrderItemAsync(int id);
 }

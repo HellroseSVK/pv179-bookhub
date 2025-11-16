@@ -82,7 +82,7 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var author = await authorService.CreateAuthorAsync(model.Adapt<AuthorCreateDTO>());
+        var author = await authorService.CreateAuthorAsync(model.Adapt<AuthorUpsertDTO>());
 
         return Created($"/Author/{author.Id}", author.Adapt<AuthorResponse>());
     }
@@ -116,7 +116,7 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await authorService.UpdateAuthorAsync(id, model.Adapt<AuthorUpdateDTO>());
+        await authorService.UpdateAuthorAsync(id, model.Adapt<AuthorUpsertDTO>());
 
         return NoContent();
     }

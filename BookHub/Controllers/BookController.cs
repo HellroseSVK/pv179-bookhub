@@ -1,7 +1,5 @@
 using BusinessLayer.DTOs.Book;
 using BusinessLayer.Facades.Interfaces;
-using BusinessLayer.Services.Interfaces;
-using DataAccessLayer;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Exception;
@@ -92,7 +90,7 @@ namespace WebAPI.Controllers
             await bookFacade.DeleteBookAsync(id);
             return NoContent();
         }
-        
+
         [HttpPost("{id}/image")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]

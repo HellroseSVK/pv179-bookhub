@@ -82,7 +82,7 @@ public class JsonToXmlMiddleware
             .ToList();
 
         // Check for XML content types
-        return acceptTypes.Any(type => 
+        return acceptTypes.Any(type =>
             type.Equals("application/xml", StringComparison.OrdinalIgnoreCase) ||
             type.Equals("text/xml", StringComparison.OrdinalIgnoreCase));
     }

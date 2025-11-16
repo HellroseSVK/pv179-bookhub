@@ -14,7 +14,7 @@ public class ImageService : IImageService
     {
         _imageStoragePath = configuration["FileStorage:ImagePath"] ?? "wwwroot/images/books";
         _maxFileSize = configuration.GetValue<long>("FileStorage:MaxFileSize", 5 * 1024 * 1024); // 5MB default
-        
+
         EnsureDirectoryExists(_imageStoragePath);
     }
 
@@ -41,7 +41,7 @@ public class ImageService : IImageService
             return;
 
         var filePath = Path.Combine(_imageStoragePath, imagePath);
-        
+
         if (File.Exists(filePath))
         {
             await Task.Run(() => File.Delete(filePath));
@@ -68,7 +68,7 @@ public class ImageService : IImageService
         var allowedContentTypes = new[]
         {
             "image/jpeg",
-            "image/jpg", 
+            "image/jpg",
             "image/png",
             "image/gif",
             "image/webp"

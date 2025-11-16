@@ -44,7 +44,7 @@ public class UserController(IUserService userService) : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var result = await userService.CreateUserAsync(model.Adapt<UserSimplifiedDTO>());
+        var result = await userService.CreateUserAsync(model.Adapt<UserUpsertDTO>());
 
         return Created($"/User/{result.Id}", result.Adapt<UserSimplifiedResponse>());
     }
@@ -61,7 +61,7 @@ public class UserController(IUserService userService) : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await userService.PatchUserAsync(id, model.Adapt<UserSimplifiedPartialDTO>());
+        await userService.PatchUserAsync(id, model.Adapt<UserPartialDTO>());
 
         return NoContent();
     }
@@ -78,7 +78,7 @@ public class UserController(IUserService userService) : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        await userService.UpdateUserAsync(id, model.Adapt<UserSimplifiedDTO>());
+        await userService.UpdateUserAsync(id, model.Adapt<UserUpsertDTO>());
 
         return NoContent();
     }

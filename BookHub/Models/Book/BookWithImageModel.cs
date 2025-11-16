@@ -10,7 +10,7 @@ namespace WebAPI.Models.Book
         public List<int> AuthorIds { get; set; } = [];
         public List<int> GenreIds { get; set; } = [];
         public int PublisherId { get; set; }
-        
+
         [FromForm(Name = "image")]
         public IFormFile? Image { get; set; }
     }

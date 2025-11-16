@@ -143,7 +143,7 @@ public class BookService(CustomDBContext dbContext) : IBookService
     public async Task UpdateBookImageAsync(int id, string imagePath)
     {
         var book = await FindBook(id);
-        
+
         book.ImagePath = imagePath;
         dbContext.Books.Update(book);
         await dbContext.SaveChangesAsync();
@@ -152,7 +152,7 @@ public class BookService(CustomDBContext dbContext) : IBookService
     public async Task RemoveBookImageAsync(int id)
     {
         var book = await FindBook(id);
-        
+
         book.ImagePath = null;
         dbContext.Books.Update(book);
         await dbContext.SaveChangesAsync();
@@ -161,7 +161,7 @@ public class BookService(CustomDBContext dbContext) : IBookService
     public async Task DeleteBookAsync(int id)
     {
         var book = await FindBook(id);
-        
+
         dbContext.Books.Remove(book);
         await dbContext.SaveChangesAsync();
     }
@@ -235,7 +235,7 @@ public class BookService(CustomDBContext dbContext) : IBookService
         var missingAuthorIds = authorIds.Except(authors.Select(a => a.Id)).ToList();
         if (missingAuthorIds.Any())
         {
-            throw new InvalidOperationException($"Authors {{{string.Join(", ", missingAuthorIds)}}} not found.");
+            throw new InvalidOperationException($"Authors with ids {string.Join(", ", missingAuthorIds)} not found.");
         }
 
         return authors;
@@ -250,7 +250,7 @@ public class BookService(CustomDBContext dbContext) : IBookService
         var missingGenreIds = genreIds.Except(genres.Select(g => g.Id)).ToList();
         if (missingGenreIds.Any())
         {
-            throw new InvalidOperationException($"Genres {{{string.Join(", ", missingGenreIds)}}} not found.");
+            throw new InvalidOperationException($"Genres  with ids {string.Join(", ", missingGenreIds)} not found.");
         }
 
         return genres;

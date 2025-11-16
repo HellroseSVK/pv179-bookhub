@@ -15,16 +15,16 @@ public class BookFacade(IBookService bookService, IImageService imageService, Cu
         try
         {
             var createdBook = await bookService.CreateBookAsync(bookDto);
-            
+
             if (image != null && imageService.IsValidImageFile(image))
             {
                 var imagePath = await imageService.SaveBookImageAsync(image, createdBook.Id);
-                
+
                 await bookService.UpdateBookImageAsync(createdBook.Id, imagePath);
-                
+
                 createdBook = await bookService.GetBookAsync(createdBook.Id, includeWishlistItems: false, includeOrderItems: false);
             }
-            
+
             await transaction.CommitAsync();
             return createdBook;
         }
@@ -75,14 +75,14 @@ public class BookFacade(IBookService bookService, IImageService imageService, Cu
             string? oldImagePath = await GetCurrentImagePathAsync(id);
 
             var newImagePath = await imageService.SaveBookImageAsync(image, id);
-            
+
             await bookService.UpdateBookImageAsync(id, newImagePath);
-            
+
             if (!string.IsNullOrEmpty(oldImagePath))
             {
                 await imageService.DeleteBookImageAsync(oldImagePath);
             }
-            
+
             await transaction.CommitAsync();
         }
         catch
@@ -98,14 +98,14 @@ public class BookFacade(IBookService bookService, IImageService imageService, Cu
         try
         {
             string? imagePathToDelete = await GetCurrentImagePathAsync(id);
-            
+
             await bookService.RemoveBookImageAsync(id);
-            
+
             if (!string.IsNullOrEmpty(imagePathToDelete))
             {
                 await imageService.DeleteBookImageAsync(imagePathToDelete);
             }
-            
+
             await transaction.CommitAsync();
         }
         catch
@@ -121,9 +121,9 @@ public class BookFacade(IBookService bookService, IImageService imageService, Cu
         try
         {
             string? imagePathToDelete = await GetCurrentImagePathAsync(id);
-            
+
             await bookService.DeleteBookAsync(id);
-            
+
             if (!string.IsNullOrEmpty(imagePathToDelete))
             {
                 await imageService.DeleteBookImageAsync(imagePathToDelete);
@@ -142,9 +142,9 @@ public class BookFacade(IBookService bookService, IImageService imageService, Cu
     {
         var currentBook = await bookService.GetBookAsync(bookId, includeAuthors: false, includeGenres: false,
             includePublisher: false, includeReviews: false, includeWishlistItems: false, includeOrderItems: false);
-        
-        return string.IsNullOrEmpty(currentBook.ImageUrl) 
-            ? null 
+
+        return string.IsNullOrEmpty(currentBook.ImageUrl)
+            ? null
             : Path.GetFileName(currentBook.ImageUrl);
     }
 }
