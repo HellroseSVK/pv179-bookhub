@@ -7,11 +7,8 @@ using BusinessLayer.DTOs.OrderItem;
 
 namespace BusinessLayer.DTOs.Book;
 
-public class BookDTO : BaseDTO
+public class BookDTO : BookSimplifiedDTO
 {
-    public required string Title { get; set; }
-    public required string Description { get; set; }
-    public decimal Price { get; set; }
     public int PublisherId { get; set; }
     public PublisherSimplifiedDTO? Publisher { get; set; }
     public List<AuthorSimplifiedDTO> Authors { get; set; } = [];

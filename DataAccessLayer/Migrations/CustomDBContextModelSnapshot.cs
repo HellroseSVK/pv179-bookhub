@@ -128,6 +128,9 @@ namespace DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
 
@@ -149,91 +152,226 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A young wizard's journey begins at Hogwarts School of Witchcraft and Wizardry.",
-                            Price = 19.99m,
-                            PublisherId = 1,
-                            Title = "Harry Potter and the Philosopher's Stone"
+                            Description = "A captivating tale of mystery and intrigue, set against the backdrop of war. Aut atque qui id deleniti nihil quo fuga tempora veniam id omnis non est.",
+                            Price = 12.74m,
+                            PublisherId = 3,
+                            Title = "The Ancient Memory"
                         },
                         new
                         {
                             Id = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A dystopian social science fiction novel about totalitarian surveillance.",
-                            Price = 15.99m,
-                            PublisherId = 2,
-                            Title = "1984"
+                            Description = "A captivating tale of family and tradition, set in a world of magic and wonder. Enim ipsa hic laborum eaque doloremque asperiores maiores.",
+                            Price = 12.93m,
+                            PublisherId = 10,
+                            Title = "The Golden Marcus"
                         },
                         new
                         {
                             Id = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A novel about racial injustice and childhood in the American South.",
-                            Price = 14.99m,
-                            PublisherId = 2,
-                            Title = "To Kill a Mockingbird"
+                            Description = "A breathtaking story of family and tradition, unfolding in the shadows of ancient cities. In debitis sed sed eos perferendis cumque blanditiis a culpa iusto hic et distinctio.",
+                            Price = 22.59m,
+                            PublisherId = 3,
+                            Title = "Theodore's Memory"
                         },
                         new
                         {
                             Id = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A critique of the American Dream set in the Jazz Age.",
-                            Price = 12.99m,
-                            PublisherId = 2,
-                            Title = "The Great Gatsby"
+                            Description = "An unforgettable story following adventure and danger, set against the backdrop of war. Consequatur eaque velit et ea autem iste debitis alias dolores non minus molestias consequatur.",
+                            Price = 21.52m,
+                            PublisherId = 4,
+                            Title = "Beyond the Journey"
                         },
                         new
                         {
                             Id = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A romantic novel about manners, upbringing, morality, and marriage.",
-                            Price = 13.99m,
-                            PublisherId = 3,
-                            Title = "Pride and Prejudice"
+                            Description = "A masterful exploration of hope and redemption, in a time of great change. Sed ipsa pariatur a sunt delectus sunt adipisci soluta voluptas reiciendis.",
+                            Price = 19.48m,
+                            PublisherId = 6,
+                            Title = "Soul in Dublin"
                         },
                         new
                         {
                             Id = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A boy's adventures along the Mississippi River.",
-                            Price = 11.99m,
-                            PublisherId = 2,
-                            Title = "The Adventures of Tom Sawyer"
+                            Description = "An epic journey through power and corruption, in a realm where nothing is as it seems. Architecto esse at soluta sunt vel officia necessitatibus explicabo.",
+                            Price = 19.42m,
+                            PublisherId = 6,
+                            Title = "Quest in London"
                         },
                         new
                         {
                             Id = 7,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "An aging Cuban fisherman's struggle with a giant marlin.",
-                            Price = 10.99m,
-                            PublisherId = 2,
-                            Title = "The Old Man and the Sea"
+                            Description = "A beautiful narrative exploring hope and redemption, unfolding in the shadows of ancient cities. Dolorem atque et voluptas eaque deleniti fuga accusamus saepe veritatis autem non.",
+                            Price = 9.20m,
+                            PublisherId = 1,
+                            Title = "The Lost Evangeline"
                         },
                         new
                         {
                             Id = 8,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A detective story featuring Hercule Poirot on a luxury train.",
-                            Price = 16.99m,
-                            PublisherId = 3,
-                            Title = "Murder on the Orient Express"
+                            Description = "A masterful exploration of loss and discovery, where legends come to life. Atque hic aspernatur ea aperiam quia voluptatem modi quidem.",
+                            Price = 15.60m,
+                            PublisherId = 10,
+                            Title = "Secrets of the Eternal Kingdom"
                         },
                         new
                         {
                             Id = 9,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A horror novel about a family isolated in a haunted hotel.",
-                            Price = 18.99m,
-                            PublisherId = 4,
-                            Title = "The Shining"
+                            Description = "A captivating tale of adventure and danger, where legends come to life. Aperiam quia suscipit nihil ratione repellendus enim vel ut dolores velit non eaque magnam dolores.",
+                            Price = 27.66m,
+                            PublisherId = 10,
+                            Title = "Adrienne's Tale"
                         },
                         new
                         {
                             Id = 10,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A story about the legacy of slavery and trauma.",
-                            Price = 17.99m,
+                            Description = "A masterful exploration of family and tradition, set in a world of magic and wonder. Quis harum explicabo dolore corporis tenetur necessitatibus quibusdam velit ea laborum cum non.",
+                            Price = 14.18m,
+                            PublisherId = 10,
+                            Title = "Dark Myth"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A haunting story about friendship and loyalty, in a time of great change. Cumque ut dolorem voluptatem magnam velit eum odio.",
+                            Price = 16.42m,
                             PublisherId = 5,
-                            Title = "Beloved"
+                            Title = "Alexander's Mind"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A beautiful narrative exploring love and betrayal, taking place across vast kingdoms. Omnis ad voluptatem voluptates nisi temporibus ea voluptatem.",
+                            Price = 13.90m,
+                            PublisherId = 10,
+                            Title = "The Golden Isabella"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A gripping saga of friendship and loyalty, where legends come to life. Unde repellat aut quia quia temporibus fugiat ut dolorum reprehenderit tempore dignissimos ut ab.",
+                            Price = 15.10m,
+                            PublisherId = 9,
+                            Title = "The Eternal Journey"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A compelling tale that love and betrayal, unfolding in the shadows of ancient cities. Exercitationem doloribus eum nam placeat maxime dolores tempore ipsum eligendi illo.",
+                            Price = 25.80m,
+                            PublisherId = 2,
+                            Title = "The Last Journey"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A masterful exploration of hope and redemption, spanning generations of conflict. Vel id vitae quia odit enim delectus quidem.",
+                            Price = 23.76m,
+                            PublisherId = 10,
+                            Title = "Secrets of the Hidden Mind"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "An unforgettable story following family and tradition, in a time of great change. Est et ea ut dicta maxime dolores earum enim.",
+                            Price = 23.88m,
+                            PublisherId = 1,
+                            Title = "The Last Journey"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "An unforgettable story following hope and redemption, in a time of great change. Modi nihil provident doloribus aut aut quis repudiandae quia inventore et sint fugit.",
+                            Price = 17.04m,
+                            PublisherId = 8,
+                            Title = "The Quest of Rome"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "An unforgettable story following friendship and loyalty, in a time of great change. Facilis distinctio ut quo dolorem amet aut sit et consequatur tenetur et ut quis dolores.",
+                            Price = 11.32m,
+                            PublisherId = 4,
+                            Title = "The Mind of Copenhagen"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "An epic journey through mystery and intrigue, unfolding in the shadows of ancient cities. Officia qui qui dolore aperiam saepe ab id nisi odio quod provident dicta dolores magnam.",
+                            Price = 27.92m,
+                            PublisherId = 7,
+                            Title = "Secret in Edinburgh"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A thrilling adventure featuring family and tradition, set in a world of magic and wonder. Porro ea eos et corrupti accusantium qui repudiandae.",
+                            Price = 21.55m,
+                            PublisherId = 7,
+                            Title = "Eternal Myth"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "An unforgettable story following love and betrayal, in a time of great change. Voluptas et deleniti alias rerum rem quasi omnis qui necessitatibus.",
+                            Price = 28.72m,
+                            PublisherId = 8,
+                            Title = "The Bright Alexander"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A beautiful narrative exploring family and tradition, across mysterious landscapes. Aut quia sed officia totam tempore dolores quis optio consequatur dolorum cum sint.",
+                            Price = 12.40m,
+                            PublisherId = 6,
+                            Title = "Beyond the Journey"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A haunting story about friendship and loyalty, set in a world of magic and wonder. Necessitatibus id facere sapiente aut consequatur adipisci amet id expedita eaque voluptas rerum.",
+                            Price = 17.61m,
+                            PublisherId = 5,
+                            Title = "The Secret of London"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A thrilling adventure featuring love and betrayal, unfolding in the shadows of ancient cities. Corrupti rerum dolore non vel sed laudantium rem.",
+                            Price = 12.12m,
+                            PublisherId = 9,
+                            Title = "Tales of Shadowed Soul"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A thrilling adventure featuring courage and sacrifice, in a realm where nothing is as it seems. Eos consequuntur adipisci quis doloribus fugiat incidunt atque nulla et et laboriosam autem omnis tempore.",
+                            Price = 18.94m,
+                            PublisherId = 10,
+                            Title = "Beyond the Quest"
                         });
                 });
 
@@ -544,72 +682,212 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 1,
-                            BookId = 1,
+                            BookId = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 1
+                            UserId = 4
                         },
                         new
                         {
                             Id = 2,
-                            BookId = 2,
+                            BookId = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 1
+                            UserId = 8
                         },
                         new
                         {
                             Id = 3,
                             BookId = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 2
+                            UserId = 4
                         },
                         new
                         {
                             Id = 4,
-                            BookId = 4,
+                            BookId = 8,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 3
                         },
                         new
                         {
                             Id = 5,
-                            BookId = 5,
+                            BookId = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 4
+                            UserId = 2
                         },
                         new
                         {
                             Id = 6,
-                            BookId = 6,
+                            BookId = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 5
                         },
                         new
                         {
                             Id = 7,
-                            BookId = 3,
+                            BookId = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 6
+                            UserId = 2
                         },
                         new
                         {
                             Id = 8,
+                            BookId = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BookId = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BookId = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 11,
                             BookId = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 6
                         },
                         new
                         {
-                            Id = 9,
-                            BookId = 7,
+                            Id = 12,
+                            BookId = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 6
                         },
                         new
                         {
-                            Id = 10,
-                            BookId = 8,
+                            Id = 13,
+                            BookId = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 6
+                        },
+                        new
+                        {
+                            Id = 14,
+                            BookId = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 15,
+                            BookId = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 16,
+                            BookId = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 17,
+                            BookId = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 18,
+                            BookId = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 19,
+                            BookId = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 20,
+                            BookId = 9,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 21,
+                            BookId = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 22,
+                            BookId = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 23,
+                            BookId = 9,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 24,
+                            BookId = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 25,
+                            BookId = 10,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 26,
+                            BookId = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 27,
+                            BookId = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 28,
+                            BookId = 9,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 29,
+                            BookId = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 30,
+                            BookId = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 4
                         });
                 });
 
@@ -731,26 +1009,26 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 1,
-                            Body = "I kept waiting for the story to pick up, but it never really went anywhere.",
-                            BookId = 1,
+                            Body = "Very disappointing read. Too many clichés and not enough originality. Would not recommend.",
+                            BookId = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 1,
-                            UserId = 1
+                            UserId = 7
                         },
                         new
                         {
                             Id = 2,
-                            Body = "The premise sounded great, but the execution was flat and predictable.",
-                            BookId = 2,
+                            Body = "The characters felt real and well-developed. ENGAGING book that I would definitely recommend.",
+                            BookId = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Rating = 2,
-                            UserId = 1
+                            Rating = 5,
+                            UserId = 5
                         },
                         new
                         {
                             Id = 3,
-                            Body = "A fast-paced read that kept me hooked, though the ending felt a bit rushed.",
-                            BookId = 3,
+                            Body = "It was fine, but didn't leave a lasting impression. AVERAGE overall.",
+                            BookId = 1,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 3,
                             UserId = 2
@@ -758,65 +1036,155 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 4,
-                            Body = "Beautiful writing, but I struggled with the slow middle chapters.",
+                            Body = "The characters felt real and well-developed. MASTERFUL book that I would definitely recommend.",
+                            BookId = 9,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 5,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Body = "Unfortunately slow. The plot was too predictable for my taste. Had some potential but didn't deliver.",
+                            BookId = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 2,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Body = "Really engaging book. The emotional depth really resonated with me. Just a few minor issues kept it from being perfect.",
                             BookId = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 4,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Body = "Really brilliant book. Beautiful writing style that flows perfectly. Just a few minor issues kept it from being perfect.",
+                            BookId = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 4,
                             UserId = 3
                         },
                         new
                         {
-                            Id = 5,
-                            Body = "Loved the characters — they felt real and flawed in the best way.",
-                            BookId = 4,
+                            Id = 8,
+                            Body = "I couldn't put this book down! EXCELLENT book that I would definitely recommend.",
+                            BookId = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 5,
                             UserId = 4
                         },
                         new
                         {
-                            Id = 6,
-                            Body = "The characters felt one-dimensional and I couldn’t connect with any of them.",
+                            Id = 9,
+                            Body = "Beautiful writing style that flows perfectly. BRILLIANT book that I would definitely recommend.",
+                            BookId = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 5,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Body = "It was fine, but didn't leave a lasting impression. ADEQUATE overall.",
                             BookId = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 3,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Body = "Really captivating book. Beautiful writing style that flows perfectly. Just a few minor issues kept it from being perfect.",
+                            BookId = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 4,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Body = "Really engaging book. I couldn't put this book down! Just a few minor issues kept it from being perfect.",
+                            BookId = 10,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 4,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Body = "Very predictable read. The plot was too predictable for my taste. Would not recommend.",
+                            BookId = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 1,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Body = "Very frustrating read. Too many clichés and not enough originality. Would not recommend.",
+                            BookId = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 1,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Body = "This book exceeded all my expectations. EXCELLENT book that I would definitely recommend.",
+                            BookId = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 5,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Body = "Really brilliant book. I couldn't put this book down! Just a few minor issues kept it from being perfect.",
+                            BookId = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 4,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Body = "Good enough to finish but wouldn't recommend highly. FINE overall.",
+                            BookId = 6,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 3,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Body = "Very weak read. I struggled to get through this one. Would not recommend.",
+                            BookId = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Rating = 1,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Body = "Very tedious read. I lost interest halfway through. Would not recommend.",
+                            BookId = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 1,
                             UserId = 4
                         },
                         new
                         {
-                            Id = 7,
-                            Body = "Too many clichés and not enough originality — I lost interest halfway through.",
-                            BookId = 7,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Rating = 2,
-                            UserId = 4
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Body = "A solid story, though I guessed the twist halfway through.",
-                            BookId = 8,
+                            Id = 20,
+                            Body = "A solid story, though not groundbreaking. AVERAGE overall.",
+                            BookId = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Rating = 3,
-                            UserId = 6
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Body = "Enjoyable overall, but I didn’t connect with the main character.",
-                            BookId = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Rating = 4,
-                            UserId = 8
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Body = "An emotional rollercoaster — I cried more than once.",
-                            BookId = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Rating = 5,
-                            UserId = 8
+                            UserId = 5
                         });
                 });
 

@@ -16,5 +16,7 @@ public interface IBookService
         bool includeOrderItems = false);
     Task PatchBookAsync(int id, BookPartialDTO bookDto);
     Task UpdateBookAsync(int id, BookUpsertDTO bookDto);
+    Task UpdateBookImageAsync(int id, string imagePath);
+    Task RemoveBookImageAsync(int id);
     Task DeleteBookAsync(int id);
 }
