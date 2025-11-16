@@ -64,7 +64,7 @@ builder.Services.AddDbContextFactory<CustomDBContext>(options =>
 {
     options
         .UseSqlite(sqliteConnectionString)
-        .LogTo(Console.WriteLine)
+        .LogTo(s => System.Diagnostics.Debug.WriteLine(s))
         .EnableSensitiveDataLogging();
 });
 
