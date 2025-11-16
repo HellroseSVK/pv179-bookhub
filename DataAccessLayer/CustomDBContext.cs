@@ -16,14 +16,8 @@ namespace DataAccessLayer
         public DbSet<BookAuthor> BookAuthors { get; set; }
         public DbSet<BookGenre> BookGenres { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public CustomDBContext(DbContextOptions options) : base(options)
         {
-            var folder = Environment.SpecialFolder.LocalApplicationData;
-            var dbPath = Path.Join(Environment.GetFolderPath(folder), "BookHub.db");
-
-            optionsBuilder
-                .UseSqlite($"Data Source={dbPath}") // Windows path: $USER/AppData/Local/BookHub.db
-                .LogTo(s => System.Diagnostics.Debug.WriteLine(s));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -103,6 +97,5 @@ namespace DataAccessLayer
 
             base.OnModelCreating(modelBuilder);
         }
-
     }
 }
