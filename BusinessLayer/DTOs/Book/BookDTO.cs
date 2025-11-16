@@ -9,7 +9,6 @@ namespace BusinessLayer.DTOs.Book;
 
 public class BookDTO : BookSimplifiedDTO
 {
-    public int PublisherId { get; set; }
     public PublisherSimplifiedDTO? Publisher { get; set; }
     public List<AuthorSimplifiedDTO> Authors { get; set; } = [];
     public List<GenreSimplifiedDTO> Genres { get; set; } = [];

@@ -8,7 +8,7 @@ public class ImageService : IImageService
 {
     private readonly string _imageStoragePath;
     private readonly long _maxFileSize;
-    private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+    private readonly string[] _allowedExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
 
     public ImageService(IConfiguration configuration)
     {
