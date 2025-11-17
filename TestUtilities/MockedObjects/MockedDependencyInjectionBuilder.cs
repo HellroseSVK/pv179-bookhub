@@ -34,7 +34,8 @@ namespace TestUtilities.MockedObjects
 
             _serviceCollection = _serviceCollection
                 .AddScoped<IAuthorService, AuthorService>()
-                .AddScoped<IBookService, BookService>();
+                .AddScoped<IBookService, BookService>()
+                .AddScoped<IUserService, UserService>();
 
             return this;
         }

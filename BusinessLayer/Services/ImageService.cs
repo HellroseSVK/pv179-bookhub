@@ -8,12 +8,12 @@ public class ImageService : IImageService
 {
     private readonly string _imageStoragePath;
     private readonly long _maxFileSize;
-    private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+    private readonly string[] _allowedExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
 
     public ImageService(IConfiguration configuration)
     {
         _imageStoragePath = configuration["FileStorage:ImagePath"] ?? "wwwroot/images/books";
-        _maxFileSize = configuration.GetValue<long>("FileStorage:MaxFileSize", 5 * 1024 * 1024); // 5MB default
+        _maxFileSize = long.TryParse(configuration["FileStorage:MaxFileSize"], out var parsed) ? parsed : 5 * 1024 * 1024;// 5MB default
 
         EnsureDirectoryExists(_imageStoragePath);
     }
