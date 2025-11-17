@@ -62,6 +62,13 @@ documentation.
 
 - [`Services/`](./BusinessLayer.Tests/Services) – Unit tests for service classes
 
+### MVC Project ([`MVC/`](./MVC/))
+
+- [`Controllers/`](./MVC/Controllers) – MVC controllers for each entity
+- [`Models/`](./MVC/Models) – View models for MVC views
+- [`Views/`](./MVC/Views) – Razor views for rendering HTML pages
+- [`wwroot/`](./MVC/wwwroot) - Static files (CSS, JS, images)
+
 ## Getting Started
 
 ### Prerequisites
@@ -74,51 +81,39 @@ documentation.
 #### A
 
 1. Clone the [repository](https://gitlab.fi.muni.cz/xsabo1/pv179-bookhub)
-2. Navigate to the [`BookHub`](./) directory
-3. Restore dependencies
-4. Build the solution
-5. Navigate to [root directory](./)
-6. Run database [migrations](./DataAccessLayer/Migrations) and seed the database
-
-```shell
-dotnet ef database update --project DataAccessLayer --startup-project BookHub   
-```  
-
-7. Run the application
-8. Authorize using the hard-coded token: `very_secret_token`
-
-#### B
-
-1. Clone the [repository](https://gitlab.fi.muni.cz/xsabo1/pv179-bookhub)
-2. Build docker image
-
-```shell
-docker build -t bookhub-webapi:latest . 
-```
-
-3. Run the docker container
-
-* you can change the port mapping if needed, default is `5000`
-
-```shell
-docker run -d --name bookhub-webapi -p 5000:8080 -e ASPNETCORE_ENVIRONMENT=Development bookhub-webapi
-```
-
-4. You can check the logs using
-
-```shell
-docker logs -f bookhub-webapi
-```
-
-5. Then you will have exposed the [API](http://localhost:5000) and [swagger](http://localhost:5000/swagger/index.html)
-6. Authorize using the hard-coded token: `very_secret_token`
+2. Set up the project
+    1. Local setup
+        1. Navigate to the [`BookHub`](./BookHub) directory
+            1. Restore dependencies
+            2. Build the solution
+        2. Do the same in directory [`MVC`](./MVC)
+        3. Navigate to [root directory](./)
+        4. Run database [migrations](./DataAccessLayer/Migrations) and seed the database
+        5.
+        6. ```shell
+           dotnet ef database update --project DataAccessLayer --startup-project BookHub
+           ```
+        7. Run the WebAPI and MVC projects
+    2. Docker compose setup
+        1. Navigate to the [root directory](./)
+        2. Build and run the docker compose
+        3. ```shell
+           docker-compose up --build
+           ```
+3. Authorize
+    1. Using the hard-coded token: `very_secret_token`
+    2. By creating an account in MVC application, then clicking on "Token" when logged in
 
 ## Usage
 
 - The API is available
   at [http://localhost:5095](http://localhost:5095) / [https://localhost:5095](https://localhost:5095) (port specified
-  in [`launchSettings.json`](./BookHub/Properties/launchSettings.json)) or at the port you specified in the docker run
-  command, provided [http://localhost:5000](http://localhost:5000)
+  in [`launchSettings.json`](./BookHub/Properties/launchSettings.json)) or if using docker
+  compose [http://localhost:5000](http://localhost:5000)
+- The MVC is available
+  at [http://localhost:5047](http://localhost:5047) / [https://localhost:5047](https://localhost:5047) (port specified
+  in [`launchSettings.json`](./BookHub/Properties/launchSettings.json)) or if using docker
+  compose [http://localhost:5001](http://localhost:5001)
 - Use the
   included [http swagger](http://localhost:5095/swagger/index.html) / [https swagger](https://localhost:5095/swagger/index.html) / [docker swagger](http://localhost:5000/swagger/index.html)
   or tools like Postman or curl to interact with the endpoints

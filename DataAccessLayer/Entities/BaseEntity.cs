@@ -1,9 +1,8 @@
-﻿namespace DataAccessLayer.Entities
-{
-    public abstract class BaseEntity
-    {
-        public int Id { get; set; }
+﻿namespace DataAccessLayer.Entities;
 
-        public DateTime CreatedAt { get; set; }
-    }
+public abstract class BaseEntity
+{
+    public int Id { get; set; }
+
+    public DateTime CreatedAt { get; set; }
 }

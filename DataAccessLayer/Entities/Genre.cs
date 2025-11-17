@@ -1,9 +1,8 @@
-﻿namespace DataAccessLayer.Entities
-{
-    public class Genre : BaseEntity
-    {
-        public required string Name { get; set; }
+﻿namespace DataAccessLayer.Entities;
 
-        public List<BookGenre> BookGenres { get; set; } = [];
-    }
+public class Genre : BaseEntity
+{
+    public required string Name { get; set; }
+
+    public List<BookGenre> BookGenres { get; set; } = [];
 }

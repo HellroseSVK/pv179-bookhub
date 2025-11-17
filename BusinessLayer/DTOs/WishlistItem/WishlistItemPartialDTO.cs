@@ -1,8 +1,7 @@
-﻿namespace BusinessLayer.DTOs.WishlistItem
+﻿namespace BusinessLayer.DTOs.WishlistItem;
+
+public class WishlistItemPartialDTO : BaseDTO
 {
-    public class WishlistItemPartialDTO : BaseDTO
-    {
-        public int? BookId { get; set; }
-        public int? UserId { get; set; }
-    }
+    public int? BookId { get; set; }
+    public int? UserId { get; set; }
 }

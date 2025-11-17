@@ -4,46 +4,44 @@ using BusinessLayer.Services;
 using DataAccessLayer;
 using BusinessLayer.Services.Interfaces;
 
-namespace TestUtilities.MockedObjects
+namespace TestUtilities.MockedObjects;
+
+public class MockedDependencyInjectionBuilder
 {
-    public class MockedDependencyInjectionBuilder
+    private IServiceCollection _serviceCollection = new ServiceCollection();
+
+    public MockedDependencyInjectionBuilder AddMockedDBContext()
     {
-        private IServiceCollection _serviceCollection = new ServiceCollection();
+        var options = MockedDbContext.GenerateNewInMemoryDbContextOptions();
+        var context = MockedDbContext.CreateFromOptions(options);
 
-        public MockedDependencyInjectionBuilder AddMockedDBContext()
-        {
-            var options = MockedDbContext.GenerateNewInMemoryDbContextOptions();
-            var context = MockedDbContext.CreateFromOptions(options);
+        _serviceCollection = _serviceCollection.AddScoped<CustomDBContext>(_ => context);
 
-            _serviceCollection = _serviceCollection.AddScoped<CustomDBContext>(_ => context);
+        return this;
+    }
 
-            return this;
-        }
+    public MockedDependencyInjectionBuilder AddScoped<T>(T objectToRegister)
+        where T : class
+    {
+        _serviceCollection = _serviceCollection.AddScoped<T>(_ => objectToRegister);
 
-        public MockedDependencyInjectionBuilder AddScoped<T>(T objectToRegister)
-            where T : class
-        {
-            _serviceCollection = _serviceCollection.AddScoped<T>(_ => objectToRegister);
+        return this;
+    }
 
-            return this;
-        }
+    public MockedDependencyInjectionBuilder AddServices()
+    {
+        _serviceCollection.RegisterMapsterConfiguration();
 
-        public MockedDependencyInjectionBuilder AddServices()
-        {
-            _serviceCollection.RegisterMapsterConfiguration();
+        _serviceCollection = _serviceCollection
+            .AddScoped<IAuthorService, AuthorService>()
+            .AddScoped<IBookService, BookService>()
+            .AddScoped<IUserService, UserService>();
 
-            _serviceCollection = _serviceCollection
-                .AddScoped<IAuthorService, AuthorService>()
-                .AddScoped<IBookService, BookService>()
-                .AddScoped<IUserService, UserService>();
+        return this;
+    }
 
-            return this;
-        }
-
-        public ServiceProvider Create()
-        {
-            return _serviceCollection.BuildServiceProvider();
-        }
+    public ServiceProvider Create()
+    {
+        return _serviceCollection.BuildServiceProvider();
     }
 }
-

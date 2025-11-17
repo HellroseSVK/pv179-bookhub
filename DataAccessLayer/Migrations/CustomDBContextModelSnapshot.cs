@@ -198,7 +198,13 @@ namespace DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("EditCount")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("ImagePath")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastModifiedById")
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
@@ -213,6 +219,8 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LastModifiedById");
+
                     b.HasIndex("PublisherId");
 
                     b.ToTable("Books");
@@ -223,6 +231,7 @@ namespace DataAccessLayer.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A captivating tale of mystery and intrigue, set against the backdrop of war. Aut atque qui id deleniti nihil quo fuga tempora veniam id omnis non est.",
+                            EditCount = 0,
                             Price = 12.74m,
                             PublisherId = 2,
                             Title = "The Ancient Memory"
@@ -232,6 +241,7 @@ namespace DataAccessLayer.Migrations
                             Id = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A captivating tale of family and tradition, set in a world of magic and wonder. Enim ipsa hic laborum eaque doloremque asperiores maiores.",
+                            EditCount = 0,
                             Price = 12.93m,
                             PublisherId = 6,
                             Title = "The Golden Marcus"
@@ -241,6 +251,7 @@ namespace DataAccessLayer.Migrations
                             Id = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A breathtaking story of family and tradition, unfolding in the shadows of ancient cities. In debitis sed sed eos perferendis cumque blanditiis a culpa iusto hic et distinctio.",
+                            EditCount = 0,
                             Price = 22.59m,
                             PublisherId = 2,
                             Title = "Theodore's Memory"
@@ -250,6 +261,7 @@ namespace DataAccessLayer.Migrations
                             Id = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An unforgettable story following adventure and danger, set against the backdrop of war. Consequatur eaque velit et ea autem iste debitis alias dolores non minus molestias consequatur.",
+                            EditCount = 0,
                             Price = 21.52m,
                             PublisherId = 3,
                             Title = "Beyond the Journey"
@@ -259,6 +271,7 @@ namespace DataAccessLayer.Migrations
                             Id = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A masterful exploration of hope and redemption, in a time of great change. Sed ipsa pariatur a sunt delectus sunt adipisci soluta voluptas reiciendis.",
+                            EditCount = 0,
                             Price = 19.48m,
                             PublisherId = 4,
                             Title = "Soul in Dublin"
@@ -268,6 +281,7 @@ namespace DataAccessLayer.Migrations
                             Id = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An epic journey through power and corruption, in a realm where nothing is as it seems. Architecto esse at soluta sunt vel officia necessitatibus explicabo.",
+                            EditCount = 0,
                             Price = 19.42m,
                             PublisherId = 4,
                             Title = "Quest in London"
@@ -277,6 +291,7 @@ namespace DataAccessLayer.Migrations
                             Id = 7,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A beautiful narrative exploring hope and redemption, unfolding in the shadows of ancient cities. Dolorem atque et voluptas eaque deleniti fuga accusamus saepe veritatis autem non.",
+                            EditCount = 0,
                             Price = 9.20m,
                             PublisherId = 1,
                             Title = "The Lost Evangeline"
@@ -286,6 +301,7 @@ namespace DataAccessLayer.Migrations
                             Id = 8,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A masterful exploration of loss and discovery, where legends come to life. Atque hic aspernatur ea aperiam quia voluptatem modi quidem.",
+                            EditCount = 0,
                             Price = 15.60m,
                             PublisherId = 6,
                             Title = "Secrets of the Eternal Kingdom"
@@ -295,6 +311,7 @@ namespace DataAccessLayer.Migrations
                             Id = 9,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A captivating tale of adventure and danger, where legends come to life. Aperiam quia suscipit nihil ratione repellendus enim vel ut dolores velit non eaque magnam dolores.",
+                            EditCount = 0,
                             Price = 27.66m,
                             PublisherId = 6,
                             Title = "Adrienne's Tale"
@@ -304,6 +321,7 @@ namespace DataAccessLayer.Migrations
                             Id = 10,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A masterful exploration of family and tradition, set in a world of magic and wonder. Quis harum explicabo dolore corporis tenetur necessitatibus quibusdam velit ea laborum cum non.",
+                            EditCount = 0,
                             Price = 14.18m,
                             PublisherId = 6,
                             Title = "Dark Myth"
@@ -313,6 +331,7 @@ namespace DataAccessLayer.Migrations
                             Id = 11,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A haunting story about friendship and loyalty, in a time of great change. Cumque ut dolorem voluptatem magnam velit eum odio.",
+                            EditCount = 0,
                             Price = 16.42m,
                             PublisherId = 3,
                             Title = "Alexander's Mind"
@@ -322,6 +341,7 @@ namespace DataAccessLayer.Migrations
                             Id = 12,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A beautiful narrative exploring love and betrayal, taking place across vast kingdoms. Omnis ad voluptatem voluptates nisi temporibus ea voluptatem.",
+                            EditCount = 0,
                             Price = 13.90m,
                             PublisherId = 6,
                             Title = "The Golden Isabella"
@@ -331,6 +351,7 @@ namespace DataAccessLayer.Migrations
                             Id = 13,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A gripping saga of friendship and loyalty, where legends come to life. Unde repellat aut quia quia temporibus fugiat ut dolorum reprehenderit tempore dignissimos ut ab.",
+                            EditCount = 0,
                             Price = 15.10m,
                             PublisherId = 6,
                             Title = "The Eternal Journey"
@@ -340,6 +361,7 @@ namespace DataAccessLayer.Migrations
                             Id = 14,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A compelling tale that love and betrayal, unfolding in the shadows of ancient cities. Exercitationem doloribus eum nam placeat maxime dolores tempore ipsum eligendi illo.",
+                            EditCount = 0,
                             Price = 25.80m,
                             PublisherId = 1,
                             Title = "The Last Journey"
@@ -349,6 +371,7 @@ namespace DataAccessLayer.Migrations
                             Id = 15,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A masterful exploration of hope and redemption, spanning generations of conflict. Vel id vitae quia odit enim delectus quidem.",
+                            EditCount = 0,
                             Price = 23.76m,
                             PublisherId = 6,
                             Title = "Secrets of the Hidden Mind"
@@ -358,6 +381,7 @@ namespace DataAccessLayer.Migrations
                             Id = 16,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An unforgettable story following family and tradition, in a time of great change. Est et ea ut dicta maxime dolores earum enim.",
+                            EditCount = 0,
                             Price = 23.88m,
                             PublisherId = 1,
                             Title = "The Last Journey"
@@ -367,6 +391,7 @@ namespace DataAccessLayer.Migrations
                             Id = 17,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An unforgettable story following hope and redemption, in a time of great change. Modi nihil provident doloribus aut aut quis repudiandae quia inventore et sint fugit.",
+                            EditCount = 0,
                             Price = 17.04m,
                             PublisherId = 5,
                             Title = "The Quest of Rome"
@@ -376,6 +401,7 @@ namespace DataAccessLayer.Migrations
                             Id = 18,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An unforgettable story following friendship and loyalty, in a time of great change. Facilis distinctio ut quo dolorem amet aut sit et consequatur tenetur et ut quis dolores.",
+                            EditCount = 0,
                             Price = 11.32m,
                             PublisherId = 3,
                             Title = "The Mind of Copenhagen"
@@ -385,6 +411,7 @@ namespace DataAccessLayer.Migrations
                             Id = 19,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An epic journey through mystery and intrigue, unfolding in the shadows of ancient cities. Officia qui qui dolore aperiam saepe ab id nisi odio quod provident dicta dolores magnam.",
+                            EditCount = 0,
                             Price = 27.92m,
                             PublisherId = 5,
                             Title = "Secret in Edinburgh"
@@ -394,6 +421,7 @@ namespace DataAccessLayer.Migrations
                             Id = 20,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A thrilling adventure featuring family and tradition, set in a world of magic and wonder. Porro ea eos et corrupti accusantium qui repudiandae.",
+                            EditCount = 0,
                             Price = 21.55m,
                             PublisherId = 4,
                             Title = "Eternal Myth"
@@ -403,6 +431,7 @@ namespace DataAccessLayer.Migrations
                             Id = 21,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An unforgettable story following love and betrayal, in a time of great change. Voluptas et deleniti alias rerum rem quasi omnis qui necessitatibus.",
+                            EditCount = 0,
                             Price = 28.72m,
                             PublisherId = 5,
                             Title = "The Bright Alexander"
@@ -412,6 +441,7 @@ namespace DataAccessLayer.Migrations
                             Id = 22,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A beautiful narrative exploring family and tradition, across mysterious landscapes. Aut quia sed officia totam tempore dolores quis optio consequatur dolorum cum sint.",
+                            EditCount = 0,
                             Price = 12.40m,
                             PublisherId = 4,
                             Title = "Beyond the Journey"
@@ -421,6 +451,7 @@ namespace DataAccessLayer.Migrations
                             Id = 23,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A haunting story about friendship and loyalty, set in a world of magic and wonder. Necessitatibus id facere sapiente aut consequatur adipisci amet id expedita eaque voluptas rerum.",
+                            EditCount = 0,
                             Price = 17.61m,
                             PublisherId = 3,
                             Title = "The Secret of London"
@@ -430,6 +461,7 @@ namespace DataAccessLayer.Migrations
                             Id = 24,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A thrilling adventure featuring love and betrayal, unfolding in the shadows of ancient cities. Corrupti rerum dolore non vel sed laudantium rem.",
+                            EditCount = 0,
                             Price = 12.12m,
                             PublisherId = 6,
                             Title = "Tales of Shadowed Soul"
@@ -439,6 +471,7 @@ namespace DataAccessLayer.Migrations
                             Id = 25,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A thrilling adventure featuring courage and sacrifice, in a realm where nothing is as it seems. Eos consequuntur adipisci quis doloribus fugiat incidunt atque nulla et et laboriosam autem omnis tempore.",
+                            EditCount = 0,
                             Price = 18.94m,
                             PublisherId = 6,
                             Title = "Beyond the Quest"
@@ -1141,6 +1174,121 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Fantasy"
                         });
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.HttpLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("QueryString")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RequestBody")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RequestHeaders")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RequestMethod")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RequestPath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ResponseBody")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ResponseHeaders")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ResponseStatusCode")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HttpLogs");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.LocalIdentityUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.OrderItem", b =>
@@ -1939,13 +2087,148 @@ namespace DataAccessLayer.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
             modelBuilder.Entity("DataAccessLayer.Entities.Book", b =>
                 {
+                    b.HasOne("DataAccessLayer.Entities.LocalIdentityUser", "LastModifiedBy")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedById")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("DataAccessLayer.Entities.Publisher", "Publisher")
                         .WithMany("Books")
                         .HasForeignKey("PublisherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("LastModifiedBy");
 
                     b.Navigation("Publisher");
                 });
@@ -1986,6 +2269,17 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("Book");
 
                     b.Navigation("Genre");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.LocalIdentityUser", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.User", "User")
+                        .WithOne()
+                        .HasForeignKey("DataAccessLayer.Entities.LocalIdentityUser", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.OrderItem", b =>
@@ -2043,6 +2337,57 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("Book");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.LocalIdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.LocalIdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLayer.Entities.LocalIdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.LocalIdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Author", b =>
