@@ -282,9 +282,9 @@ namespace DataAccessLayer
             var faker = new Faker<User>()
                 .UseSeed(666)
                 .RuleFor(u => u.Id, f => f.IndexFaker + 1)
-                .RuleFor(u => u.Email, f => GenerateEmail(f))
+                .RuleFor(u => u.Email, GenerateEmail)
                 .RuleFor(u => u.IsAdmin, f => f.Random.Bool(0.2f)) // 20% admins
-                .RuleFor(u => u.Password, f => GeneratePassword(f));
+                .RuleFor(u => u.Password, GeneratePassword);
 
             return faker.Generate(UserCount);
         }
@@ -298,16 +298,16 @@ namespace DataAccessLayer
         }
 
         private static readonly string[] FirstNames =
-        {
+        [
             "john", "jane", "michael", "sarah", "david",
             "emily", "chris", "laura", "robert", "anna"
-        };
+        ];
 
         private static readonly string[] LastNames =
-        {
+        [
             "smith", "johnson", "williams", "brown", "jones",
             "garcia", "miller", "davis", "martinez", "lee"
-        };
+        ];
 
         private static string GenerateEmail(Faker faker)
         {

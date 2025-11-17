@@ -1,4 +1,10 @@
+using BusinessLayer.Facades;
+using BusinessLayer.Facades.Interfaces;
+using BusinessLayer.Services;
+using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
+using DataAccessLayer.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -28,6 +34,17 @@ builder.Services.AddDbContextFactory<CustomDBContext>(options =>
         .EnableSensitiveDataLogging();
 });
 
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookFacade, BookFacade>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IPublisherService, PublisherService>();
+builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
+
 builder.Services.Configure<IISServerOptions>(options =>
 {
     options.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
@@ -36,6 +53,32 @@ builder.Services.Configure<IISServerOptions>(options =>
 builder.Services.Configure<KestrelServerOptions>(options =>
 {
     options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
+});
+
+builder.Services.AddIdentity<LocalIdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<CustomDBContext>()
+    .AddDefaultTokenProviders();
+
+// Additional configurations (password policies, cookie settings)
+// Configure Identity options for password policy
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    // Password settings.
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 8;
+    options.Password.RequiredUniqueChars = 0;
+});
+
+// Configure the application cookie settings.
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // Sets the path for the login page.
+    // When a user attempts to access a resource that requires authentication and they are not authenticated,
+    // they will be redirected to this path.
+    options.LoginPath = "/Account/Login";
 });
 
 var app = builder.Build();

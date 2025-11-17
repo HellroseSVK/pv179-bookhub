@@ -1,12 +1,12 @@
 ﻿using DataAccessLayer.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer
 {
-    public class CustomDBContext : DbContext
+    public class CustomDBContext : IdentityDbContext<LocalIdentityUser>
     {
-        public DbSet<HttpLog> HttpLogs { get; set; }
-        public DbSet<User> Users { get; set; }
+        public new DbSet<User> Users { get; set; }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Genre> Genres { get; set; }
@@ -17,12 +17,18 @@ namespace DataAccessLayer
         public DbSet<BookAuthor> BookAuthors { get; set; }
         public DbSet<BookGenre> BookGenres { get; set; }
 
+        public DbSet<HttpLog> HttpLogs { get; set; }
+
+        public DbSet<LocalIdentityUser> LocalIdentityUsers { get; set; }
+
         public CustomDBContext(DbContextOptions options) : base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             // Setup the delete method for all of the entities using reflexion
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
@@ -42,6 +48,12 @@ namespace DataAccessLayer
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
                 }
             }
+
+            modelBuilder.Entity<LocalIdentityUser>()
+            .HasOne(u => u.User)
+            .WithOne()
+            .HasForeignKey<LocalIdentityUser>(u => u.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
             // one-to-many relationships
 
@@ -101,8 +113,6 @@ namespace DataAccessLayer
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Seed();
-
-            base.OnModelCreating(modelBuilder);
         }
     }
 }
