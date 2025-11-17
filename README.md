@@ -29,10 +29,9 @@ documentation.
 ### WebAPI Project ([`BookHub/`](./BookHub/))
 
 - [`Controllers/`](./BookHub/Controllers) – API controllers for each entity
-- [`Models/`](./BookHub/Models) – Data transfer objects (DTOs) and response models
 - [`Core/`](./BookHub/Core) – Core classes (e.g., error responses)
-- [`Exception/`](./BookHub/Exception) – Custom exception handling
 - [`Middlewares/`](./BookHub/Middlewares) – Custom middleware for logging, error handling and authentication
+- [`Models/`](./BookHub/Models) – Data transfer objects (DTOs) and response models
 - [`Program.cs`](./BookHub/Program.cs), [`appsettings.json`](./BookHub/appsettings.json), etc.
 
 ### DataAccessLayer Project ([`DataAccessLayer/`](./DataAccessLayer/))
@@ -41,6 +40,27 @@ documentation.
 - [`Migrations/`](./DataAccessLayer/Migrations) – Database migrations
 - [`CustomDBContext.cs`](./DataAccessLayer/CustomDBContext.cs) – Database context
 - [`DataInitializer.cs`](./DataAccessLayer/DataInitializer.cs) – Database seeding
+
+### Shared Project ([`Shared/`](./Shared/))
+
+- [`Exceptions/`](./Shared/Exceptions) – Custom exception classes
+
+### BusinessLayer Project ([`BusinessLayer/`](./BusinessLayer/))
+
+- [`DTOs/`](./BusinessLayer/DTOs) – Data transfer objects
+- [`Facades/`](./BusinessLayer/Facades) – Facade classes for business logic
+- [`Mappers/`](./BusinessLayer/Mappers) – Mapster mapping configurations
+- [`Services/`](./BusinessLayer/Services) – Service classes for data access
+- [`Services/Interfaces/`](./BusinessLayer/Services/Interfaces) – Service interfaces
+
+### TestUtilities Project ([`TestUtilities/`](./TestUtilities/))
+
+- [`Data/`](./TestUtilities/Data) – Test data for unit tests
+- [`MockedObjects/`](./TestUtilities/MockedObjects) – Mocked objects for unit tests
+
+### BusinessLayer.Tests Project ([`BusinessLayer.Tests/`](./BusinessLayer.Tests/))
+
+- [`Services/`](./BusinessLayer.Tests/Services) – Unit tests for service classes
 
 ## Getting Started
 
@@ -56,9 +76,16 @@ documentation.
 1. Clone the [repository](https://gitlab.fi.muni.cz/xsabo1/pv179-bookhub)
 2. Navigate to the [`BookHub`](./) directory
 3. Restore dependencies
-4. Run database [migrations](./DataAccessLayer/Migrations) and seed the database
-5. Run the application, use the environment `Local`
-6. Authorize using the hard-coded token: `very_secret_token`
+4. Build the solution
+5. Navigate to [root directory](./)
+6. Run database [migrations](./DataAccessLayer/Migrations) and seed the database
+
+```shell
+dotnet ef database update --project DataAccessLayer --startup-project BookHub   
+```  
+
+7. Run the application
+8. Authorize using the hard-coded token: `very_secret_token`
 
 #### B
 
@@ -101,6 +128,9 @@ docker logs -f bookhub-webapi
 - ASP.NET Core Web API
 - Entity Framework Core
 - Mapster
+- xUnit for unit testing
+- Docker for containerization
+- Bogus for generating realistic test data
 - Microsoft SQLite
 - Swagger (Swashbuckle)
 - Git and GitLab for version control and collaboration

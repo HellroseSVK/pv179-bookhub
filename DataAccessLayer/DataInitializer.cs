@@ -14,6 +14,8 @@ namespace DataAccessLayer
         private const int WishlistItemCount = 20;
         private const int OrderItemCount = 30;
         private const int ReviewCount = 20;
+        private const int BookAuthorCount = 40;
+        private const int BookGenreCount = 40;
 
         public static void Seed(this ModelBuilder modelBuilder)
         {
@@ -52,19 +54,23 @@ namespace DataAccessLayer
 
         private static List<Author> PrepareAuthors()
         {
-            return new List<Author>()
+            var names = new[]
             {
-                new Author { Id = 1, Name = "J.K.", Surname = "Rowling" },
-                new Author { Id = 2, Name = "George", Surname = "Orwell" },
-                new Author { Id = 3, Name = "Harper", Surname = "Lee" },
-                new Author { Id = 4, Name = "F. Scott", Surname = "Fitzgerald" },
-                new Author { Id = 5, Name = "Jane", Surname = "Austen" },
-                new Author { Id = 6, Name = "Mark", Surname = "Twain" },
-                new Author { Id = 7, Name = "Ernest", Surname = "Hemingway" },
-                new Author { Id = 8, Name = "Agatha", Surname = "Christie" },
-                new Author { Id = 9, Name = "Stephen", Surname = "King" },
-                new Author { Id = 10, Name = "Toni", Surname = "Morrison" }
+                "J.K.", "George", "Harper", "F. Scott", "Jane", "Mark", "Ernest", "Agatha", "Stephen", "Toni"
             };
+
+            var surnames = new[]
+            {
+                "Rowling", "Orwell", "Lee", "Fitzgerald", "Austen", "Twain", "Hemingway", "Christie", "King", "Morrison"
+            };
+
+            var faker = new Faker<Author>()
+                .UseSeed(213496)
+                .RuleFor(b => b.Id, f => f.IndexFaker + 1)
+                .RuleFor(b => b.Name, f => f.PickRandom(names))
+                .RuleFor(b => b.Surname, f => f.PickRandom(surnames));
+
+            return faker.Generate(AuthorCount);
         }
 
         private static List<Book> PrepareBooks()
@@ -83,23 +89,40 @@ namespace DataAccessLayer
                 "Secrets of the {adjective} {noun}"
             };
 
-            var adjectives = new[] { "Silent", "Hidden", "Lost", "Forgotten", "Ancient", "Mysterious", "Eternal", "Sacred", "Dark", "Golden", "Silver", "Crimson", "Emerald", "Shadowed", "Bright" };
-            var nouns = new[] { "Journey", "Kingdom", "Dream", "Secret", "Memory", "Heart", "Soul", "Mind", "Story", "Legend", "Myth", "Tale", "Adventure", "Quest", "Destiny" };
-            var places = new[] { "London", "Paris", "Rome", "Venice", "Prague", "Istanbul", "Cairo", "Tokyo", "Vienna", "Barcelona", "Dublin", "Edinburgh", "Amsterdam", "Copenhagen" };
-            var people = new[] { "Alexander", "Victoria", "Napoleon", "Elizabeth", "Catherine", "Marcus", "Helena", "Adrienne", "Sebastian", "Isabella", "Theodore", "Evangeline" };
+            var adjectives = new[]
+            {
+                "Silent", "Hidden", "Lost", "Forgotten", "Ancient", "Mysterious", "Eternal", "Sacred", "Dark", "Golden",
+                "Silver", "Crimson", "Emerald", "Shadowed", "Bright"
+            };
+            var nouns = new[]
+            {
+                "Journey", "Kingdom", "Dream", "Secret", "Memory", "Heart", "Soul", "Mind", "Story", "Legend", "Myth",
+                "Tale", "Adventure", "Quest", "Destiny"
+            };
+            var places = new[]
+            {
+                "London", "Paris", "Rome", "Venice", "Prague", "Istanbul", "Cairo", "Tokyo", "Vienna", "Barcelona",
+                "Dublin", "Edinburgh", "Amsterdam", "Copenhagen"
+            };
+            var people = new[]
+            {
+                "Alexander", "Victoria", "Napoleon", "Elizabeth", "Catherine", "Marcus", "Helena", "Adrienne",
+                "Sebastian", "Isabella", "Theodore", "Evangeline"
+            };
 
             var faker = new Faker<Book>()
                 .UseSeed(98765)
                 .RuleFor(b => b.Id, f => f.IndexFaker + 1)
                 .RuleFor(b => b.Title, f => GenerateBookTitle(f, bookTitleTemplates, adjectives, nouns, places, people))
-                .RuleFor(b => b.Description, f => GenerateBookDescription(f))
+                .RuleFor(b => b.Description, GenerateBookDescription)
                 .RuleFor(b => b.Price, f => Math.Round(f.Random.Decimal(8.99m, 29.99m), 2))
                 .RuleFor(b => b.PublisherId, f => f.Random.Int(1, PublisherCount));
 
             return faker.Generate(BookCount);
         }
 
-        private static string GenerateBookTitle(Faker faker, string[] templates, string[] adjectives, string[] nouns, string[] places, string[] people)
+        private static string GenerateBookTitle(Faker faker, string[] templates, string[] adjectives, string[] nouns,
+            string[] places, string[] people)
         {
             var template = faker.PickRandom(templates);
             return template
@@ -162,25 +185,26 @@ namespace DataAccessLayer
 
         private static List<Genre> PrepareGenres()
         {
-            return new List<Genre>()
+            var genreNames = new[]
             {
-                new Genre { Id = 1, Name = "Fantasy" },
-                new Genre { Id = 2, Name = "Science Fiction" },
-                new Genre { Id = 3, Name = "Mystery" },
-                new Genre { Id = 4, Name = "Romance" },
-                new Genre { Id = 5, Name = "Thriller" },
-                new Genre { Id = 6, Name = "Horror" },
-                new Genre { Id = 7, Name = "Historical Fiction" },
-                new Genre { Id = 8, Name = "Literary Fiction" },
-                new Genre { Id = 9, Name = "Adventure" },
-                new Genre { Id = 10, Name = "Classic" }
+                "Fantasy", "Science Fiction", "Mystery", "Romance", "Thriller",
+                "Horror", "Historical Fiction", "Literary Fiction", "Adventure", "Classic", "Non-Fiction",
+                "Biography", "Self-Help", "Young Adult", "Children's", "Dystopian", "Contemporary", "Graphic Novel",
+                "Poetry", "Drama"
             };
+
+            var faker = new Faker<Genre>()
+                .UseSeed(87416)
+                .RuleFor(b => b.Id, f => f.IndexFaker + 1)
+                .RuleFor(b => b.Name, f => f.PickRandom(genreNames));
+
+            return faker.Generate(GenreCount);
         }
 
         private static List<Publisher> PreparePublishers()
         {
-            return new List<Publisher>()
-            {
+            return
+            [
                 new Publisher { Id = 1, Name = "Bloomsbury Publishing Plc" },
                 new Publisher { Id = 2, Name = "Harper & Brothers" },
                 new Publisher { Id = 3, Name = "Canongate Books" },
@@ -191,7 +215,7 @@ namespace DataAccessLayer
                 new Publisher { Id = 8, Name = "Medknow Publications" },
                 new Publisher { Id = 9, Name = "University of California Press" },
                 new Publisher { Id = 10, Name = "Emerald Group Publishing" }
-            };
+            ];
         }
 
         private static List<Review> PrepareReviews()
@@ -200,8 +224,8 @@ namespace DataAccessLayer
                 .UseSeed(12345)
                 .RuleFor(r => r.Id, f => f.IndexFaker + 1)
                 .RuleFor(r => r.Rating, f => f.Random.WeightedRandom(
-                    new[] { 1, 2, 3, 4, 5 },
-                    new[] { 0.1f, 0.1f, 0.2f, 0.3f, 0.3f }
+                    [1, 2, 3, 4, 5],
+                    [0.1f, 0.1f, 0.2f, 0.3f, 0.3f]
                 ))
                 .RuleFor(r => r.Body, (f, r) => GenerateReviewBody(f, r.Rating))
                 .RuleFor(r => r.BookId, f => f.Random.Int(1, BookCount))
@@ -212,9 +236,21 @@ namespace DataAccessLayer
 
         private static string GenerateReviewBody(Faker faker, int rating)
         {
-            var positiveAdjectives = new[] { "amazing", "fantastic", "brilliant", "wonderful", "excellent", "outstanding", "captivating", "engaging", "masterful", "beautiful" };
-            var negativeAdjectives = new[] { "disappointing", "boring", "confusing", "poorly written", "predictable", "slow", "uninteresting", "weak", "frustrating", "tedious" };
-            var neutralAdjectives = new[] { "decent", "okay", "average", "readable", "solid", "fine", "acceptable", "reasonable", "adequate", "satisfactory" };
+            var positiveAdjectives = new[]
+            {
+                "amazing", "fantastic", "brilliant", "wonderful", "excellent", "outstanding", "captivating", "engaging",
+                "masterful", "beautiful"
+            };
+            var negativeAdjectives = new[]
+            {
+                "disappointing", "boring", "confusing", "poorly written", "predictable", "slow", "uninteresting",
+                "weak", "frustrating", "tedious"
+            };
+            var neutralAdjectives = new[]
+            {
+                "decent", "okay", "average", "readable", "solid", "fine", "acceptable", "reasonable", "adequate",
+                "satisfactory"
+            };
 
             var positiveComments = new[]
             {
@@ -251,11 +287,15 @@ namespace DataAccessLayer
 
             return rating switch
             {
-                5 => $"{faker.PickRandom(positiveComments)} {faker.PickRandom(positiveAdjectives).ToUpper()} book that I would definitely recommend.",
-                4 => $"Really {faker.PickRandom(positiveAdjectives)} book. {faker.PickRandom(positiveComments)} Just a few minor issues kept it from being perfect.",
+                5 =>
+                    $"{faker.PickRandom(positiveComments)} {faker.PickRandom(positiveAdjectives).ToUpper()} book that I would definitely recommend.",
+                4 =>
+                    $"Really {faker.PickRandom(positiveAdjectives)} book. {faker.PickRandom(positiveComments)} Just a few minor issues kept it from being perfect.",
                 3 => $"{faker.PickRandom(neutralComments)} {faker.PickRandom(neutralAdjectives).ToUpper()} overall.",
-                2 => $"Unfortunately {faker.PickRandom(negativeAdjectives)}. {faker.PickRandom(negativeComments)} Had some potential but didn't deliver.",
-                1 => $"Very {faker.PickRandom(negativeAdjectives)} read. {faker.PickRandom(negativeComments)} Would not recommend.",
+                2 =>
+                    $"Unfortunately {faker.PickRandom(negativeAdjectives)}. {faker.PickRandom(negativeComments)} Had some potential but didn't deliver.",
+                1 =>
+                    $"Very {faker.PickRandom(negativeAdjectives)} read. {faker.PickRandom(negativeComments)} Would not recommend.",
                 _ => faker.Lorem.Sentence(faker.Random.Int(5, 15))
             };
         }
@@ -266,12 +306,12 @@ namespace DataAccessLayer
                 .UseSeed(54321)
                 .RuleFor(o => o.Id, f => f.IndexFaker + 1)
                 .RuleFor(o => o.BookId, f => f.Random.WeightedRandom(
-                    new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
-                    new[] { 0.15f, 0.12f, 0.12f, 0.10f, 0.12f, 0.08f, 0.08f, 0.10f, 0.08f, 0.05f }
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    [0.15f, 0.12f, 0.12f, 0.10f, 0.12f, 0.08f, 0.08f, 0.10f, 0.08f, 0.05f]
                 ))
                 .RuleFor(o => o.UserId, f => f.Random.WeightedRandom(
-                    new[] { 1, 2, 3, 4, 5, 6, 7, 8 },
-                    new[] { 0.20f, 0.15f, 0.12f, 0.15f, 0.10f, 0.18f, 0.05f, 0.05f }
+                    [1, 2, 3, 4, 5, 6, 7, 8],
+                    [0.20f, 0.15f, 0.12f, 0.15f, 0.10f, 0.18f, 0.05f, 0.05f]
                 ));
 
             return faker.Generate(OrderItemCount);
@@ -282,9 +322,9 @@ namespace DataAccessLayer
             var faker = new Faker<User>()
                 .UseSeed(666)
                 .RuleFor(u => u.Id, f => f.IndexFaker + 1)
-                .RuleFor(u => u.Email, f => GenerateEmail(f))
+                .RuleFor(u => u.Email, GenerateEmail)
                 .RuleFor(u => u.IsAdmin, f => f.Random.Bool(0.2f)) // 20% admins
-                .RuleFor(u => u.Password, f => GeneratePassword(f));
+                .RuleFor(u => u.Password, GeneratePassword);
 
             return faker.Generate(UserCount);
         }
@@ -298,16 +338,16 @@ namespace DataAccessLayer
         }
 
         private static readonly string[] FirstNames =
-        {
+        [
             "john", "jane", "michael", "sarah", "david",
             "emily", "chris", "laura", "robert", "anna"
-        };
+        ];
 
         private static readonly string[] LastNames =
-        {
+        [
             "smith", "johnson", "williams", "brown", "jones",
             "garcia", "miller", "davis", "martinez", "lee"
-        };
+        ];
 
         private static string GenerateEmail(Faker faker)
         {
@@ -331,36 +371,24 @@ namespace DataAccessLayer
 
         private static List<BookAuthor> LinkBooksAndAuthors()
         {
-            return new List<BookAuthor>()
-            {
-                new BookAuthor { Id = 1, BookId = 1, AuthorId = 1 }, // Harry Potter - J.K. Rowling
-                new BookAuthor { Id = 2, BookId = 2, AuthorId = 2 }, // 1984 - George Orwell
-                new BookAuthor { Id = 3, BookId = 3, AuthorId = 3 }, // To Kill a Mockingbird - Harper Lee
-                new BookAuthor { Id = 4, BookId = 4, AuthorId = 4 }, // The Great Gatsby - F. Scott Fitzgerald
-                new BookAuthor { Id = 5, BookId = 5, AuthorId = 5 }, // Pride and Prejudice - Jane Austen
-                new BookAuthor { Id = 6, BookId = 6, AuthorId = 6 }, // Tom Sawyer - Mark Twain
-                new BookAuthor { Id = 7, BookId = 7, AuthorId = 7 }, // The Old Man and the Sea - Ernest Hemingway
-                new BookAuthor { Id = 8, BookId = 8, AuthorId = 8 }, // Murder on Orient Express - Agatha Christie
-                new BookAuthor { Id = 9, BookId = 9, AuthorId = 9 }, // The Shining - Stephen King
-                new BookAuthor { Id = 10, BookId = 10, AuthorId = 10 } // Beloved - Toni Morrison
-            };
+            var faker = new Faker<BookAuthor>()
+                .UseSeed(761321)
+                .RuleFor(w => w.Id, f => f.IndexFaker + 1)
+                .RuleFor(w => w.BookId, f => f.Random.Int(1, BookCount))
+                .RuleFor(w => w.AuthorId, f => f.Random.Int(1, AuthorCount));
+
+            return faker.Generate(BookAuthorCount);
         }
 
         private static List<BookGenre> LinkBooksAndGenres()
         {
-            return new List<BookGenre>()
-            {
-                new BookGenre { Id = 1, BookId = 1, GenreId = 1 }, // Harry Potter - Fantasy
-                new BookGenre { Id = 2, BookId = 2, GenreId = 2 }, // 1984 - Science Fiction
-                new BookGenre { Id = 3, BookId = 3, GenreId = 8 }, // To Kill a Mockingbird - Literary Fiction
-                new BookGenre { Id = 4, BookId = 4, GenreId = 10 }, // The Great Gatsby - Classic
-                new BookGenre { Id = 5, BookId = 5, GenreId = 4 }, // Pride and Prejudice - Romance
-                new BookGenre { Id = 6, BookId = 6, GenreId = 9 }, // Tom Sawyer - Adventure
-                new BookGenre { Id = 7, BookId = 7, GenreId = 8 }, // The Old Man and the Sea - Literary Fiction
-                new BookGenre { Id = 8, BookId = 8, GenreId = 3 }, // Murder on Orient Express - Mystery
-                new BookGenre { Id = 9, BookId = 9, GenreId = 6 }, // The Shining - Horror
-                new BookGenre { Id = 10, BookId = 10, GenreId = 8 } // Beloved - Literary Fiction
-            };
+            var faker = new Faker<BookGenre>()
+                .UseSeed(761321)
+                .RuleFor(w => w.Id, f => f.IndexFaker + 1)
+                .RuleFor(w => w.BookId, f => f.Random.Int(1, BookCount))
+                .RuleFor(w => w.GenreId, f => f.Random.Int(1, GenreCount));
+
+            return faker.Generate(BookGenreCount);
         }
     }
 }

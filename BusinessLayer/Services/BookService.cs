@@ -235,7 +235,8 @@ public class BookService(CustomDBContext dbContext) : IBookService
         var missingAuthorIds = authorIds.Except(authors.Select(a => a.Id)).ToList();
         if (missingAuthorIds.Any())
         {
-            throw new InvalidOperationException($"Authors with ids {string.Join(", ", missingAuthorIds)} not found.");
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                $"Authors with ids {string.Join(", ", missingAuthorIds)} not found.");
         }
 
         return authors;
@@ -250,7 +251,8 @@ public class BookService(CustomDBContext dbContext) : IBookService
         var missingGenreIds = genreIds.Except(genres.Select(g => g.Id)).ToList();
         if (missingGenreIds.Any())
         {
-            throw new InvalidOperationException($"Genres  with ids {string.Join(", ", missingGenreIds)} not found.");
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                $"Genres  with ids {string.Join(", ", missingGenreIds)} not found.");
         }
 
         return genres;
@@ -263,7 +265,7 @@ public class BookService(CustomDBContext dbContext) : IBookService
 
         if (publisher == null)
         {
-            throw new InvalidOperationException($"Publisher with id {publisherId} not found.");
+            throw new StatusCodeException(StatusCodes.Status404NotFound, $"Publisher with id {publisherId} not found.");
         }
 
         return publisher;
