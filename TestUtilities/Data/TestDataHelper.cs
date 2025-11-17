@@ -109,10 +109,38 @@ namespace TestUtilities.Data
                 new User
                 {
                     Id = 1,
-                    Email = "",
-                    Password = "",
+                    Email = "john.doe@example.com",
+                    Password = "hashedPassword123",
                     IsAdmin = false
                 },
+                new User
+                {
+                    Id = 2,
+                    Email = "jane.smith@example.com",
+                    Password = "securePass456",
+                    IsAdmin = true
+                },
+                new User
+                {
+                    Id = 3,
+                    Email = "mike.jones@test.com",
+                    Password = "testPassword789",
+                    IsAdmin = false
+                },
+                new User
+                {
+                    Id = 4,
+                    Email = "admin@bookhub.com",
+                    Password = "adminPassword321",
+                    IsAdmin = true
+                },
+                new User
+                {
+                    Id = 5,
+                    Email = "reader@example.com",
+                    Password = "readerPass654",
+                    IsAdmin = false
+                }
             ];
         }
 
