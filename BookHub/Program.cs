@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using BusinessLayer.Mapper;
 using BusinessLayer.Services;
 using DataAccessLayer;
@@ -9,6 +10,9 @@ using BusinessLayer.Services.Interfaces;
 using BusinessLayer.Facades.Interfaces;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,9 +32,12 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Enter the API key as follows: Bearer your_token",
         Name = "Authorization",
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    }
+    );
+
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -91,6 +98,39 @@ builder.Services.Configure<KestrelServerOptions>(options =>
     options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10MB
 });
 
+var jwtKey = configuration["Jwt:Key"];
+var jwtIssuer = configuration["Jwt:Issuer"];
+var jwtAudience = configuration["Jwt:Audience"];
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+if (string.IsNullOrWhiteSpace(jwtKey) || string.IsNullOrWhiteSpace(jwtIssuer) || string.IsNullOrWhiteSpace(jwtAudience))
+{
+    Console.WriteLine("Warning: Jwt settings are missing in configuration.");
+}
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = true;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? string.Empty))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
@@ -122,6 +162,7 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseMiddleware<TokenAuthenticationMiddleware>();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<JsonToXmlMiddleware>();

@@ -1,9 +1,8 @@
-﻿namespace DataAccessLayer.Entities
-{
-    public class Publisher : BaseEntity
-    {
-        public required string Name { get; set; }
+﻿namespace DataAccessLayer.Entities;
 
-        public List<Book> Books { get; set; } = [];
-    }
+public class Publisher : BaseEntity
+{
+    public required string Name { get; set; }
+
+    public List<Book> Books { get; set; } = [];
 }

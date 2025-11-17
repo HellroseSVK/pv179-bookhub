@@ -1,18 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MVC.Models.Account
+namespace MVC.Models.Account;
+
+public class LoginViewModel
 {
-    public class LoginViewModel
-    {
-        [Required]
-        [EmailAddress]
-        public required string Email { get; set; }
+    [Required]
+    [EmailAddress]
+    public required string Email { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        public required string Password { get; set; }
+    [Required]
+    [DataType(DataType.Password)]
+    public required string Password { get; set; }
 
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; }
-    }
+    [Display(Name = "Remember me?")]
+    public bool RememberMe { get; set; }
 }

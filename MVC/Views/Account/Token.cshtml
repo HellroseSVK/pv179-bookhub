@@ -1,0 +1,61 @@
+@model MVC.Models.Account.TokenViewModel
+
+<h2>Token</h2>
+
+<div>
+    <p>Short-lived JWT for API calls. The token is shown below and stored in <code>localStorage</code> when you copy it.</p>
+
+    <div style="margin-bottom:8px;">
+        <button id="btnCopy" class="btn btn-secondary">Copy</button>
+        <button id="btnClear" class="btn btn-outline-secondary">Clear</button>
+    </div>
+
+    <div>
+        <label for="tokenArea">JWT</label><br />
+        <textarea id="tokenArea" rows="4" style="width:100%;font-family:monospace;" readonly>@Model?.Token</textarea>
+    </div>
+
+    <small class="text-muted">Use the token as: <code>Authorization: Bearer &lt;token&gt;</code></small>
+</div>
+
+<script>
+    (function () {
+        const tokenArea = document.getElementById('tokenArea');
+        const btnCopy = document.getElementById('btnCopy');
+        const btnClear = document.getElementById('btnClear');
+
+        function setToken(t) {
+            tokenArea.value = t || '';
+            if (t) localStorage.setItem('jwt', t);
+            else localStorage.removeItem('jwt');
+        }
+
+        async function copyToken() {
+            if (!tokenArea.value) return;
+            try {
+                await navigator.clipboard.writeText(tokenArea.value);
+                btnCopy.innerText = 'Copied';
+                setTimeout(() => btnCopy.innerText = 'Copy', 1200);
+                setToken(tokenArea.value);
+            } catch {
+                alert('Copy failed. Select and copy manually.');
+            }
+        }
+
+        function clearToken() {
+            setToken('');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const stored = localStorage.getItem('jwt');
+            if (stored) tokenArea.value = stored;
+            // if server provided token, keep it unless localStorage overrides
+            if (!tokenArea.value && '@(Model?.Token ?? "")') {
+                tokenArea.value = '@(Model?.Token ?? "")';
+            }
+        });
+
+        btnCopy.addEventListener('click', copyToken);
+        btnClear.addEventListener('click', clearToken);
+    })();
+</script>

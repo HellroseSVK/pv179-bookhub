@@ -2,393 +2,392 @@
 using Microsoft.EntityFrameworkCore;
 using Bogus;
 
-namespace DataAccessLayer
+namespace DataAccessLayer;
+
+public static class DataInitializer
 {
-    public static class DataInitializer
+    private const int GenreCount = 10;
+    private const int PublisherCount = 6;
+    private const int AuthorCount = 20;
+    private const int UserCount = 8;
+    private const int BookCount = 25;
+    private const int WishlistItemCount = 20;
+    private const int OrderItemCount = 30;
+    private const int ReviewCount = 20;
+    private const int BookAuthorCount = 40;
+    private const int BookGenreCount = 40;
+
+    public static void Seed(this ModelBuilder modelBuilder)
     {
-        private const int GenreCount = 10;
-        private const int PublisherCount = 6;
-        private const int AuthorCount = 20;
-        private const int UserCount = 8;
-        private const int BookCount = 25;
-        private const int WishlistItemCount = 20;
-        private const int OrderItemCount = 30;
-        private const int ReviewCount = 20;
-        private const int BookAuthorCount = 40;
-        private const int BookGenreCount = 40;
+        var genres = PrepareGenres();
+        var publishers = PreparePublishers();
+        var authors = PrepareAuthors();
+        var users = PrepareUsers();
+        var books = PrepareBooks();
+        var wishlistItems = PrepareWishlistItems();
+        var orderItems = PrepareOrderItems();
+        var reviews = PrepareReviews();
+        var bookAuthors = LinkBooksAndAuthors();
+        var bookGenres = LinkBooksAndGenres();
 
-        public static void Seed(this ModelBuilder modelBuilder)
+        modelBuilder.Entity<Genre>()
+            .HasData(genres);
+        modelBuilder.Entity<Publisher>()
+            .HasData(publishers);
+        modelBuilder.Entity<Author>()
+            .HasData(authors);
+        modelBuilder.Entity<User>()
+            .HasData(users);
+        modelBuilder.Entity<Book>()
+            .HasData(books);
+        modelBuilder.Entity<WishlistItem>()
+            .HasData(wishlistItems);
+        modelBuilder.Entity<OrderItem>()
+            .HasData(orderItems);
+        modelBuilder.Entity<Review>()
+            .HasData(reviews);
+        modelBuilder.Entity<BookAuthor>()
+            .HasData(bookAuthors);
+        modelBuilder.Entity<BookGenre>()
+            .HasData(bookGenres);
+    }
+
+    private static List<Author> PrepareAuthors()
+    {
+        var names = new[]
         {
-            var genres = PrepareGenres();
-            var publishers = PreparePublishers();
-            var authors = PrepareAuthors();
-            var users = PrepareUsers();
-            var books = PrepareBooks();
-            var wishlistItems = PrepareWishlistItems();
-            var orderItems = PrepareOrderItems();
-            var reviews = PrepareReviews();
-            var bookAuthors = LinkBooksAndAuthors();
-            var bookGenres = LinkBooksAndGenres();
+            "J.K.", "George", "Harper", "F. Scott", "Jane", "Mark", "Ernest", "Agatha", "Stephen", "Toni"
+        };
 
-            modelBuilder.Entity<Genre>()
-                .HasData(genres);
-            modelBuilder.Entity<Publisher>()
-                .HasData(publishers);
-            modelBuilder.Entity<Author>()
-                .HasData(authors);
-            modelBuilder.Entity<User>()
-                .HasData(users);
-            modelBuilder.Entity<Book>()
-                .HasData(books);
-            modelBuilder.Entity<WishlistItem>()
-                .HasData(wishlistItems);
-            modelBuilder.Entity<OrderItem>()
-                .HasData(orderItems);
-            modelBuilder.Entity<Review>()
-                .HasData(reviews);
-            modelBuilder.Entity<BookAuthor>()
-                .HasData(bookAuthors);
-            modelBuilder.Entity<BookGenre>()
-                .HasData(bookGenres);
-        }
-
-        private static List<Author> PrepareAuthors()
+        var surnames = new[]
         {
-            var names = new[]
-            {
-                "J.K.", "George", "Harper", "F. Scott", "Jane", "Mark", "Ernest", "Agatha", "Stephen", "Toni"
-            };
+            "Rowling", "Orwell", "Lee", "Fitzgerald", "Austen", "Twain", "Hemingway", "Christie", "King", "Morrison"
+        };
 
-            var surnames = new[]
-            {
-                "Rowling", "Orwell", "Lee", "Fitzgerald", "Austen", "Twain", "Hemingway", "Christie", "King", "Morrison"
-            };
+        var faker = new Faker<Author>()
+            .UseSeed(213496)
+            .RuleFor(b => b.Id, f => f.IndexFaker + 1)
+            .RuleFor(b => b.Name, f => f.PickRandom(names))
+            .RuleFor(b => b.Surname, f => f.PickRandom(surnames));
 
-            var faker = new Faker<Author>()
-                .UseSeed(213496)
-                .RuleFor(b => b.Id, f => f.IndexFaker + 1)
-                .RuleFor(b => b.Name, f => f.PickRandom(names))
-                .RuleFor(b => b.Surname, f => f.PickRandom(surnames));
+        return faker.Generate(AuthorCount);
+    }
 
-            return faker.Generate(AuthorCount);
-        }
-
-        private static List<Book> PrepareBooks()
+    private static List<Book> PrepareBooks()
+    {
+        var bookTitleTemplates = new[]
         {
-            var bookTitleTemplates = new[]
-            {
-                "The {adjective} {noun}",
-                "{adjective} {noun}",
-                "The {noun} of {place}",
-                "{person}'s {noun}",
-                "The {adjective} {person}",
-                "{noun} in {place}",
-                "Beyond the {noun}",
-                "Tales of {adjective} {noun}",
-                "The Last {noun}",
-                "Secrets of the {adjective} {noun}"
-            };
+            "The {adjective} {noun}",
+            "{adjective} {noun}",
+            "The {noun} of {place}",
+            "{person}'s {noun}",
+            "The {adjective} {person}",
+            "{noun} in {place}",
+            "Beyond the {noun}",
+            "Tales of {adjective} {noun}",
+            "The Last {noun}",
+            "Secrets of the {adjective} {noun}"
+        };
 
-            var adjectives = new[]
-            {
-                "Silent", "Hidden", "Lost", "Forgotten", "Ancient", "Mysterious", "Eternal", "Sacred", "Dark", "Golden",
-                "Silver", "Crimson", "Emerald", "Shadowed", "Bright"
-            };
-            var nouns = new[]
-            {
-                "Journey", "Kingdom", "Dream", "Secret", "Memory", "Heart", "Soul", "Mind", "Story", "Legend", "Myth",
-                "Tale", "Adventure", "Quest", "Destiny"
-            };
-            var places = new[]
-            {
-                "London", "Paris", "Rome", "Venice", "Prague", "Istanbul", "Cairo", "Tokyo", "Vienna", "Barcelona",
-                "Dublin", "Edinburgh", "Amsterdam", "Copenhagen"
-            };
-            var people = new[]
-            {
-                "Alexander", "Victoria", "Napoleon", "Elizabeth", "Catherine", "Marcus", "Helena", "Adrienne",
-                "Sebastian", "Isabella", "Theodore", "Evangeline"
-            };
-
-            var faker = new Faker<Book>()
-                .UseSeed(98765)
-                .RuleFor(b => b.Id, f => f.IndexFaker + 1)
-                .RuleFor(b => b.Title, f => GenerateBookTitle(f, bookTitleTemplates, adjectives, nouns, places, people))
-                .RuleFor(b => b.Description, GenerateBookDescription)
-                .RuleFor(b => b.Price, f => Math.Round(f.Random.Decimal(8.99m, 29.99m), 2))
-                .RuleFor(b => b.PublisherId, f => f.Random.Int(1, PublisherCount));
-
-            return faker.Generate(BookCount);
-        }
-
-        private static string GenerateBookTitle(Faker faker, string[] templates, string[] adjectives, string[] nouns,
-            string[] places, string[] people)
+        var adjectives = new[]
         {
-            var template = faker.PickRandom(templates);
-            return template
-                .Replace("{adjective}", faker.PickRandom(adjectives))
-                .Replace("{noun}", faker.PickRandom(nouns))
-                .Replace("{place}", faker.PickRandom(places))
-                .Replace("{person}", faker.PickRandom(people));
-        }
-
-        private static string GenerateBookDescription(Faker faker)
+            "Silent", "Hidden", "Lost", "Forgotten", "Ancient", "Mysterious", "Eternal", "Sacred", "Dark", "Golden",
+            "Silver", "Crimson", "Emerald", "Shadowed", "Bright"
+        };
+        var nouns = new[]
         {
-            var openings = new[]
-            {
-                "A captivating tale of",
-                "An epic journey through",
-                "A haunting story about",
-                "A thrilling adventure featuring",
-                "A beautiful narrative exploring",
-                "A gripping saga of",
-                "An unforgettable story following",
-                "A masterful exploration of",
-                "A compelling tale that",
-                "A breathtaking story of"
-            };
-
-            var themes = new[]
-            {
-                "love and betrayal",
-                "courage and sacrifice",
-                "mystery and intrigue",
-                "friendship and loyalty",
-                "power and corruption",
-                "hope and redemption",
-                "loss and discovery",
-                "adventure and danger",
-                "family and tradition",
-                "dreams and reality"
-            };
-
-            var settings = new[]
-            {
-                "set in a world of magic and wonder",
-                "unfolding in the shadows of ancient cities",
-                "taking place across vast kingdoms",
-                "set against the backdrop of war",
-                "in a realm where nothing is as it seems",
-                "spanning generations of conflict",
-                "in a time of great change",
-                "where legends come to life",
-                "in a place forgotten by time",
-                "across mysterious landscapes"
-            };
-
-            var opening = faker.PickRandom(openings);
-            var theme = faker.PickRandom(themes);
-            var setting = faker.PickRandom(settings);
-
-            return $"{opening} {theme}, {setting}. {faker.Lorem.Sentence(faker.Random.Int(8, 15))}";
-        }
-
-        private static List<Genre> PrepareGenres()
+            "Journey", "Kingdom", "Dream", "Secret", "Memory", "Heart", "Soul", "Mind", "Story", "Legend", "Myth",
+            "Tale", "Adventure", "Quest", "Destiny"
+        };
+        var places = new[]
         {
-            var genreNames = new[]
-            {
-                "Fantasy", "Science Fiction", "Mystery", "Romance", "Thriller",
-                "Horror", "Historical Fiction", "Literary Fiction", "Adventure", "Classic", "Non-Fiction",
-                "Biography", "Self-Help", "Young Adult", "Children's", "Dystopian", "Contemporary", "Graphic Novel",
-                "Poetry", "Drama"
-            };
-
-            var faker = new Faker<Genre>()
-                .UseSeed(87416)
-                .RuleFor(b => b.Id, f => f.IndexFaker + 1)
-                .RuleFor(b => b.Name, f => f.PickRandom(genreNames));
-
-            return faker.Generate(GenreCount);
-        }
-
-        private static List<Publisher> PreparePublishers()
+            "London", "Paris", "Rome", "Venice", "Prague", "Istanbul", "Cairo", "Tokyo", "Vienna", "Barcelona",
+            "Dublin", "Edinburgh", "Amsterdam", "Copenhagen"
+        };
+        var people = new[]
         {
-            return
-            [
-                new Publisher { Id = 1, Name = "Bloomsbury Publishing Plc" },
-                new Publisher { Id = 2, Name = "Harper & Brothers" },
-                new Publisher { Id = 3, Name = "Canongate Books" },
-                new Publisher { Id = 4, Name = "Ian Allan Publishing" },
-                new Publisher { Id = 5, Name = "Bison Books" },
-                new Publisher { Id = 6, Name = "Ladybird Books" },
-                new Publisher { Id = 7, Name = "Harlequin Enterprises Ltd" },
-                new Publisher { Id = 8, Name = "Medknow Publications" },
-                new Publisher { Id = 9, Name = "University of California Press" },
-                new Publisher { Id = 10, Name = "Emerald Group Publishing" }
-            ];
-        }
+            "Alexander", "Victoria", "Napoleon", "Elizabeth", "Catherine", "Marcus", "Helena", "Adrienne",
+            "Sebastian", "Isabella", "Theodore", "Evangeline"
+        };
 
-        private static List<Review> PrepareReviews()
+        var faker = new Faker<Book>()
+            .UseSeed(98765)
+            .RuleFor(b => b.Id, f => f.IndexFaker + 1)
+            .RuleFor(b => b.Title, f => GenerateBookTitle(f, bookTitleTemplates, adjectives, nouns, places, people))
+            .RuleFor(b => b.Description, GenerateBookDescription)
+            .RuleFor(b => b.Price, f => Math.Round(f.Random.Decimal(8.99m, 29.99m), 2))
+            .RuleFor(b => b.PublisherId, f => f.Random.Int(1, PublisherCount));
+
+        return faker.Generate(BookCount);
+    }
+
+    private static string GenerateBookTitle(Faker faker, string[] templates, string[] adjectives, string[] nouns,
+        string[] places, string[] people)
+    {
+        var template = faker.PickRandom(templates);
+        return template
+            .Replace("{adjective}", faker.PickRandom(adjectives))
+            .Replace("{noun}", faker.PickRandom(nouns))
+            .Replace("{place}", faker.PickRandom(places))
+            .Replace("{person}", faker.PickRandom(people));
+    }
+
+    private static string GenerateBookDescription(Faker faker)
+    {
+        var openings = new[]
         {
-            var faker = new Faker<Review>()
-                .UseSeed(12345)
-                .RuleFor(r => r.Id, f => f.IndexFaker + 1)
-                .RuleFor(r => r.Rating, f => f.Random.WeightedRandom(
-                    [1, 2, 3, 4, 5],
-                    [0.1f, 0.1f, 0.2f, 0.3f, 0.3f]
-                ))
-                .RuleFor(r => r.Body, (f, r) => GenerateReviewBody(f, r.Rating))
-                .RuleFor(r => r.BookId, f => f.Random.Int(1, BookCount))
-                .RuleFor(r => r.UserId, f => f.Random.Int(1, UserCount));
+            "A captivating tale of",
+            "An epic journey through",
+            "A haunting story about",
+            "A thrilling adventure featuring",
+            "A beautiful narrative exploring",
+            "A gripping saga of",
+            "An unforgettable story following",
+            "A masterful exploration of",
+            "A compelling tale that",
+            "A breathtaking story of"
+        };
 
-            return faker.Generate(ReviewCount);
-        }
-
-        private static string GenerateReviewBody(Faker faker, int rating)
+        var themes = new[]
         {
-            var positiveAdjectives = new[]
-            {
-                "amazing", "fantastic", "brilliant", "wonderful", "excellent", "outstanding", "captivating", "engaging",
-                "masterful", "beautiful"
-            };
-            var negativeAdjectives = new[]
-            {
-                "disappointing", "boring", "confusing", "poorly written", "predictable", "slow", "uninteresting",
-                "weak", "frustrating", "tedious"
-            };
-            var neutralAdjectives = new[]
-            {
-                "decent", "okay", "average", "readable", "solid", "fine", "acceptable", "reasonable", "adequate",
-                "satisfactory"
-            };
+            "love and betrayal",
+            "courage and sacrifice",
+            "mystery and intrigue",
+            "friendship and loyalty",
+            "power and corruption",
+            "hope and redemption",
+            "loss and discovery",
+            "adventure and danger",
+            "family and tradition",
+            "dreams and reality"
+        };
 
-            var positiveComments = new[]
-            {
-                "I couldn't put this book down!",
-                "The characters felt real and well-developed.",
-                "The plot was engaging from start to finish.",
-                "Beautiful writing style that flows perfectly.",
-                "This book exceeded all my expectations.",
-                "The emotional depth really resonated with me.",
-                "A truly memorable reading experience."
-            };
-
-            var negativeComments = new[]
-            {
-                "I struggled to get through this one.",
-                "The characters felt one-dimensional.",
-                "The plot was too predictable for my taste.",
-                "I lost interest halfway through.",
-                "The pacing was really off.",
-                "Too many clichés and not enough originality.",
-                "The ending was disappointing."
-            };
-
-            var neutralComments = new[]
-            {
-                "A solid story, though not groundbreaking.",
-                "Some good moments but overall just okay.",
-                "It was fine, but didn't leave a lasting impression.",
-                "Decent read for passing time.",
-                "Had its moments but also some slow parts.",
-                "Worth reading but not a favorite.",
-                "Good enough to finish but wouldn't recommend highly."
-            };
-
-            return rating switch
-            {
-                5 =>
-                    $"{faker.PickRandom(positiveComments)} {faker.PickRandom(positiveAdjectives).ToUpper()} book that I would definitely recommend.",
-                4 =>
-                    $"Really {faker.PickRandom(positiveAdjectives)} book. {faker.PickRandom(positiveComments)} Just a few minor issues kept it from being perfect.",
-                3 => $"{faker.PickRandom(neutralComments)} {faker.PickRandom(neutralAdjectives).ToUpper()} overall.",
-                2 =>
-                    $"Unfortunately {faker.PickRandom(negativeAdjectives)}. {faker.PickRandom(negativeComments)} Had some potential but didn't deliver.",
-                1 =>
-                    $"Very {faker.PickRandom(negativeAdjectives)} read. {faker.PickRandom(negativeComments)} Would not recommend.",
-                _ => faker.Lorem.Sentence(faker.Random.Int(5, 15))
-            };
-        }
-
-        private static List<OrderItem> PrepareOrderItems()
+        var settings = new[]
         {
-            var faker = new Faker<OrderItem>()
-                .UseSeed(54321)
-                .RuleFor(o => o.Id, f => f.IndexFaker + 1)
-                .RuleFor(o => o.BookId, f => f.Random.WeightedRandom(
-                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                    [0.15f, 0.12f, 0.12f, 0.10f, 0.12f, 0.08f, 0.08f, 0.10f, 0.08f, 0.05f]
-                ))
-                .RuleFor(o => o.UserId, f => f.Random.WeightedRandom(
-                    [1, 2, 3, 4, 5, 6, 7, 8],
-                    [0.20f, 0.15f, 0.12f, 0.15f, 0.10f, 0.18f, 0.05f, 0.05f]
-                ));
+            "set in a world of magic and wonder",
+            "unfolding in the shadows of ancient cities",
+            "taking place across vast kingdoms",
+            "set against the backdrop of war",
+            "in a realm where nothing is as it seems",
+            "spanning generations of conflict",
+            "in a time of great change",
+            "where legends come to life",
+            "in a place forgotten by time",
+            "across mysterious landscapes"
+        };
 
-            return faker.Generate(OrderItemCount);
-        }
+        var opening = faker.PickRandom(openings);
+        var theme = faker.PickRandom(themes);
+        var setting = faker.PickRandom(settings);
 
-        private static List<User> PrepareUsers()
+        return $"{opening} {theme}, {setting}. {faker.Lorem.Sentence(faker.Random.Int(8, 15))}";
+    }
+
+    private static List<Genre> PrepareGenres()
+    {
+        var genreNames = new[]
         {
-            var faker = new Faker<User>()
-                .UseSeed(666)
-                .RuleFor(u => u.Id, f => f.IndexFaker + 1)
-                .RuleFor(u => u.Email, GenerateEmail)
-                .RuleFor(u => u.IsAdmin, f => f.Random.Bool(0.2f)) // 20% admins
-                .RuleFor(u => u.Password, GeneratePassword);
+            "Fantasy", "Science Fiction", "Mystery", "Romance", "Thriller",
+            "Horror", "Historical Fiction", "Literary Fiction", "Adventure", "Classic", "Non-Fiction",
+            "Biography", "Self-Help", "Young Adult", "Children's", "Dystopian", "Contemporary", "Graphic Novel",
+            "Poetry", "Drama"
+        };
 
-            return faker.Generate(UserCount);
-        }
+        var faker = new Faker<Genre>()
+            .UseSeed(87416)
+            .RuleFor(b => b.Id, f => f.IndexFaker + 1)
+            .RuleFor(b => b.Name, f => f.PickRandom(genreNames));
 
-        private static string GeneratePassword(Faker faker)
-        {
-            var letters = faker.Random.String2(20, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            var digits = faker.Random.String2(5, "0123456789");
+        return faker.Generate(GenreCount);
+    }
 
-            return letters + digits;
-        }
-
-        private static readonly string[] FirstNames =
+    private static List<Publisher> PreparePublishers()
+    {
+        return
         [
-            "john", "jane", "michael", "sarah", "david",
-            "emily", "chris", "laura", "robert", "anna"
+            new Publisher { Id = 1, Name = "Bloomsbury Publishing Plc" },
+            new Publisher { Id = 2, Name = "Harper & Brothers" },
+            new Publisher { Id = 3, Name = "Canongate Books" },
+            new Publisher { Id = 4, Name = "Ian Allan Publishing" },
+            new Publisher { Id = 5, Name = "Bison Books" },
+            new Publisher { Id = 6, Name = "Ladybird Books" },
+            new Publisher { Id = 7, Name = "Harlequin Enterprises Ltd" },
+            new Publisher { Id = 8, Name = "Medknow Publications" },
+            new Publisher { Id = 9, Name = "University of California Press" },
+            new Publisher { Id = 10, Name = "Emerald Group Publishing" }
         ];
+    }
 
-        private static readonly string[] LastNames =
-        [
-            "smith", "johnson", "williams", "brown", "jones",
-            "garcia", "miller", "davis", "martinez", "lee"
-        ];
+    private static List<Review> PrepareReviews()
+    {
+        var faker = new Faker<Review>()
+            .UseSeed(12345)
+            .RuleFor(r => r.Id, f => f.IndexFaker + 1)
+            .RuleFor(r => r.Rating, f => f.Random.WeightedRandom(
+                [1, 2, 3, 4, 5],
+                [0.1f, 0.1f, 0.2f, 0.3f, 0.3f]
+            ))
+            .RuleFor(r => r.Body, (f, r) => GenerateReviewBody(f, r.Rating))
+            .RuleFor(r => r.BookId, f => f.Random.Int(1, BookCount))
+            .RuleFor(r => r.UserId, f => f.Random.Int(1, UserCount));
 
-        private static string GenerateEmail(Faker faker)
+        return faker.Generate(ReviewCount);
+    }
+
+    private static string GenerateReviewBody(Faker faker, int rating)
+    {
+        var positiveAdjectives = new[]
         {
-            var first = faker.Random.ArrayElement(FirstNames);
-            var last = faker.Random.ArrayElement(LastNames);
-            var domain = faker.Random.ArrayElement(["example.com", "test.com", "sample.org"]);
-
-            return $"{first}.{last}@{domain}";
-        }
-
-        private static List<WishlistItem> PrepareWishlistItems()
+            "amazing", "fantastic", "brilliant", "wonderful", "excellent", "outstanding", "captivating", "engaging",
+            "masterful", "beautiful"
+        };
+        var negativeAdjectives = new[]
         {
-            var faker = new Faker<WishlistItem>()
-                .UseSeed(648651)
-                .RuleFor(w => w.Id, f => f.IndexFaker + 1)
-                .RuleFor(w => w.BookId, f => f.Random.Int(1, BookCount))
-                .RuleFor(w => w.UserId, f => f.Random.Int(1, UserCount));
-
-            return faker.Generate(WishlistItemCount);
-        }
-
-        private static List<BookAuthor> LinkBooksAndAuthors()
+            "disappointing", "boring", "confusing", "poorly written", "predictable", "slow", "uninteresting",
+            "weak", "frustrating", "tedious"
+        };
+        var neutralAdjectives = new[]
         {
-            var faker = new Faker<BookAuthor>()
-                .UseSeed(761321)
-                .RuleFor(w => w.Id, f => f.IndexFaker + 1)
-                .RuleFor(w => w.BookId, f => f.Random.Int(1, BookCount))
-                .RuleFor(w => w.AuthorId, f => f.Random.Int(1, AuthorCount));
+            "decent", "okay", "average", "readable", "solid", "fine", "acceptable", "reasonable", "adequate",
+            "satisfactory"
+        };
 
-            return faker.Generate(BookAuthorCount);
-        }
-
-        private static List<BookGenre> LinkBooksAndGenres()
+        var positiveComments = new[]
         {
-            var faker = new Faker<BookGenre>()
-                .UseSeed(761321)
-                .RuleFor(w => w.Id, f => f.IndexFaker + 1)
-                .RuleFor(w => w.BookId, f => f.Random.Int(1, BookCount))
-                .RuleFor(w => w.GenreId, f => f.Random.Int(1, GenreCount));
+            "I couldn't put this book down!",
+            "The characters felt real and well-developed.",
+            "The plot was engaging from start to finish.",
+            "Beautiful writing style that flows perfectly.",
+            "This book exceeded all my expectations.",
+            "The emotional depth really resonated with me.",
+            "A truly memorable reading experience."
+        };
 
-            return faker.Generate(BookGenreCount);
-        }
+        var negativeComments = new[]
+        {
+            "I struggled to get through this one.",
+            "The characters felt one-dimensional.",
+            "The plot was too predictable for my taste.",
+            "I lost interest halfway through.",
+            "The pacing was really off.",
+            "Too many clichés and not enough originality.",
+            "The ending was disappointing."
+        };
+
+        var neutralComments = new[]
+        {
+            "A solid story, though not groundbreaking.",
+            "Some good moments but overall just okay.",
+            "It was fine, but didn't leave a lasting impression.",
+            "Decent read for passing time.",
+            "Had its moments but also some slow parts.",
+            "Worth reading but not a favorite.",
+            "Good enough to finish but wouldn't recommend highly."
+        };
+
+        return rating switch
+        {
+            5 =>
+                $"{faker.PickRandom(positiveComments)} {faker.PickRandom(positiveAdjectives).ToUpper()} book that I would definitely recommend.",
+            4 =>
+                $"Really {faker.PickRandom(positiveAdjectives)} book. {faker.PickRandom(positiveComments)} Just a few minor issues kept it from being perfect.",
+            3 => $"{faker.PickRandom(neutralComments)} {faker.PickRandom(neutralAdjectives).ToUpper()} overall.",
+            2 =>
+                $"Unfortunately {faker.PickRandom(negativeAdjectives)}. {faker.PickRandom(negativeComments)} Had some potential but didn't deliver.",
+            1 =>
+                $"Very {faker.PickRandom(negativeAdjectives)} read. {faker.PickRandom(negativeComments)} Would not recommend.",
+            _ => faker.Lorem.Sentence(faker.Random.Int(5, 15))
+        };
+    }
+
+    private static List<OrderItem> PrepareOrderItems()
+    {
+        var faker = new Faker<OrderItem>()
+            .UseSeed(54321)
+            .RuleFor(o => o.Id, f => f.IndexFaker + 1)
+            .RuleFor(o => o.BookId, f => f.Random.WeightedRandom(
+                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                [0.15f, 0.12f, 0.12f, 0.10f, 0.12f, 0.08f, 0.08f, 0.10f, 0.08f, 0.05f]
+            ))
+            .RuleFor(o => o.UserId, f => f.Random.WeightedRandom(
+                [1, 2, 3, 4, 5, 6, 7, 8],
+                [0.20f, 0.15f, 0.12f, 0.15f, 0.10f, 0.18f, 0.05f, 0.05f]
+            ));
+
+        return faker.Generate(OrderItemCount);
+    }
+
+    private static List<User> PrepareUsers()
+    {
+        var faker = new Faker<User>()
+            .UseSeed(666)
+            .RuleFor(u => u.Id, f => f.IndexFaker + 1)
+            .RuleFor(u => u.Email, GenerateEmail)
+            .RuleFor(u => u.IsAdmin, f => f.Random.Bool(0.2f)) // 20% admins
+            .RuleFor(u => u.Password, GeneratePassword);
+
+        return faker.Generate(UserCount);
+    }
+
+    private static string GeneratePassword(Faker faker)
+    {
+        var letters = faker.Random.String2(20, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        var digits = faker.Random.String2(5, "0123456789");
+
+        return letters + digits;
+    }
+
+    private static readonly string[] FirstNames =
+    [
+        "john", "jane", "michael", "sarah", "david",
+        "emily", "chris", "laura", "robert", "anna"
+    ];
+
+    private static readonly string[] LastNames =
+    [
+        "smith", "johnson", "williams", "brown", "jones",
+        "garcia", "miller", "davis", "martinez", "lee"
+    ];
+
+    private static string GenerateEmail(Faker faker)
+    {
+        var first = faker.Random.ArrayElement(FirstNames);
+        var last = faker.Random.ArrayElement(LastNames);
+        var domain = faker.Random.ArrayElement(["example.com", "test.com", "sample.org"]);
+
+        return $"{first}.{last}@{domain}";
+    }
+
+    private static List<WishlistItem> PrepareWishlistItems()
+    {
+        var faker = new Faker<WishlistItem>()
+            .UseSeed(648651)
+            .RuleFor(w => w.Id, f => f.IndexFaker + 1)
+            .RuleFor(w => w.BookId, f => f.Random.Int(1, BookCount))
+            .RuleFor(w => w.UserId, f => f.Random.Int(1, UserCount));
+
+        return faker.Generate(WishlistItemCount);
+    }
+
+    private static List<BookAuthor> LinkBooksAndAuthors()
+    {
+        var faker = new Faker<BookAuthor>()
+            .UseSeed(761321)
+            .RuleFor(w => w.Id, f => f.IndexFaker + 1)
+            .RuleFor(w => w.BookId, f => f.Random.Int(1, BookCount))
+            .RuleFor(w => w.AuthorId, f => f.Random.Int(1, AuthorCount));
+
+        return faker.Generate(BookAuthorCount);
+    }
+
+    private static List<BookGenre> LinkBooksAndGenres()
+    {
+        var faker = new Faker<BookGenre>()
+            .UseSeed(761321)
+            .RuleFor(w => w.Id, f => f.IndexFaker + 1)
+            .RuleFor(w => w.BookId, f => f.Random.Int(1, BookCount))
+            .RuleFor(w => w.GenreId, f => f.Random.Int(1, GenreCount));
+
+        return faker.Generate(BookGenreCount);
     }
 }

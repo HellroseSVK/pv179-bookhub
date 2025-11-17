@@ -1,4 +1,3 @@
-﻿namespace BusinessLayer.DTOs.WishlistItem
-{
-    public class WishlistItemSimplifiedDTO : BaseDTO;
-}
+﻿namespace BusinessLayer.DTOs.WishlistItem;
+
+public class WishlistItemSimplifiedDTO : BaseDTO;

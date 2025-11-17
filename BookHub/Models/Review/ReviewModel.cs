@@ -1,13 +1,12 @@
-﻿namespace WebAPI.Models.Review
+﻿namespace WebAPI.Models.Review;
+
+public class ReviewModel
 {
-    public class ReviewModel
-    {
-        public int Rating { get; set; }
+    public int Rating { get; set; }
 
-        public required string Body { get; set; }
+    public required string Body { get; set; }
 
-        public int BookId { get; set; }
+    public int BookId { get; set; }
 
-        public int UserId { get; set; }
-    }
+    public int UserId { get; set; }
 }
