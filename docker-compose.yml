@@ -1,0 +1,18 @@
+services:
+  web-api:
+    build:
+        context: .
+        dockerfile: ./BookHub/Dockerfile
+    ports:
+      - "5000:8080"
+    volumes:
+      - ./web-api/data:/app/data
+  mvc-client:
+    build:
+        context: .
+        dockerfile: ./MVC/Dockerfile
+    ports:
+      - "5001:8080"
+    volumes:
+      - ./mvc-client/data:/app/data
+        
