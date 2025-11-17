@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +7,8 @@ namespace DataAccessLayer
 {
     public class CustomDBContext : IdentityDbContext<LocalIdentityUser>
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         public new DbSet<User> Users { get; set; }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
@@ -21,8 +24,37 @@ namespace DataAccessLayer
 
         public DbSet<LocalIdentityUser> LocalIdentityUsers { get; set; }
 
-        public CustomDBContext(DbContextOptions options) : base(options)
+        public CustomDBContext(DbContextOptions options, IHttpContextAccessor accessor) : base(options)
         {
+            _httpContextAccessor = accessor;
+        }
+
+        public override int SaveChanges()
+        {
+            ApplyAuditInfo();
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            ApplyAuditInfo();
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void ApplyAuditInfo()
+        {
+            var userId = _httpContextAccessor.HttpContext?.User?
+                .FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)
+                ?.Value;
+
+            var modifiedEntries = ChangeTracker.Entries<Book>()
+                .Where(e => e.State == EntityState.Modified);
+
+            foreach (var entry in modifiedEntries)
+            {
+                entry.Entity.LastModifiedById = userId;
+                entry.Entity.EditCount += 1;
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

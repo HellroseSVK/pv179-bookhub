@@ -19,10 +19,11 @@ namespace TestUtilities.MockedObjects
 
         public static CustomDBContext CreateFromOptions(DbContextOptions<CustomDBContext> options)
         {
-            var dbContextToMock = new CustomDBContext(options);
-            PrepareData(dbContextToMock);
+            var accessor = MockHttpContextAccessor.Create();
+            var dbContext = new CustomDBContext(options, accessor);
+            PrepareData(dbContext);
 
-            return dbContextToMock;
+            return dbContext;
         }
         private static void PrepareData(CustomDBContext dbContext)
         {
@@ -38,7 +39,7 @@ namespace TestUtilities.MockedObjects
             dbContext.SaveChanges();
         }
 
-        private static void PrepareDataAsync(CustomDBContext dbContext)
+        private static async void PrepareDataAsync(CustomDBContext dbContext)
         {
             dbContext.Authors.AddRange(TestDataHelper.GetAuthors());
             dbContext.Publishers.AddRange(TestDataHelper.GetPublishers());
@@ -49,7 +50,7 @@ namespace TestUtilities.MockedObjects
             dbContext.WishlistItems.AddRange(TestDataHelper.GetWishlistItems());
             dbContext.OrderItems.AddRange(TestDataHelper.GetOrderItems());
 
-            dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
     }
 }

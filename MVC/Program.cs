@@ -34,6 +34,8 @@ builder.Services.AddDbContextFactory<CustomDBContext>(options =>
         .EnableSensitiveDataLogging();
 });
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IGenreService, GenreService>();

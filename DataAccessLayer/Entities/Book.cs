@@ -26,5 +26,11 @@ namespace DataAccessLayer.Entities
         public int PublisherId { get; set; }
 
         public Publisher? Publisher { get; set; }
+
+        public int EditCount { get; set; } = 0;
+
+        public string? LastModifiedById { get; set; }
+
+        public LocalIdentityUser? LastModifiedBy { get; set; }
     }
 }
