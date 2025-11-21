@@ -99,6 +99,10 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
             .HasForeignKey<LocalIdentityUser>(u => u.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
         // one-to-many relationships
 
         modelBuilder.Entity<WishlistItem>()
