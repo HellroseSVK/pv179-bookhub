@@ -1,6 +1,7 @@
 ﻿using BusinessLayer.DTOs.User;
 using BusinessLayer.Services.Interfaces;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Exception;
 using WebAPI.Core;
@@ -34,9 +35,9 @@ public class UserController(IUserService userService) : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType<UserResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateUser([FromBody] UserModel model)
     {
         if (!ModelState.IsValid)
@@ -47,6 +48,22 @@ public class UserController(IUserService userService) : ControllerBase
         var result = await userService.CreateUserAsync(model.Adapt<UserUpsertDTO>());
 
         return Created($"/User/{result.Id}", result.Adapt<UserSimplifiedResponse>());
+    }
+
+    [HttpPost("/token")]
+    [AllowAnonymous]
+    [ProducesResponseType<UserResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetToken([FromBody] UserLoginModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
+        }
+
+        var result = await userService.GetTokenAsync(model.Adapt<UserLoginDTO>());
+
+        return Created($"/User/token/{result}", result);
     }
 
     [HttpPatch("{id}")]

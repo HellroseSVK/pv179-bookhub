@@ -29,4 +29,12 @@
       <Folder Include="wwwroot\images\books\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Remove="wwwroot\images\books\book_1_fa9c9a9f12f3499b8cdcbcfd6dfdc34f.jpg" />
+      <Content Remove="wwwroot\images\books\book_1_f787c72436844d1f8316c3abbb5ad292.jpg" />
+      <Content Remove="wwwroot\images\books\book_1_918052543c1247769f9ad10cd0b1ec0b.jpg" />
+      <Content Remove="wwwroot\images\books\book_1_36caf635b9db46dbb77f89df1e1b794e.jpg" />
+      <Content Remove="wwwroot\images\books\book_1_2a2db81c27b94f0f87d50498058a03d7.jpg" />
+    </ItemGroup>
+
 </Project>

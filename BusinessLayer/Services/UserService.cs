@@ -1,15 +1,22 @@
-﻿using BusinessLayer.DTOs.User;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using BusinessLayer.DTOs.User;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Shared.Exception;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace BusinessLayer.Services;
 
-public class UserService(CustomDBContext dbContext) : IUserService
+public class UserService(CustomDBContext dbContext, IConfiguration config) : IUserService
 {
     public async Task<UserDTO> CreateUserAsync(UserUpsertDTO userDto)
     {
@@ -18,6 +25,50 @@ public class UserService(CustomDBContext dbContext) : IUserService
         await dbContext.SaveChangesAsync();
 
         return created.Entity.Adapt<UserDTO>();
+    }
+
+    public async Task<string> GetTokenAsync(UserLoginDTO userDto)
+    {
+        var user = await dbContext.Users.Where(u => u.Email == userDto.Email && u.Password == userDto.Password)
+            .FirstOrDefaultAsync();
+        if (user == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status401Unauthorized, "Invalid email or password.");
+        }
+
+        string[] roles = user.IsAdmin ? ["Admin", "User"] : ["User"];
+
+        var claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+        claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+
+        var configuredKey = config["Jwt:Key"] ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(configuredKey))
+        {
+            throw new InvalidOperationException("JWT key is not configured. Set Jwt:Key in configuration.");
+        }
+
+        byte[] keyBytes;
+        using (var sha = SHA256.Create())
+        {
+            keyBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(configuredKey));
+        }
+
+        var key = new SymmetricSecurityKey(keyBytes);
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var token = new JwtSecurityToken(
+            issuer: config["Jwt:Issuer"],
+            audience: config["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     public async Task<UserDTO> GetUserAsync(int id, bool includeReviews = true,
