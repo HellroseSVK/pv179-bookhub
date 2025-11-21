@@ -33,10 +33,9 @@ public class MockedDependencyInjectionBuilder
     {
         var inMemorySettings = new Dictionary<string, string?>
         {
-            // add keys your services expect; adjust values as needed for tests
-            { "Jwt:Key", "test_jwt_key" },
-            { "Jwt:Issuer", "" },
-            { "Jwt:Audience", "" },
+            { "Jwt:Key", "very_secret_token" },
+            { "Jwt:Issuer", "bookhub" },
+            { "Jwt:Audience", "bookhub" },
         };
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(inMemorySettings!)
