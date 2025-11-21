@@ -107,32 +107,6 @@ public class WishlistItemService(CustomDBContext dbContext) : IWishlistItemServi
 
     }
 
-    private async Task<Book> FindBook(int bookId)
-    {
-        var book = await dbContext.Books
-            .FirstOrDefaultAsync(book => bookId == book.Id);
-
-        if (book == null)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound, $"Book with id {string.Join(", ", bookId)} not found.");
-        }
-
-        return book;
-    }
-
-    private async Task<User> FindUser(int userId)
-    {
-        var user = await dbContext.Users
-            .FirstOrDefaultAsync(user => userId == user.Id);
-
-        if (user == null)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound, $"User with id {string.Join(", ", userId)} not found.");
-        }
-
-        return user;
-    }
-
     private IQueryable<WishlistItem> GetBaseQuery(bool includeBook, bool includeUser)
     {
         IQueryable<WishlistItem> query = dbContext.WishlistItems;
@@ -148,5 +122,33 @@ public class WishlistItemService(CustomDBContext dbContext) : IWishlistItemServi
         }
 
         return query;
+    }
+
+    private async Task<Book> FindBook(int bookId)
+    {
+        var book = await dbContext.Books
+            .FirstOrDefaultAsync(book => bookId.Equals(book.Id));
+
+        if (book == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                $"Book with id {string.Join(", ", bookId)} not found.");
+        }
+
+        return book;
+    }
+
+    private async Task<User> FindUser(int userId)
+    {
+        var user = await dbContext.Users
+            .FirstOrDefaultAsync(user => userId.Equals(user.Id));
+
+        if (user == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                $"User with id {string.Join(", ", userId)} not found.");
+        }
+
+        return user;
     }
 }

@@ -119,16 +119,15 @@ public class ReviewService(CustomDBContext dbContext) : IReviewService
         return query;
     }
 
-    private async Task<Book> FindBook(int userId)
+    private async Task<Book> FindBook(int bookId)
     {
         var book = await dbContext.Books
-            .Where(book => userId.Equals(book.Id))
-            .FirstAsync();
+            .FirstOrDefaultAsync(book => bookId.Equals(book.Id));
 
         if (book == null)
         {
             throw new StatusCodeException(StatusCodes.Status404NotFound,
-                $"Book with id {string.Join(", ", userId)} not found.");
+                $"Book with id {string.Join(", ", bookId)} not found.");
         }
 
         return book;
@@ -137,8 +136,7 @@ public class ReviewService(CustomDBContext dbContext) : IReviewService
     private async Task<User> FindUser(int userId)
     {
         var user = await dbContext.Users
-            .Where(user => userId.Equals(user.Id))
-            .FirstAsync();
+            .FirstOrDefaultAsync(user => userId.Equals(user.Id));
 
         if (user == null)
         {
