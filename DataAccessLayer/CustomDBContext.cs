@@ -50,6 +50,7 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
                      ?? user.FindFirst(JwtRegisteredClaimNames.Jti)?.Value
                      ?? user.FindFirst(ClaimTypes.Role)?.Value;
         }
+
         userId ??= "local-user";
 
         Console.WriteLine("Audit Info Applied: UserId = " + userId);
@@ -58,7 +59,9 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
             .Where(e => e.State is EntityState.Modified or EntityState.Added)
             .Select(entry =>
             {
-                entry.Entity.LastModifiedById = userId;
+                entry.Entity.LastModifiedByUserIds = entry.Entity.LastModifiedByUserIds == null
+                    ? [userId!]
+                    : entry.Entity.LastModifiedByUserIds.Concat([userId!]).ToArray();
                 entry.Entity.EditCount += 1;
                 return entry;
             });

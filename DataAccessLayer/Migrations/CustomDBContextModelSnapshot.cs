@@ -204,7 +204,7 @@ namespace DataAccessLayer.Migrations
                     b.Property<string>("ImagePath")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("LastModifiedById")
+                    b.PrimitiveCollection<string>("LastModifiedByUserIds")
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
@@ -218,8 +218,6 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LastModifiedById");
 
                     b.HasIndex("PublisherId");
 
@@ -2217,18 +2215,11 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Entities.Book", b =>
                 {
-                    b.HasOne("DataAccessLayer.Entities.LocalIdentityUser", "LastModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedById")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("DataAccessLayer.Entities.Publisher", "Publisher")
                         .WithMany("Books")
                         .HasForeignKey("PublisherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("LastModifiedBy");
 
                     b.Navigation("Publisher");
                 });
