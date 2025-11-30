@@ -1,3 +1,4 @@
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Book;
 using Microsoft.AspNetCore.Http;
 
@@ -7,6 +8,7 @@ public interface IBookFacade
 {
     Task<BookDTO> CreateBookWithImageAsync(BookUpsertDTO book, IFormFile? image);
     Task<List<BookDTO>> FilterBooksAsync(BookFilterDTO filter);
+    Task<PagedResult<BookDTO>> FilterBooksPaginatedAsync(BookFilterDTO filter);
     Task<BookDTO> GetBookAsync(
         int id,
         bool includeAuthors = true,

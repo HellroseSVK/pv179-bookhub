@@ -1,3 +1,4 @@
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Book;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
@@ -31,7 +32,48 @@ public class BookService(CustomDBContext dbContext) : IBookService
 
     public async Task<List<BookDTO>> FilterBooksAsync(BookFilterDTO filter)
     {
+        var query = BuildFilterQuery(filter).Distinct();
+        var books = await query.ToListAsync();
+        return books.Adapt<List<BookDTO>>();
+    }
+
+    public async Task<PagedResult<BookDTO>> FilterBooksPaginatedAsync(BookFilterDTO filter)
+    {
+        var query = BuildFilterQuery(filter).Distinct();
+        
+        var totalCount = await query.CountAsync();
+        
+        var books = await query
+            .Skip((filter.PageNumber - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<BookDTO>
+        {
+            Items = books.Adapt<List<BookDTO>>(),
+            TotalCount = totalCount,
+            PageNumber = filter.PageNumber,
+            PageSize = filter.PageSize
+        };
+    }
+
+    private IQueryable<Book> BuildFilterQuery(BookFilterDTO filter)
+    {
         var query = GetBaseQuery(true, true, true, true, false, false);
+
+        if (!string.IsNullOrEmpty(filter.SearchTerm))
+        {
+            var searchTermLower = filter.SearchTerm.ToLower();
+            query = query.Where(b => b.Title.ToLower().Contains(searchTermLower) || 
+                                   b.Description.ToLower().Contains(searchTermLower) ||
+                                   b.BookAuthors.Any(ba => ba.Author != null && 
+                                                         ((ba.Author.Name + " " + ba.Author.Surname).ToLower().Contains(searchTermLower) ||
+                                                         (ba.Author.Surname + " " + ba.Author.Name).ToLower().Contains(searchTermLower) ||
+                                                         ba.Author.Name.ToLower().Contains(searchTermLower) || 
+                                                         ba.Author.Surname.ToLower().Contains(searchTermLower))) ||
+                                   b.BookGenres.Any(bg => bg.Genre != null && bg.Genre.Name.ToLower().Contains(searchTermLower)) ||
+                                   (b.Publisher != null && b.Publisher.Name.ToLower().Contains(searchTermLower)));
+        }
 
         if (!string.IsNullOrEmpty(filter.Title))
             query = query.Where(b => b.Title.Contains(filter.Title));
@@ -59,8 +101,7 @@ public class BookService(CustomDBContext dbContext) : IBookService
         if (filter.PublisherIds is { Count: > 0 })
             query = query.Where(b => filter.PublisherIds.Contains(b.PublisherId));
 
-        var books = await query.ToListAsync();
-        return books.Adapt<List<BookDTO>>();
+        return query;
     }
 
     public async Task<BookDTO> GetBookAsync(

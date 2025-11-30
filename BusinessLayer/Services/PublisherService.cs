@@ -46,6 +46,19 @@ public class PublisherService(CustomDBContext dbContext) : IPublisherService
         return publisher.Adapt<PublisherDTO>();
     }
 
+    public async Task<List<PublisherDTO>> SearchPublishersAsync(string searchTerm)
+    {
+        var query = GetBaseQuery(false);
+        
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            query = query.Where(p => p.Name.Contains(searchTerm));
+        }
+        
+        var publishers = await query.ToListAsync();
+        return publishers.Adapt<List<PublisherDTO>>();
+    }
+
     public async Task PatchPublisherAsync(int id, PublisherPartialDTO publisherDto)
     {
         var publisher = await FindPublisher(id, true);
