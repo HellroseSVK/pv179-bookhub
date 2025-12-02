@@ -14,7 +14,7 @@ public class BookWithImageModel
     public required string Description { get; set; }
 
     [Required]
-    [Range(0.00, 9999999.99)]
+    [Range(0.00, double.MaxValue)]
     public decimal Price { get; set; }
 
     [Required]
