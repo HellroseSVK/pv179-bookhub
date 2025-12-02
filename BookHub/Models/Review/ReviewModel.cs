@@ -5,7 +5,7 @@ namespace WebAPI.Models.Review;
 public class ReviewModel
 {
     [Required]
-    [Range(0, 100)]
+    [Range(1, 5)]
     public int Rating { get; set; }
 
     [Required]

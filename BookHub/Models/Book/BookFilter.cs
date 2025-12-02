@@ -16,7 +16,7 @@ public class BookFilter
     [Range(0.00, double.MaxValue)]
     public decimal? PriceMax { get; set; }
 
-    [Range(0.00, 100.00)]
+    [Range(1.00, 5.00)]
     public decimal? RatingMin { get; set; }
 
     public List<int>? AuthorIds { get; set; }

@@ -4,7 +4,7 @@ namespace WebAPI.Models.Review;
 
 public class ReviewPartialModel
 {
-    [Range(0, 100)]
+    [Range(1, 5)]
     public int? Rating { get; set; }
 
     [StringLength(500, MinimumLength = 1)]
