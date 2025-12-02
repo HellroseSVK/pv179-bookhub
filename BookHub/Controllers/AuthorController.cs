@@ -2,10 +2,11 @@ using BusinessLayer.DTOs.Author;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Core;
 using Shared.Exception;
-using WebAPI.Core;
 using WebAPI.Models.Author;
 using WebAPI.Models.Book;
 using WebAPI.Models.Genre;
@@ -19,8 +20,10 @@ namespace WebAPI.Controllers;
 public class AuthorController(CustomDBContext dBContext, IAuthorService authorService) : ControllerBase
 {
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType<List<AuthorResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetAuthors()
     {
         var authors = await authorService.GetAuthorsAsync(includeBookAuthors: true);
@@ -29,9 +32,11 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     [ProducesResponseType<AuthorResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAuthor(int id)
     {
         var author = await authorService.GetAuthorAsync(id);
@@ -41,8 +46,9 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
 
     [HttpGet("{id}/books")]
     [ProducesResponseType<List<BookResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAuthorBooks(int id)
     {
         var author = await dBContext.Authors
@@ -71,10 +77,12 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<AuthorResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateAuthor([FromBody] AuthorModel model)
     {
         if (!ModelState.IsValid)
@@ -88,10 +96,12 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PatchAuthor(int id, [FromBody] AuthorPartialModel model)
     {
         if (!ModelState.IsValid)
@@ -105,10 +115,12 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAuthor(int id, [FromBody] AuthorModel model)
     {
         if (!ModelState.IsValid)
@@ -122,10 +134,12 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAuthor(int id)
     {
         await authorService.DeleteAuthorAsync(id);

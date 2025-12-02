@@ -1,10 +1,11 @@
-using DataAccessLayer;
-using DataAccessLayer.Entities;
-using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
+using DataAccessLayer;
+using DataAccessLayer.Entities;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
-namespace WebAPI.Middlewares;
+namespace Shared.Middleware;
 
 public class LoggingMiddleware(RequestDelegate next, IDbContextFactory<CustomDBContext> dbFactory)
 {

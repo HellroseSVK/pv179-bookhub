@@ -1,9 +1,10 @@
 ﻿using BusinessLayer.DTOs.OrderItem;
 using BusinessLayer.Services.Interfaces;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Core;
 using Shared.Exception;
-using WebAPI.Core;
 using WebAPI.Models.Order;
 
 namespace WebAPI.Controllers;
@@ -13,8 +14,10 @@ namespace WebAPI.Controllers;
 public class OrderItemController(IOrderItemService orderService) : ControllerBase
 {
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<List<OrderItemResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetOrderItems()
     {
         var orderItems = await orderService.GetOrderItemsAsync();
@@ -22,9 +25,11 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<OrderItemResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetOrderItem(int id)
     {
         var orderItem = await orderService.GetOrderItemAsync(id);
@@ -32,9 +37,12 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
     }
 
     [HttpPost]
+    [Authorize(Roles = "User")]
     [ProducesResponseType<OrderItemResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateOrderItem([FromBody] OrderItemModel model)
     {
         if (!ModelState.IsValid)
@@ -47,10 +55,12 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PatchOrderItem(int id, [FromBody] OrderItemPartialModel model)
     {
         if (!ModelState.IsValid)
@@ -63,10 +73,12 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateOrderItem(int id, [FromBody] OrderItemModel model)
     {
         if (!ModelState.IsValid)
@@ -79,10 +91,12 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteOrderItem(int id)
     {
         await orderService.DeleteOrderItemAsync(id);

@@ -92,14 +92,14 @@ public class BookService(CustomDBContext dbContext) : IBookService
             book.Publisher = publisher;
         }
 
-        if (bookDto.AuthorIds != null)
+        if (bookDto.AuthorIds is { Count: > 0 })
         {
             var authors = await FindAuthors(bookDto.AuthorIds);
             var newAuthors = authors.Except(book.BookAuthors.Select(ba => ba.Author));
             book.BookAuthors.AddRange(newAuthors.Select(a => new BookAuthor { Author = a }));
         }
 
-        if (bookDto.GenreIds != null)
+        if (bookDto.GenreIds is { Count: > 0 })
         {
             var genres = await FindGenres(bookDto.GenreIds);
             var newGenres = genres.Except(book.BookGenres.Select(bg => bg.Genre));
