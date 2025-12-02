@@ -14,7 +14,7 @@ namespace WebAPI.Controllers;
 public class UserController(IUserService userService) : ControllerBase
 {
     [HttpGet]
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<List<UserResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
@@ -26,7 +26,7 @@ public class UserController(IUserService userService) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
@@ -55,7 +55,7 @@ public class UserController(IUserService userService) : ControllerBase
     }
 
     [HttpPost("/token")]
-    [AllowAnonymous]
+    [Authorize(Roles = "User")]
     [ProducesResponseType<UserResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetToken([FromBody] UserLoginModel model)

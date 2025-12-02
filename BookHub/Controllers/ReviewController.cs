@@ -14,7 +14,7 @@ namespace WebAPI.Controllers;
 public class ReviewController(IReviewService reviewService) : ControllerBase
 {
     [HttpGet]
-    [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [ProducesResponseType<List<ReviewResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
@@ -25,7 +25,7 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [ProducesResponseType<ReviewResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]

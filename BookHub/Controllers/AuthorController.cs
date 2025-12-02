@@ -20,7 +20,7 @@ namespace WebAPI.Controllers;
 public class AuthorController(CustomDBContext dBContext, IAuthorService authorService) : ControllerBase
 {
     [HttpGet]
-    [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [ProducesResponseType<List<AuthorResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
@@ -32,7 +32,7 @@ public class AuthorController(CustomDBContext dBContext, IAuthorService authorSe
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [ProducesResponseType<AuthorResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]

@@ -14,7 +14,7 @@ namespace WebAPI.Controllers;
 public class GenreController(IGenreService genreService) : ControllerBase
 {
     [HttpGet]
-    [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [ProducesResponseType<List<GenreResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
@@ -26,7 +26,7 @@ public class GenreController(IGenreService genreService) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [ProducesResponseType<GenreResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]

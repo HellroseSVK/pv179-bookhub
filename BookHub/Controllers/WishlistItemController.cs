@@ -14,7 +14,7 @@ namespace WebAPI.Controllers;
 public class WishlistItemController(IWishlistItemService wishlistService) : ControllerBase
 {
     [HttpGet]
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<List<WishlistItemResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
@@ -26,7 +26,7 @@ public class WishlistItemController(IWishlistItemService wishlistService) : Cont
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<WishlistItemResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]

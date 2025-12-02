@@ -14,7 +14,7 @@ namespace WebAPI.Controllers;
 public class PublisherController(IPublisherService publisherService) : ControllerBase
 {
     [HttpGet]
-    [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [ProducesResponseType<List<PublisherResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
@@ -26,7 +26,7 @@ public class PublisherController(IPublisherService publisherService) : Controlle
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [ProducesResponseType<PublisherResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]

@@ -14,7 +14,7 @@ namespace WebAPI.Controllers;
 public class BookController(IBookFacade bookFacade) : ControllerBase
 {
     [HttpGet("filter")]
-    [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [ProducesResponseType<List<BookResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
@@ -25,7 +25,7 @@ public class BookController(IBookFacade bookFacade) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [ProducesResponseType<BookResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]

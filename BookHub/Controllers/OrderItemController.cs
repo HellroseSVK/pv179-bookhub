@@ -14,7 +14,7 @@ namespace WebAPI.Controllers;
 public class OrderItemController(IOrderItemService orderService) : ControllerBase
 {
     [HttpGet]
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<List<OrderItemResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
@@ -25,7 +25,7 @@ public class OrderItemController(IOrderItemService orderService) : ControllerBas
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<OrderItemResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
