@@ -1,5 +1,6 @@
 using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Book;
+using BusinessLayer.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -32,20 +33,25 @@ public class BookService(CustomDBContext dbContext) : IBookService
 
     public async Task<List<BookDTO>> FilterBooksAsync(BookFilterDTO filter)
     {
-        var query = BuildFilterQuery(filter).Distinct();
-        var books = await query.ToListAsync();
+        var books = await dbContext.Books
+            .IncludeVirtuals()
+            .ApplyBookFilter(filter)
+            .Distinct()
+            .ToListAsync();
         return books.Adapt<List<BookDTO>>();
     }
 
     public async Task<PagedResult<BookDTO>> FilterBooksPaginatedAsync(BookFilterDTO filter)
     {
-        var query = BuildFilterQuery(filter).Distinct();
+        var query = dbContext.Books
+            .IncludeVirtuals()
+            .ApplyBookFilter(filter)
+            .Distinct();
         
         var totalCount = await query.CountAsync();
         
         var books = await query
-            .Skip((filter.PageNumber - 1) * filter.PageSize)
-            .Take(filter.PageSize)
+            .Paginate(filter.PageNumber, filter.PageSize)
             .ToListAsync();
 
         return new PagedResult<BookDTO>
@@ -57,52 +63,6 @@ public class BookService(CustomDBContext dbContext) : IBookService
         };
     }
 
-    private IQueryable<Book> BuildFilterQuery(BookFilterDTO filter)
-    {
-        var query = GetBaseQuery(true, true, true, true, false, false);
-
-        if (!string.IsNullOrEmpty(filter.SearchTerm))
-        {
-            var searchTermLower = filter.SearchTerm.ToLower();
-            query = query.Where(b => b.Title.ToLower().Contains(searchTermLower) || 
-                                   b.Description.ToLower().Contains(searchTermLower) ||
-                                   b.BookAuthors.Any(ba => ba.Author != null && 
-                                                         ((ba.Author.Name + " " + ba.Author.Surname).ToLower().Contains(searchTermLower) ||
-                                                         (ba.Author.Surname + " " + ba.Author.Name).ToLower().Contains(searchTermLower) ||
-                                                         ba.Author.Name.ToLower().Contains(searchTermLower) || 
-                                                         ba.Author.Surname.ToLower().Contains(searchTermLower))) ||
-                                   b.BookGenres.Any(bg => bg.Genre != null && bg.Genre.Name.ToLower().Contains(searchTermLower)) ||
-                                   (b.Publisher != null && b.Publisher.Name.ToLower().Contains(searchTermLower)));
-        }
-
-        if (!string.IsNullOrEmpty(filter.Title))
-            query = query.Where(b => b.Title.Contains(filter.Title));
-
-        if (!string.IsNullOrEmpty(filter.Description))
-            query = query.Where(b => b.Description.Contains(filter.Description));
-
-        if (filter.PriceMin.HasValue)
-            query = query.Where(b => b.Price >= filter.PriceMin.Value);
-
-        if (filter.PriceMax.HasValue)
-            query = query.Where(b => b.Price <= filter.PriceMax.Value);
-
-        if (filter.RatingMin.HasValue)
-            query = query
-                .Where(b => b.Reviews.Any())
-                .Where(b => b.Reviews.Average(r => r.Rating) >= (double)filter.RatingMin.Value);
-
-        if (filter.AuthorIds is { Count: > 0 })
-            query = query.Where(b => b.BookAuthors.Any(ba => filter.AuthorIds.Contains(ba.AuthorId)));
-
-        if (filter.GenreIds is { Count: > 0 })
-            query = query.Where(b => b.BookGenres.Any(bg => filter.GenreIds.Contains(bg.GenreId)));
-
-        if (filter.PublisherIds is { Count: > 0 })
-            query = query.Where(b => filter.PublisherIds.Contains(b.PublisherId));
-
-        return query;
-    }
 
     public async Task<BookDTO> GetBookAsync(
         int id,
@@ -215,37 +175,30 @@ public class BookService(CustomDBContext dbContext) : IBookService
         bool includeWishlistItems,
         bool includeOrderItems)
     {
-        IQueryable<Book> query = dbContext.Books;
+        var query = dbContext.Books.AsQueryable();
+
+        if (includeAuthors && includeGenres && includePublisher && includeReviews)
+        {
+            return query.IncludeVirtuals(includeWishlistItems, includeOrderItems);
+        }
 
         if (includeAuthors)
-        {
             query = query.Include(b => b.BookAuthors).ThenInclude(ba => ba.Author);
-        }
 
         if (includeGenres)
-        {
             query = query.Include(b => b.BookGenres).ThenInclude(bg => bg.Genre);
-        }
 
         if (includePublisher)
-        {
             query = query.Include(b => b.Publisher);
-        }
 
         if (includeReviews)
-        {
             query = query.Include(b => b.Reviews);
-        }
 
         if (includeWishlistItems)
-        {
             query = query.Include(b => b.WishlistItems);
-        }
 
         if (includeOrderItems)
-        {
             query = query.Include(b => b.OrderItems);
-        }
 
         return query;
     }
