@@ -8,11 +8,11 @@ public interface IOrderItemService
     Task<List<OrderItemDTO>> GetOrderItemsAsync(
         int[]? ids = null,
         bool includeBook = true,
-        bool includeUser = true);
+        bool includeOrder = true);
     Task<OrderItemDTO> GetOrderItemAsync(
         int id,
         bool includeBook = true,
-        bool includeUser = true);
+        bool includeOrder = true);
     Task PatchOrderItemAsync(int id, OrderItemPartialDTO orderItemDto);
     Task UpdateOrderItemAsync(int id, OrderItemUpsertDTO orderItemDto);
     Task DeleteOrderItemAsync(int id);

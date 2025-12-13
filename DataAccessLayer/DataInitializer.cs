@@ -12,6 +12,7 @@ public static class DataInitializer
     private const int UserCount = 8;
     private const int BookCount = 25;
     private const int WishlistItemCount = 20;
+    private const int OrderCount = 8;
     private const int OrderItemCount = 30;
     private const int ReviewCount = 20;
     private const int BookAuthorCount = 40;
@@ -25,6 +26,7 @@ public static class DataInitializer
         var users = PrepareUsers();
         var books = PrepareBooks();
         var wishlistItems = PrepareWishlistItems();
+        var orders = PrepareOrders();
         var orderItems = PrepareOrderItems();
         var reviews = PrepareReviews();
         var bookAuthors = LinkBooksAndAuthors();
@@ -42,6 +44,8 @@ public static class DataInitializer
             .HasData(books);
         modelBuilder.Entity<WishlistItem>()
             .HasData(wishlistItems);
+        modelBuilder.Entity<Order>()
+            .HasData(orders);
         modelBuilder.Entity<OrderItem>()
             .HasData(orderItems);
         modelBuilder.Entity<Review>()
@@ -300,19 +304,23 @@ public static class DataInitializer
         };
     }
 
+    private static List<Order> PrepareOrders()
+    {
+        var faker = new Faker<Order>()
+            .UseSeed(111222)
+            .RuleFor(o => o.Id, f => f.IndexFaker + 1)
+            .RuleFor(o => o.UserId, f => f.Random.Int(1, UserCount));
+
+        return faker.Generate(OrderCount);
+    }
+
     private static List<OrderItem> PrepareOrderItems()
     {
         var faker = new Faker<OrderItem>()
             .UseSeed(54321)
             .RuleFor(o => o.Id, f => f.IndexFaker + 1)
-            .RuleFor(o => o.BookId, f => f.Random.WeightedRandom(
-                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                [0.15f, 0.12f, 0.12f, 0.10f, 0.12f, 0.08f, 0.08f, 0.10f, 0.08f, 0.05f]
-            ))
-            .RuleFor(o => o.UserId, f => f.Random.WeightedRandom(
-                [1, 2, 3, 4, 5, 6, 7, 8],
-                [0.20f, 0.15f, 0.12f, 0.15f, 0.10f, 0.18f, 0.05f, 0.05f]
-            ));
+            .RuleFor(o => o.BookId, f => f.Random.Int(1, BookCount))
+            .RuleFor(o => o.OrderId, f => f.Random.Int(1, OrderCount));
 
         return faker.Generate(OrderItemCount);
     }

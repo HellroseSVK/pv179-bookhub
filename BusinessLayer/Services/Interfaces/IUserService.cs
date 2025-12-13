@@ -12,13 +12,13 @@ public interface IUserService
         int[]? ids = null,
         bool includeReviews = true,
         bool includeWishlistItems = true,
-        bool includeOrderItems = true);
+        bool includeOrders = true);
 
     public Task<UserDTO> GetUserAsync(
         int id,
         bool includeReviews = true,
         bool includeWishlistItems = true,
-        bool includeOrderItems = true);
+        bool includeOrders = true);
 
     public Task PatchUserAsync(int id, UserPartialDTO userDto);
     public Task UpdateUserAsync(int id, UserUpsertDTO userDto);
