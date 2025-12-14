@@ -17,6 +17,7 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
     public DbSet<Publisher> Publishers { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<WishlistItem> WishlistItems { get; set; }
+    public DbSet<Order> Orders {  get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<BookAuthor> BookAuthors { get; set; }
     public DbSet<BookGenre> BookGenres { get; set; }
@@ -110,9 +111,14 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
             .WithMany(user => user.WishlistItems)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<Order>()
+            .HasOne<User>(order => order.User)
+            .WithMany(user => user.Orders)
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Entity<OrderItem>()
-            .HasOne<User>(item => item.User)
-            .WithMany(user => user.OrderItems)
+            .HasOne<Order>(item => item.Order)
+            .WithMany(order => order.OrderItems)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Review>()

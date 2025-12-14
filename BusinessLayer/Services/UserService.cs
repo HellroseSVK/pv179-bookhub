@@ -77,9 +77,9 @@ public class UserService(CustomDBContext dbContext, IConfiguration config) : IUs
     }
 
     public async Task<UserDTO> GetUserAsync(int id, bool includeReviews = true,
-        bool includeWishlistItems = true, bool includeOrderItems = true)
+        bool includeWishlistItems = true, bool includeOrders = true)
     {
-        var user = await FindUser(id, includeReviews, includeWishlistItems, includeOrderItems);
+        var user = await FindUser(id, includeReviews, includeWishlistItems, includeOrders);
 
         return user.Adapt<UserDTO>();
     }
@@ -141,7 +141,7 @@ public class UserService(CustomDBContext dbContext, IConfiguration config) : IUs
         await dbContext.SaveChangesAsync();
     }
 
-    private IQueryable<User> GetBaseQuery(bool includeReviews, bool includeWishlistItems, bool includeOrderItems)
+    private IQueryable<User> GetBaseQuery(bool includeReviews, bool includeWishlistItems, bool includeOrders)
     {
         IQueryable<User> userQuery = dbContext.Users;
 
@@ -157,19 +157,19 @@ public class UserService(CustomDBContext dbContext, IConfiguration config) : IUs
                 .Include(user => user.WishlistItems);
         }
 
-        if (includeOrderItems)
+        if (includeOrders)
         {
             userQuery = userQuery
-                .Include(user => user.OrderItems);
+                .Include(user => user.Orders);
         }
 
         return userQuery;
     }
 
     private async Task<User> FindUser(int userId, bool includeReviews = false, bool includeWishlistItems = false,
-        bool includeOrderItems = false)
+        bool includeOrders = false)
     {
-        var query = GetBaseQuery(includeReviews, includeWishlistItems, includeOrderItems);
+        var query = GetBaseQuery(includeReviews, includeWishlistItems, includeOrders);
 
         var user = await query.FirstOrDefaultAsync(user => user.Id == userId);
 

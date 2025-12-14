@@ -9,8 +9,8 @@ public class OrderItem : BaseEntity
 
     public Book? Book { get; set; }
 
-    [ForeignKey("User")]
-    public int UserId { get; set; }
+    [ForeignKey("Order")]
+    public int OrderId { get; set; }
 
-    public User? User { get; set; }
+    public Order? Order { get; set; }
 }

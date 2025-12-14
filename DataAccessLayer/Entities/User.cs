@@ -12,5 +12,5 @@ public class User : BaseEntity
 
     public List<WishlistItem> WishlistItems { get; set; } = [];
 
-    public List<OrderItem> OrderItems { get; set; } = [];
+    public List<Order> Orders { get; set; } = [];
 }

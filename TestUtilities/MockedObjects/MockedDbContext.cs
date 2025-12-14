@@ -34,6 +34,7 @@ public class MockedDbContext
         dbContext.Users.AddRange(TestDataHelper.GetUsers());
         dbContext.Reviews.AddRange(TestDataHelper.GetReviews());
         dbContext.WishlistItems.AddRange(TestDataHelper.GetWishlistItems());
+        dbContext.Orders.AddRange(TestDataHelper.GetOrders());
         dbContext.OrderItems.AddRange(TestDataHelper.GetOrderItems());
 
         dbContext.SaveChanges();
@@ -48,6 +49,7 @@ public class MockedDbContext
         dbContext.Users.AddRange(TestDataHelper.GetUsers());
         dbContext.Reviews.AddRange(TestDataHelper.GetReviews());
         dbContext.WishlistItems.AddRange(TestDataHelper.GetWishlistItems());
+        dbContext.Orders.AddRange(TestDataHelper.GetOrders());
         dbContext.OrderItems.AddRange(TestDataHelper.GetOrderItems());
 
         await dbContext.SaveChangesAsync();
