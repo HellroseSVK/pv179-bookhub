@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace DataAccessLayer.Entities;
 
-namespace DataAccessLayer.Entities
+public abstract class BaseEntity
 {
-    public class BaseEntity
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public DateTime CreatedAt { get; set; }
-    }
+    public DateTime CreatedAt { get; set; }
 }

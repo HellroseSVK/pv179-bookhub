@@ -1,42 +1,25 @@
-﻿using DataAccessLayer;
-using DataAccessLayer.Entities;
+﻿using BusinessLayer.DTOs.WishlistItem;
+using BusinessLayer.Services.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
+using WebAPI.Models.Wishlist;
 
 namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WishlistItemController : ControllerBase
+public class WishlistItemController(IWishlistItemService wishlistService) : ControllerBase
 {
-    private readonly CustomDBContext _dbContext;
-
-    public WishlistItemController(CustomDBContext dBContext)
-    {
-        _dbContext = dBContext;
-    }
-
     [HttpGet]
     [ProducesResponseType<List<WishlistItemResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetWishlistItems()
     {
-        var wishlistItems = await _dbContext.WishlistItems
-            .Include(wishlistItem => wishlistItem.Book)
-            .Include(wishlistItem => wishlistItem.User)
-            .ToListAsync();
+        var wishlistItems = await wishlistService.GetWishlistItemsAsync();
 
-        return Ok(wishlistItems.Select(wi => wi.Adapt<WishlistItemResponse>() with
-        {
-            Book = wi.Book.Adapt<BookSimplifiedResponse>(),
-            User = wi.User.Adapt<UserSimplifiedResponse>()
-        }).ToList());
+        return Ok(wishlistItems.Adapt<List<WishlistItemResponse>>());
     }
 
     [HttpGet("{id}")]
@@ -45,13 +28,10 @@ public class WishlistItemController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetWishlistItem(int id)
     {
-        var wishlistItem = await FindWishlistItem(id);
+        var wishlistItem = await wishlistService.GetWishlistItemAsync(id);
 
-        return Ok(wishlistItem.Adapt<WishlistItemResponse>() with
-        {
-            Book = wishlistItem.Book.Adapt<BookSimplifiedResponse>(),
-            User = wishlistItem.User.Adapt<UserSimplifiedResponse>()
-        });
+        return Ok(wishlistItem.Adapt<WishlistItemResponse>());
+
     }
 
     [HttpPost]
@@ -65,21 +45,9 @@ public class WishlistItemController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var wishlistItem = new WishlistItem
-        {
-            BookId = model.BookId,
-            UserId = model.UserId
-        };
+        var result = await wishlistService.CreateWishlistItemAsync(model.Adapt<WishlistItemUpsertDTO>());
 
-        _dbContext.WishlistItems.Add(wishlistItem);
-
-        await _dbContext.SaveChangesAsync();
-
-        return Created($"/WishlistItem/{wishlistItem.Id}", wishlistItem.Adapt<WishlistItemResponse>() with
-        {
-            Book = wishlistItem.Book.Adapt<BookSimplifiedResponse>(),
-            User = wishlistItem.User.Adapt<UserSimplifiedResponse>()
-        });
+        return Created($"/WishlistItem/{result.Id}", result.Adapt<WishlistItemResponse>());
     }
 
     [HttpPatch("{id}")]
@@ -94,14 +62,7 @@ public class WishlistItemController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var wishlistItem = await FindWishlistItem(id);
-
-        wishlistItem.BookId = model.BookId ?? wishlistItem.BookId;
-        wishlistItem.UserId = model.UserId ?? wishlistItem.UserId;
-
-        _dbContext.WishlistItems.Update(wishlistItem);
-
-        await _dbContext.SaveChangesAsync();
+        await wishlistService.PatchWishlistItemAsync(id, model.Adapt<WishlistItemPartialDTO>());
 
         return NoContent();
     }
@@ -118,14 +79,7 @@ public class WishlistItemController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var wishlistItem = await FindWishlistItem(id);
-
-        wishlistItem.BookId = model.BookId;
-        wishlistItem.UserId = model.UserId;
-
-        _dbContext.WishlistItems.Update(wishlistItem);
-
-        await _dbContext.SaveChangesAsync();
+        await wishlistService.UpdateWishlistItemAsync(id, model.Adapt<WishlistItemUpsertDTO>());
 
         return NoContent();
     }
@@ -137,31 +91,8 @@ public class WishlistItemController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteWishlistItem(int id)
     {
-        if (!ModelState.IsValid)
-        {
-            throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
-        }
-
-        var wishlistItem = await FindWishlistItem(id);
-
-        _dbContext.WishlistItems.Remove(wishlistItem);
-
-        await _dbContext.SaveChangesAsync();
+        await wishlistService.DeleteWishlistItemAsync(id);
 
         return NoContent();
-    }
-
-    private async Task<WishlistItem> FindWishlistItem(int wishlistItemId)
-    {
-        var wishlistItem = await _dbContext.WishlistItems
-            .FirstOrDefaultAsync(p => p.Id == wishlistItemId);
-
-        if (wishlistItem == null)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound,
-                $"WishlistItem with id {wishlistItemId} not found.");
-        }
-
-        return wishlistItem;
     }
 }

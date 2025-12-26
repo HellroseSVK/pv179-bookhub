@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DataAccessLayer.Entities
+namespace DataAccessLayer.Entities;
+
+public class WishlistItem : BaseEntity
 {
-    public class WishlistItem : BaseEntity
-    {
-        [ForeignKey("Book")]
-        public int BookId { get; set; }
+    [ForeignKey("Book")]
+    public int BookId { get; set; }
 
-        public Book Book { get; set; }
+    public Book? Book { get; set; }
 
-        [ForeignKey("User")]
-        public int UserId { get; set; }
+    [ForeignKey("User")]
+    public int UserId { get; set; }
 
-        public User User { get; set; }
-    }
+    public User? User { get; set; }
 }

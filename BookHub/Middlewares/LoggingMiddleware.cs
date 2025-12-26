@@ -1,57 +1,59 @@
+using DataAccessLayer;
+using DataAccessLayer.Entities;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
+using System.Text.Json;
 
 namespace WebAPI.Middlewares;
 
-public class LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> logger)
+public class LoggingMiddleware(RequestDelegate next, IDbContextFactory<CustomDBContext> dbFactory)
 {
     public async Task InvokeAsync(HttpContext context)
     {
+        // ----- Read Request Body -----
         context.Request.EnableBuffering();
         string requestBody;
-        using (var reader = new StreamReader(
-                   context.Request.Body, Encoding.UTF8, leaveOpen: true))
+        using (var reader = new StreamReader(context.Request.Body, Encoding.UTF8, leaveOpen: true))
         {
             requestBody = await reader.ReadToEndAsync();
             context.Request.Body.Position = 0;
         }
 
-        logger.LogInformation("Request: {Method} {Path} | Parameters: {@Parameters} | Query: {Query} | Body: {Body}",
-            context.Request.Method,
-            context.Request.Path,
-            context.Request.RouteValues,
-            context.Request.QueryString.Value,
-            requestBody);
-
-        var originalBodyStream = context.Response.Body;
-        using var responseBody = new MemoryStream();
-        context.Response.Body = responseBody;
+        // ----- Capture Response Body -----
+        var originalResponseBodyStream = context.Response.Body;
+        using var newResponseBodyStream = new MemoryStream();
+        context.Response.Body = newResponseBodyStream;
 
         await next(context);
 
+        // ----- Read Response Body -----
         context.Response.Body.Seek(0, SeekOrigin.Begin);
-        string responseText = await new StreamReader(context.Response.Body).ReadToEndAsync();
+        var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
         context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-        switch (context.Response.StatusCode)
+        // ----- Build Log Entry -----
+        var httpLog = new HttpLog
         {
-            case >= 500:
-                logger.LogError("Response: {StatusCode} | Body: {Body}",
-                    context.Response.StatusCode,
-                    responseText);
-                break;
-            case >= 400:
-                logger.LogWarning("Response: {StatusCode} | Body: {Body}",
-                    context.Response.StatusCode,
-                    responseText);
-                break;
-            default:
-                logger.LogInformation("Response: {StatusCode} | Body: {Body}",
-                    context.Response.StatusCode,
-                    responseText);
-                break;
+            Timestamp = DateTime.UtcNow,
+            RequestMethod = context.Request.Method,
+            RequestPath = context.Request.Path,
+            QueryString = context.Request.QueryString.Value ?? "",
+            RequestHeaders = JsonSerializer.Serialize(context.Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString())),
+            RequestBody = requestBody ?? "",
+            ResponseStatusCode = context.Response.StatusCode,
+            ResponseHeaders = JsonSerializer.Serialize(context.Response.Headers.ToDictionary(h => h.Key, h => h.Value.ToString())),
+            ResponseBody = responseBody ?? ""
+        };
+
+        // ----- Save to database -----
+        await using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            db.HttpLogs.Add(httpLog);
+            await db.SaveChangesAsync();
         }
 
-        await responseBody.CopyToAsync(originalBodyStream);
-        context.Response.Body = originalBodyStream;
+        // ----- Restore original response -----
+        await newResponseBodyStream.CopyToAsync(originalResponseBodyStream);
+        context.Response.Body = originalResponseBodyStream;
     }
 }

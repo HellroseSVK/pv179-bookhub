@@ -29,10 +29,9 @@ documentation.
 ### WebAPI Project ([`BookHub/`](./BookHub/))
 
 - [`Controllers/`](./BookHub/Controllers) – API controllers for each entity
-- [`Models/`](./BookHub/Models) – Data transfer objects (DTOs) and response models
 - [`Core/`](./BookHub/Core) – Core classes (e.g., error responses)
-- [`Exception/`](./BookHub/Exception) – Custom exception handling
 - [`Middlewares/`](./BookHub/Middlewares) – Custom middleware for logging, error handling and authentication
+- [`Models/`](./BookHub/Models) – Data transfer objects (DTOs) and response models
 - [`Program.cs`](./BookHub/Program.cs), [`appsettings.json`](./BookHub/appsettings.json), etc.
 
 ### DataAccessLayer Project ([`DataAccessLayer/`](./DataAccessLayer/))
@@ -41,6 +40,34 @@ documentation.
 - [`Migrations/`](./DataAccessLayer/Migrations) – Database migrations
 - [`CustomDBContext.cs`](./DataAccessLayer/CustomDBContext.cs) – Database context
 - [`DataInitializer.cs`](./DataAccessLayer/DataInitializer.cs) – Database seeding
+
+### Shared Project ([`Shared/`](./Shared/))
+
+- [`Exceptions/`](./Shared/Exceptions) – Custom exception classes
+
+### BusinessLayer Project ([`BusinessLayer/`](./BusinessLayer/))
+
+- [`DTOs/`](./BusinessLayer/DTOs) – Data transfer objects
+- [`Facades/`](./BusinessLayer/Facades) – Facade classes for business logic
+- [`Mappers/`](./BusinessLayer/Mappers) – Mapster mapping configurations
+- [`Services/`](./BusinessLayer/Services) – Service classes for data access
+- [`Services/Interfaces/`](./BusinessLayer/Services/Interfaces) – Service interfaces
+
+### TestUtilities Project ([`TestUtilities/`](./TestUtilities/))
+
+- [`Data/`](./TestUtilities/Data) – Test data for unit tests
+- [`MockedObjects/`](./TestUtilities/MockedObjects) – Mocked objects for unit tests
+
+### BusinessLayer.Tests Project ([`BusinessLayer.Tests/`](./BusinessLayer.Tests/))
+
+- [`Services/`](./BusinessLayer.Tests/Services) – Unit tests for service classes
+
+### MVC Project ([`MVC/`](./MVC/))
+
+- [`Controllers/`](./MVC/Controllers) – MVC controllers for each entity
+- [`Models/`](./MVC/Models) – View models for MVC views
+- [`Views/`](./MVC/Views) – Razor views for rendering HTML pages
+- [`wwroot/`](./MVC/wwwroot) - Static files (CSS, JS, images)
 
 ## Getting Started
 
@@ -51,25 +78,54 @@ documentation.
 
 ### Setup
 
+#### A
+
 1. Clone the [repository](https://gitlab.fi.muni.cz/xsabo1/pv179-bookhub)
-2. Navigate to the [`BookHub`](./) directory
-3. Restore dependencies
-4. Run database [migrations](./DataAccessLayer/Migrations) and seed the database
-5. Run the application
-6. Authorize using the hard-coded token: `very_secret_token`
+2. Set up the project
+    1. Local setup
+        1. Navigate to the [`BookHub`](./BookHub) directory
+            1. Restore dependencies
+            2. Build the solution
+        2. Do the same in directory [`MVC`](./MVC)
+        3. Navigate to [root directory](./)
+        4. Run database [migrations](./DataAccessLayer/Migrations) and seed the database
+        5.
+        6. ```shell
+           dotnet ef database update --project DataAccessLayer --startup-project BookHub
+           ```
+        7. Run the WebAPI and MVC projects
+    2. Docker compose setup
+        1. Navigate to the [root directory](./)
+        2. Build and run the docker compose
+        3. ```shell
+           docker-compose up --build
+           ```
+3. Authorize
+    1. Using the hard-coded token: `very_secret_token`
+    2. By creating an account in MVC application, then clicking on "Token" when logged in
 
 ## Usage
 
-- The API is available at `http://localhost:5095` (port specified in [
-  `launchSettings.json`](./BookHub/Properties/launchSettings.json))
-- Use the included [swagger](http://localhost:5095/swagger/index.html) or tools like Postman or curl to interact with
-  the endpoints
+- The API is available
+  at [http://localhost:5095](http://localhost:5095) / [https://localhost:5095](https://localhost:5095) (port specified
+  in [`launchSettings.json`](./BookHub/Properties/launchSettings.json)) or if using docker
+  compose [http://localhost:5000](http://localhost:5000)
+- The MVC is available
+  at [http://localhost:5047](http://localhost:5047) / [https://localhost:5047](https://localhost:5047) (port specified
+  in [`launchSettings.json`](./BookHub/Properties/launchSettings.json)) or if using docker
+  compose [http://localhost:5001](http://localhost:5001)
+- Use the
+  included [http swagger](http://localhost:5095/swagger/index.html) / [https swagger](https://localhost:5095/swagger/index.html) / [docker swagger](http://localhost:5000/swagger/index.html)
+  or tools like Postman or curl to interact with the endpoints
 
 ## Technologies Used
 
 - ASP.NET Core Web API
 - Entity Framework Core
 - Mapster
+- xUnit for unit testing
+- Docker for containerization
+- Bogus for generating realistic test data
 - Microsoft SQLite
 - Swagger (Swashbuckle)
 - Git and GitLab for version control and collaboration

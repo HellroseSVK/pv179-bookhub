@@ -1,40 +1,25 @@
-using DataAccessLayer;
-using DataAccessLayer.Entities;
+using BusinessLayer.DTOs.Publisher;
+using BusinessLayer.Services.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
+using WebAPI.Models.Publisher;
 
 namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PublisherController : ControllerBase
+public class PublisherController(IPublisherService publisherService) : ControllerBase
 {
-    private readonly CustomDBContext _dbContext;
-
-    public PublisherController(CustomDBContext dBContext)
-    {
-        _dbContext = dBContext;
-    }
-
     [HttpGet]
     [ProducesResponseType<List<PublisherResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetPublishers()
     {
-        var result = await _dbContext.Publishers
-            .Include(publisher => publisher.Books)
-            .ToListAsync();
+        var publishers = await publisherService.GetPublishersAsync();
 
-        return Ok(result.Select(r => r.Adapt<PublisherResponse>() with
-        {
-            Books = r.Books.Select(b => b.Adapt<BookSimplifiedResponse>()).ToList()
-        }).ToList());
+        return Ok(publishers.Adapt<List<PublisherResponse>>());
     }
 
     [HttpGet("{id}")]
@@ -43,20 +28,9 @@ public class PublisherController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetPublisher(int id)
     {
-        var publisher = await _dbContext.Publishers
-            .Where(p => p.Id == id)
-            .Include(publisher => publisher.Books)
-            .FirstOrDefaultAsync();
+        var publisher = await publisherService.GetPublisherAsync(id);
 
-        if (publisher == null)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound, "Publisher not found");
-        }
-
-        return Ok(publisher.Adapt<PublisherResponse>() with
-        {
-            Books = publisher.Books.Select(b => b.Adapt<BookSimplifiedResponse>()).ToList()
-        });
+        return Ok(publisher.Adapt<PublisherResponse>());
     }
 
     [HttpPost]
@@ -70,19 +44,9 @@ public class PublisherController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var publisher = new Publisher
-        {
-            Name = model.Name
-        };
+        var publisher = await publisherService.CreatePublisherAsync(model.Adapt<PublisherUpsertDTO>());
 
-        _dbContext.Publishers.Add(publisher);
-
-        await _dbContext.SaveChangesAsync();
-
-        return Created($"/Publisher/{publisher.Id}", publisher.Adapt<PublisherResponse>() with
-        {
-            Books = publisher.Books.Select(b => b.Adapt<BookSimplifiedResponse>()).ToList()
-        });
+        return Created($"/Publisher/{publisher.Id}", publisher.Adapt<PublisherResponse>());
     }
 
     [HttpPatch("{id}")]
@@ -90,19 +54,14 @@ public class PublisherController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> PatchPublisher(int id, [FromBody] PublisherModel model)
+    public async Task<IActionResult> PatchPublisher(int id, [FromBody] PublisherPartialModel model)
     {
         if (!ModelState.IsValid)
         {
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var publisher = FindPublisher(id);
-        publisher.Name = model.Name;
-
-        _dbContext.Publishers.Update(publisher);
-
-        await _dbContext.SaveChangesAsync();
+        await publisherService.PatchPublisherAsync(id, model.Adapt<PublisherPartialDTO>());
 
         return NoContent();
     }
@@ -119,12 +78,7 @@ public class PublisherController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var publisher = FindPublisher(id);
-        publisher.Name = model.Name;
-
-        _dbContext.Publishers.Update(publisher);
-
-        await _dbContext.SaveChangesAsync();
+        await publisherService.UpdatePublisherAsync(id, model.Adapt<PublisherUpsertDTO>());
 
         return NoContent();
     }
@@ -141,31 +95,8 @@ public class PublisherController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var publisher = FindPublisher(id);
-
-        if (_dbContext.Books.Any(b => b.PublisherId == id))
-        {
-            throw new StatusCodeException(StatusCodes.Status400BadRequest,
-                "Cannot delete publisher with associated books.");
-        }
-
-        _dbContext.Publishers.Remove(publisher);
-
-        await _dbContext.SaveChangesAsync();
+        await publisherService.DeletePublisherAsync(id);
 
         return NoContent();
-    }
-
-    private Publisher FindPublisher(int publisherId)
-    {
-        var publisher = _dbContext.Publishers
-            .FirstOrDefault(p => p.Id == publisherId);
-        if (publisher == null)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound,
-                $"Publisher with id {publisherId} not found.");
-        }
-
-        return publisher;
     }
 }

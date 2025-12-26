@@ -1,42 +1,24 @@
-﻿using DataAccessLayer;
-using DataAccessLayer.Entities;
+﻿using BusinessLayer.DTOs.OrderItem;
+using BusinessLayer.Services.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Shared.Exception;
 using WebAPI.Core;
-using WebAPI.Exception;
-using WebAPI.Models;
-using WebAPI.Models.Response;
-using WebAPI.Models.Response.Simplified;
+using WebAPI.Models.Order;
 
 namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class OrderItemController : ControllerBase
+public class OrderItemController(IOrderItemService orderService) : ControllerBase
 {
-    private readonly CustomDBContext _dbContext;
-
-    public OrderItemController(CustomDBContext dBContext)
-    {
-        _dbContext = dBContext;
-    }
-
     [HttpGet]
     [ProducesResponseType<List<OrderItemResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetOrderItems()
     {
-        var orderItems = await _dbContext.OrderItems
-            .Include(orderItem => orderItem.Book)
-            .Include(orderItem => orderItem.User)
-            .ToListAsync();
-
-        return Ok(orderItems.Select(ot => ot.Adapt<OrderItemResponse>() with
-        {
-            Book = ot.Book.Adapt<BookSimplifiedResponse>(),
-            User = ot.User.Adapt<UserSimplifiedResponse>()
-        }).ToList());
+        var orderItems = await orderService.GetOrderItemsAsync();
+        return Ok(orderItems.Adapt<List<OrderItemResponse>>());
     }
 
     [HttpGet("{id}")]
@@ -45,13 +27,8 @@ public class OrderItemController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetOrderItem(int id)
     {
-        var orderItem = await (FindOrderItem(id));
-
-        return Ok(orderItem.Adapt<OrderItemResponse>() with
-        {
-            Book = orderItem.Book.Adapt<BookSimplifiedResponse>(),
-            User = orderItem.User.Adapt<UserSimplifiedResponse>()
-        });
+        var orderItem = await orderService.GetOrderItemAsync(id);
+        return Ok(orderItem.Adapt<OrderItemResponse>());
     }
 
     [HttpPost]
@@ -65,21 +42,8 @@ public class OrderItemController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var orderItem = new OrderItem
-        {
-            BookId = model.BookId,
-            UserId = model.UserId
-        };
-
-        _dbContext.OrderItems.Add(orderItem);
-
-        await _dbContext.SaveChangesAsync();
-
-        return Created($"/OrderItem/{orderItem.Id}", orderItem.Adapt<OrderItemResponse>() with
-        {
-            Book = orderItem.Book.Adapt<BookSimplifiedResponse>(),
-            User = orderItem.User.Adapt<UserSimplifiedResponse>()
-        });
+        var result = await orderService.CreateOrderItemAsync(model.Adapt<OrderItemUpsertDTO>());
+        return Created($"/OrderItem/{result.Id}", result.Adapt<OrderItemResponse>());
     }
 
     [HttpPatch("{id}")]
@@ -94,15 +58,7 @@ public class OrderItemController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var orderItem = await FindOrderItem(id);
-
-        orderItem.BookId = model.BookId ?? orderItem.BookId;
-        orderItem.UserId = model.UserId ?? orderItem.UserId;
-
-        _dbContext.OrderItems.Update(orderItem);
-
-        await _dbContext.SaveChangesAsync();
-
+        await orderService.PatchOrderItemAsync(id, model.Adapt<OrderItemPartialDTO>());
         return NoContent();
     }
 
@@ -118,15 +74,7 @@ public class OrderItemController : ControllerBase
             throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
         }
 
-        var orderItem = await FindOrderItem(id);
-
-        orderItem.BookId = model.BookId;
-        orderItem.UserId = model.UserId;
-
-        _dbContext.OrderItems.Update(orderItem);
-
-        await _dbContext.SaveChangesAsync();
-
+        await orderService.UpdateOrderItemAsync(id, model.Adapt<OrderItemUpsertDTO>());
         return NoContent();
     }
 
@@ -137,31 +85,7 @@ public class OrderItemController : ControllerBase
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteOrderItem(int id)
     {
-        if (!ModelState.IsValid)
-        {
-            throw new StatusCodeException(StatusCodes.Status400BadRequest, ModelState.ToString() ?? string.Empty);
-        }
-
-        var orderItem = await FindOrderItem(id);
-
-        _dbContext.OrderItems.Remove(orderItem);
-
-        await _dbContext.SaveChangesAsync();
-
+        await orderService.DeleteOrderItemAsync(id);
         return NoContent();
-    }
-
-    private async Task<OrderItem> FindOrderItem(int orderItemId)
-    {
-        var orderItem = await _dbContext.OrderItems
-            .FirstOrDefaultAsync(p => p.Id == orderItemId);
-
-        if (orderItem == null)
-        {
-            throw new StatusCodeException(StatusCodes.Status404NotFound,
-                $"OrderItem with id {orderItemId} not found.");
-        }
-
-        return orderItem;
     }
 }
