@@ -10,6 +10,8 @@ public interface IAuthorService
 
     public Task<AuthorDTO> GetAuthorAsync(int id, bool includeBookAuthors = true);
 
+    public Task<List<AuthorDTO>> SearchAuthorsAsync(string searchTerm);
+
     public Task PatchAuthorAsync(int id, AuthorPartialDTO authorDto);
     public Task UpdateAuthorAsync(int id, AuthorUpsertDTO authorDto);
     public Task DeleteAuthorAsync(int id);

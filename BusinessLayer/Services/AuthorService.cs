@@ -46,6 +46,23 @@ public class AuthorService(CustomDBContext dbContext) : IAuthorService
         return author.Adapt<AuthorDTO>();
     }
 
+    public async Task<List<AuthorDTO>> SearchAuthorsAsync(string searchTerm)
+    {
+        var query = GetBaseQuery(false);
+        
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            var searchTermLower = searchTerm.ToLower();
+            query = query.Where(a => (a.Name + " " + a.Surname).ToLower().Contains(searchTermLower) ||
+                                   (a.Surname + " " + a.Name).ToLower().Contains(searchTermLower) ||
+                                   a.Name.ToLower().Contains(searchTermLower) || 
+                                   a.Surname.ToLower().Contains(searchTermLower));
+        }
+        
+        var authors = await query.ToListAsync();
+        return authors.Adapt<List<AuthorDTO>>();
+    }
+
     public async Task PatchAuthorAsync(int id, AuthorPartialDTO authorDto)
     {
         var author = await FindAuthor(id, true);

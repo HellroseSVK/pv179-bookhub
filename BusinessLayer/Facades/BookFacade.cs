@@ -1,3 +1,4 @@
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Book;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
@@ -38,6 +39,11 @@ public class BookFacade(IBookService bookService, IImageService imageService, Cu
     public async Task<List<BookDTO>> FilterBooksAsync(BookFilterDTO filter)
     {
         return await bookService.FilterBooksAsync(filter);
+    }
+
+    public async Task<PagedResult<BookDTO>> FilterBooksPaginatedAsync(BookFilterDTO filter)
+    {
+        return await bookService.FilterBooksPaginatedAsync(filter);
     }
 
     public async Task<BookDTO> GetBookAsync(

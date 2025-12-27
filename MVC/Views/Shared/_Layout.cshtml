@@ -33,7 +33,14 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                    </ul>
+                    
+                    <form class="d-flex me-3" asp-controller="Search" asp-action="Index" method="get">
+                        <input class="form-control me-2" type="search" name="searchTerm" placeholder="Search books, genres, publishers..." aria-label="Search" style="min-width: 250px;">
+                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    </form>
 
+                    <ul class="navbar-nav">
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li>
@@ -55,7 +62,6 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
                             </li>
                         }
-
                     </ul>
                 </div>
             </div>

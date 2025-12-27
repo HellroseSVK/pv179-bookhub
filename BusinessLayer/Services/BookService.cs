@@ -1,4 +1,6 @@
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Book;
+using BusinessLayer.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -31,37 +33,36 @@ public class BookService(CustomDBContext dbContext) : IBookService
 
     public async Task<List<BookDTO>> FilterBooksAsync(BookFilterDTO filter)
     {
-        var query = GetBaseQuery(true, true, true, true, false, false);
-
-        if (!string.IsNullOrEmpty(filter.Title))
-            query = query.Where(b => b.Title.Contains(filter.Title));
-
-        if (!string.IsNullOrEmpty(filter.Description))
-            query = query.Where(b => b.Description.Contains(filter.Description));
-
-        if (filter.PriceMin.HasValue)
-            query = query.Where(b => b.Price >= filter.PriceMin.Value);
-
-        if (filter.PriceMax.HasValue)
-            query = query.Where(b => b.Price <= filter.PriceMax.Value);
-
-        if (filter.RatingMin.HasValue)
-            query = query
-                .Where(b => b.Reviews.Any())
-                .Where(b => b.Reviews.Average(r => r.Rating) >= (double)filter.RatingMin.Value);
-
-        if (filter.AuthorIds is { Count: > 0 })
-            query = query.Where(b => b.BookAuthors.Any(ba => filter.AuthorIds.Contains(ba.AuthorId)));
-
-        if (filter.GenreIds is { Count: > 0 })
-            query = query.Where(b => b.BookGenres.Any(bg => filter.GenreIds.Contains(bg.GenreId)));
-
-        if (filter.PublisherIds is { Count: > 0 })
-            query = query.Where(b => filter.PublisherIds.Contains(b.PublisherId));
-
-        var books = await query.ToListAsync();
+        var books = await dbContext.Books
+            .IncludeVirtuals()
+            .ApplyBookFilter(filter)
+            .Distinct()
+            .ToListAsync();
         return books.Adapt<List<BookDTO>>();
     }
+
+    public async Task<PagedResult<BookDTO>> FilterBooksPaginatedAsync(BookFilterDTO filter)
+    {
+        var query = dbContext.Books
+            .IncludeVirtuals()
+            .ApplyBookFilter(filter)
+            .Distinct();
+        
+        var totalCount = await query.CountAsync();
+        
+        var books = await query
+            .Paginate(filter.PageNumber, filter.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<BookDTO>
+        {
+            Items = books.Adapt<List<BookDTO>>(),
+            TotalCount = totalCount,
+            PageNumber = filter.PageNumber,
+            PageSize = filter.PageSize
+        };
+    }
+
 
     public async Task<BookDTO> GetBookAsync(
         int id,
@@ -174,7 +175,12 @@ public class BookService(CustomDBContext dbContext) : IBookService
         bool includeWishlistItems,
         bool includeOrderItems)
     {
-        IQueryable<Book> query = dbContext.Books;
+        var query = dbContext.Books.AsQueryable();
+
+        if (includeAuthors && includeGenres && includePublisher && includeReviews)
+        {
+            return query.IncludeVirtuals(includeWishlistItems, includeOrderItems);
+        }
 
         if (includeAuthors)
         {
