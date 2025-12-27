@@ -19,20 +19,44 @@
                 <div class="row">
                     @foreach (var book in Model.Books.Items)
                     {
-                        <div class="col-md-4 mb-3">
-                            <div class="card">
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
                                 @if (!string.IsNullOrEmpty(book.ImageUrl))
                                 {
-                                    <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" style="height: 200px; object-fit: cover;">
+                                    <img src="@book.ImageUrl" class="card-img-top" style="height: 200px; object-fit: cover;" alt="@book.Title" />
                                 }
-                                <div class="card-body">
+                                else
+                                {
+                                    <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background-color: #f8f9fa;">
+                                        <span class="text-muted">No Image</span>
+                                    </div>
+                                }
+                                <div class="card-body d-flex flex-column">
                                     <h5 class="card-title">@book.Title</h5>
-                                    <p class="card-text">@book.Description.Substring(0, Math.Min(100, book.Description.Length))...</p>
-                                    <p class="card-text"><small class="text-muted">Price: @book.Price</small></p>
-                                    @if (book.Authors != null && book.Authors.Any())
-                                    {
-                                        <p class="card-text"><small class="text-muted">Authors: @string.Join(", ", book.Authors.Select(a => $"{a.Name}"))</small></p>
-                                    }
+                                    <p class="card-text flex-grow-1">@book.Description</p>
+                                    <div class="mt-auto">
+                                        <p class="card-text">
+                                            <strong>Price: @book.Price.ToString("C")</strong>
+                                        </p>
+                                        @if (book.Publisher != null)
+                                        {
+                                            <p class="card-text">
+                                                <small class="text-muted">Publisher: @book.Publisher.Name</small>
+                                            </p>
+                                        }
+                                        @if (book.Authors != null && book.Authors.Any())
+                                        {
+                                            <p class="card-text">
+                                                <small class="text-muted">Authors: @string.Join(", ", book.Authors.Select(a => $"{a.Name} {a.Surname}"))</small>
+                                            </p>
+                                        }
+                                        @if (book.Genres != null && book.Genres.Any())
+                                        {
+                                            <p class="card-text">
+                                                <small class="text-muted">Genres: @string.Join(", ", book.Genres.Select(g => g.Name))</small>
+                                            </p>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
