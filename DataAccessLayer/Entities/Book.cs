@@ -29,7 +29,5 @@ public class Book : BaseEntity
 
     public int EditCount { get; set; } = 0;
 
-    public string? LastModifiedById { get; set; }
-
-    public LocalIdentityUser? LastModifiedBy { get; set; }
+    public string[]? LastModifiedByUserIds { get; set; }
 }

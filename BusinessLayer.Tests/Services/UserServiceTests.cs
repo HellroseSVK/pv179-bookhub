@@ -36,7 +36,7 @@ public class UserServiceTests
         Assert.Equal(userDto.IsAdmin, created.IsAdmin);
         Assert.NotNull(created.Reviews);
         Assert.NotNull(created.WishlistItems);
-        Assert.NotNull(created.OrderItems);
+        Assert.NotNull(created.Orders);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class UserServiceTests
         Assert.False(string.IsNullOrEmpty(user.Email));
         Assert.NotNull(user.Reviews);
         Assert.NotNull(user.WishlistItems);
-        Assert.NotNull(user.OrderItems);
+        Assert.NotNull(user.Orders);
     }
 
     [Fact]

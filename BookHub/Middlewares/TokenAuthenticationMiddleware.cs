@@ -2,6 +2,7 @@
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI.Middlewares;
 
@@ -14,6 +15,13 @@ public class TokenAuthenticationMiddleware(
 
     public async Task Invoke(HttpContext context)
     {
+        var endpoint = context.GetEndpoint();
+        if (endpoint?.Metadata?.GetMetadata<AllowAnonymousAttribute>() != null)
+        {
+            await next(context);
+            return;
+        }
+
         var authHeader = context.Request.Headers["Authorization"].ToString();
 
         if (!string.IsNullOrEmpty(authHeader) && authHeader == ApiToken)

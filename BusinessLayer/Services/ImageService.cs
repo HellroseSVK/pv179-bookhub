@@ -29,7 +29,7 @@ public class ImageService : IImageService
         var fileName = $"book_{bookId}_{Guid.NewGuid():N}{fileExtension}";
         var filePath = Path.Combine(_imageStoragePath, fileName);
 
-        using var stream = new FileStream(filePath, FileMode.Create);
+        await using var stream = new FileStream(filePath, FileMode.Create);
         await imageFile.CopyToAsync(stream);
 
         return fileName;
@@ -57,10 +57,7 @@ public class ImageService : IImageService
             return false;
 
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-        if (!_allowedExtensions.Contains(extension))
-            return false;
-
-        return IsValidImageContentType(file.ContentType);
+        return _allowedExtensions.Contains(extension) && IsValidImageContentType(file.ContentType);
     }
 
     private static bool IsValidImageContentType(string contentType)

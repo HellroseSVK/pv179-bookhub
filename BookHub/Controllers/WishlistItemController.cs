@@ -1,9 +1,10 @@
 ﻿using BusinessLayer.DTOs.WishlistItem;
 using BusinessLayer.Services.Interfaces;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Core;
 using Shared.Exception;
-using WebAPI.Core;
 using WebAPI.Models.Wishlist;
 
 namespace WebAPI.Controllers;
@@ -13,8 +14,10 @@ namespace WebAPI.Controllers;
 public class WishlistItemController(IWishlistItemService wishlistService) : ControllerBase
 {
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<List<WishlistItemResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetWishlistItems()
     {
         var wishlistItems = await wishlistService.GetWishlistItemsAsync();
@@ -23,9 +26,11 @@ public class WishlistItemController(IWishlistItemService wishlistService) : Cont
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<WishlistItemResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetWishlistItem(int id)
     {
         var wishlistItem = await wishlistService.GetWishlistItemAsync(id);
@@ -35,9 +40,12 @@ public class WishlistItemController(IWishlistItemService wishlistService) : Cont
     }
 
     [HttpPost]
+    [Authorize(Roles = "User")]
     [ProducesResponseType<WishlistItemResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateWishlistItem([FromBody] WishlistItemModel model)
     {
         if (!ModelState.IsValid)
@@ -51,10 +59,12 @@ public class WishlistItemController(IWishlistItemService wishlistService) : Cont
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Roles = "User")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PatchWishlistItem(int id, [FromBody] WishlistItemPartialModel model)
     {
         if (!ModelState.IsValid)
@@ -68,10 +78,12 @@ public class WishlistItemController(IWishlistItemService wishlistService) : Cont
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "User")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateWishlistItem(int id, [FromBody] WishlistItemModel model)
     {
         if (!ModelState.IsValid)
@@ -85,10 +97,12 @@ public class WishlistItemController(IWishlistItemService wishlistService) : Cont
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "User")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteWishlistItem(int id)
     {
         await wishlistService.DeleteWishlistItemAsync(id);

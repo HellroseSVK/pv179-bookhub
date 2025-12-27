@@ -158,6 +158,17 @@ public class TestDataHelper
         ];
     }
 
+    public static List<Order> GetOrders()
+    {
+        return [
+            new Order
+            {
+                Id = 1,
+                UserId = 1,
+            },
+        ];
+    }
+
     public static List<OrderItem> GetOrderItems()
     {
         return [
@@ -165,7 +176,7 @@ public class TestDataHelper
             {
                 Id = 1,
                 BookId = 1,
-                UserId = 1,
+                OrderId = 1,
             },
         ];
     }

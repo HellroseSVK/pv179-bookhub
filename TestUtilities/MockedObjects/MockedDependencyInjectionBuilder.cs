@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using BusinessLayer.Services.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace TestUtilities.MockedObjects;
 
@@ -30,6 +31,18 @@ public class MockedDependencyInjectionBuilder
 
     public MockedDependencyInjectionBuilder AddServices()
     {
+        var inMemorySettings = new Dictionary<string, string?>
+        {
+            { "Jwt:Key", "very_secret_token" },
+            { "Jwt:Issuer", "bookhub" },
+            { "Jwt:Audience", "bookhub" },
+        };
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(inMemorySettings!)
+            .Build();
+
+        _serviceCollection = _serviceCollection.AddSingleton<IConfiguration>(config);
+
         _serviceCollection.RegisterMapsterConfiguration();
 
         _serviceCollection = _serviceCollection

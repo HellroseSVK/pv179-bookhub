@@ -1,8 +1,9 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using Shared.Core;
 using Shared.Exception;
-using WebAPI.Core;
 
-namespace WebAPI.Middlewares;
+namespace Shared.Middleware;
 
 public class StatusCodeExceptionMiddleware(RequestDelegate next)
 {

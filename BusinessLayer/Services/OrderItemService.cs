@@ -14,13 +14,11 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
     public async Task<OrderItemDTO> CreateOrderItemAsync(OrderItemUpsertDTO orderItemDto)
     {
         var book = await FindBook(orderItemDto.BookId);
-        var user = await FindUser(orderItemDto.UserId);
+        var order = await FindOrder(orderItemDto.OrderId);
 
         var orderItem = orderItemDto.Adapt<OrderItem>();
         orderItem.BookId = book.Id;
-        orderItem.Book = book;
-        orderItem.UserId = user.Id;
-        orderItem.User = user;
+        orderItem.OrderId = order.Id;
 
         var created = dbContext.OrderItems.Add(orderItem);
         await dbContext.SaveChangesAsync();
@@ -28,16 +26,16 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
         return created.Entity.Adapt<OrderItemDTO>();
     }
 
-    public async Task<OrderItemDTO> GetOrderItemAsync(int id, bool includeBook = true, bool includeUser = true)
+    public async Task<OrderItemDTO> GetOrderItemAsync(int id, bool includeBook = true, bool includeOrder = true)
     {
-        var orderItem = await FindOrderItem(id, includeBook, includeUser);
+        var orderItem = await FindOrderItem(id, includeBook, includeOrder);
         return orderItem.Adapt<OrderItemDTO>();
     }
 
     public async Task<List<OrderItemDTO>> GetOrderItemsAsync(int[]? ids = null, bool includeBook = true,
-        bool includeUser = true)
+        bool includeOrder = true)
     {
-        var query = GetBaseQuery(includeBook, includeUser);
+        var query = GetBaseQuery(includeBook, includeOrder);
 
         if (ids is { Length: > 0 })
         {
@@ -59,11 +57,11 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
             orderItem.Book = book;
         }
 
-        if (orderItemDto.UserId != null)
+        if (orderItemDto.OrderId != null)
         {
-            var user = await FindUser((int)orderItemDto.UserId);
-            orderItem.UserId = user.Id;
-            orderItem.User = user;
+            var order = await FindOrder((int)orderItemDto.OrderId);
+            orderItem.OrderId = order.Id;
+            orderItem.Order = order;
         }
 
         dbContext.OrderItems.Update(orderItem);
@@ -75,12 +73,10 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
         var orderItem = await FindOrderItem(id);
 
         var book = await FindBook(orderItemDto.BookId);
-        var user = await FindUser(orderItemDto.UserId);
+        var order = await FindOrder(orderItemDto.OrderId);
 
         orderItem.BookId = book.Id;
-        orderItem.Book = book;
-        orderItem.UserId = user.Id;
-        orderItem.User = user;
+        orderItem.OrderId = order.Id;
 
         dbContext.OrderItems.Update(orderItem);
         await dbContext.SaveChangesAsync();
@@ -94,9 +90,9 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
         await dbContext.SaveChangesAsync();
     }
 
-    private async Task<OrderItem> FindOrderItem(int orderItemId, bool includeBook = false, bool includeUser = false)
+    private async Task<OrderItem> FindOrderItem(int orderItemId, bool includeBook = false, bool includeOrder = false)
     {
-        var query = GetBaseQuery(includeBook, includeUser);
+        var query = GetBaseQuery(includeBook, includeOrder);
         var orderItem = await query.FirstOrDefaultAsync(oi => oi.Id == orderItemId);
 
         return orderItem ??
@@ -104,7 +100,7 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
                    $"OrderItem with id {orderItemId} not found.");
     }
 
-    private IQueryable<OrderItem> GetBaseQuery(bool includeBook, bool includeUser)
+    private IQueryable<OrderItem> GetBaseQuery(bool includeBook, bool includeOrder)
     {
         IQueryable<OrderItem> query = dbContext.OrderItems;
 
@@ -113,41 +109,39 @@ public class OrderItemService(CustomDBContext dbContext) : IOrderItemService
             query = query.Include(oi => oi.Book);
         }
 
-        if (includeUser)
+        if (includeOrder)
         {
-            query = query.Include(oi => oi.User);
+            query = query.Include(oi => oi.Order);
         }
 
         return query;
     }
 
-    private async Task<Book> FindBook(int userId)
+    private async Task<Book> FindBook(int bookId)
     {
         var book = await dbContext.Books
-            .Where(book => userId.Equals(book.Id))
-            .FirstAsync();
+            .FirstOrDefaultAsync(book => bookId.Equals(book.Id));
 
         if (book == null)
         {
             throw new StatusCodeException(StatusCodes.Status404NotFound,
-                $"Book with id {string.Join(", ", userId)} not found.");
+                $"Book with id {string.Join(", ", bookId)} not found.");
         }
 
         return book;
     }
 
-    private async Task<User> FindUser(int userId)
+    private async Task<Order> FindOrder(int orderId)
     {
-        var user = await dbContext.Users
-            .Where(user => userId.Equals(user.Id))
-            .FirstAsync();
+        var order = await dbContext.Orders
+            .FirstOrDefaultAsync(order => orderId.Equals(order.Id));
 
-        if (user == null)
+        if (order == null)
         {
             throw new StatusCodeException(StatusCodes.Status404NotFound,
-                $"User with id {string.Join(", ", userId)} not found.");
+                $"Order with id {string.Join(", ", orderId)} not found.");
         }
 
-        return user;
+        return order;
     }
 }

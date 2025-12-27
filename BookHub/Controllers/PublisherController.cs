@@ -1,9 +1,10 @@
 using BusinessLayer.DTOs.Publisher;
 using BusinessLayer.Services.Interfaces;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Core;
 using Shared.Exception;
-using WebAPI.Core;
 using WebAPI.Models.Publisher;
 
 namespace WebAPI.Controllers;
@@ -13,8 +14,10 @@ namespace WebAPI.Controllers;
 public class PublisherController(IPublisherService publisherService) : ControllerBase
 {
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType<List<PublisherResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetPublishers()
     {
         var publishers = await publisherService.GetPublishersAsync();
@@ -23,9 +26,11 @@ public class PublisherController(IPublisherService publisherService) : Controlle
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     [ProducesResponseType<PublisherResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPublisher(int id)
     {
         var publisher = await publisherService.GetPublisherAsync(id);
@@ -34,9 +39,12 @@ public class PublisherController(IPublisherService publisherService) : Controlle
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType<PublisherResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreatePublisher([FromBody] PublisherModel model)
     {
         if (!ModelState.IsValid)
@@ -50,10 +58,12 @@ public class PublisherController(IPublisherService publisherService) : Controlle
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PatchPublisher(int id, [FromBody] PublisherPartialModel model)
     {
         if (!ModelState.IsValid)
@@ -67,10 +77,12 @@ public class PublisherController(IPublisherService publisherService) : Controlle
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdatePublisher(int id, [FromBody] PublisherModel model)
     {
         if (!ModelState.IsValid)
@@ -84,10 +96,12 @@ public class PublisherController(IPublisherService publisherService) : Controlle
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeletePublisher(int id)
     {
         if (!ModelState.IsValid)

@@ -17,6 +17,7 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
     public DbSet<Publisher> Publishers { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<WishlistItem> WishlistItems { get; set; }
+    public DbSet<Order> Orders {  get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<BookAuthor> BookAuthors { get; set; }
     public DbSet<BookGenre> BookGenres { get; set; }
@@ -50,6 +51,7 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
                      ?? user.FindFirst(JwtRegisteredClaimNames.Jti)?.Value
                      ?? user.FindFirst(ClaimTypes.Role)?.Value;
         }
+
         userId ??= "local-user";
 
         Console.WriteLine("Audit Info Applied: UserId = " + userId);
@@ -58,7 +60,9 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
             .Where(e => e.State is EntityState.Modified or EntityState.Added)
             .Select(entry =>
             {
-                entry.Entity.LastModifiedById = userId;
+                entry.Entity.LastModifiedByUserIds = entry.Entity.LastModifiedByUserIds == null
+                    ? [userId!]
+                    : entry.Entity.LastModifiedByUserIds.Concat([userId!]).ToArray();
                 entry.Entity.EditCount += 1;
                 return entry;
             });
@@ -96,6 +100,10 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
             .HasForeignKey<LocalIdentityUser>(u => u.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
         // one-to-many relationships
 
         modelBuilder.Entity<WishlistItem>()
@@ -103,9 +111,14 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
             .WithMany(user => user.WishlistItems)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<Order>()
+            .HasOne<User>(order => order.User)
+            .WithMany(user => user.Orders)
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Entity<OrderItem>()
-            .HasOne<User>(item => item.User)
-            .WithMany(user => user.OrderItems)
+            .HasOne<Order>(item => item.Order)
+            .WithMany(order => order.OrderItems)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Review>()
