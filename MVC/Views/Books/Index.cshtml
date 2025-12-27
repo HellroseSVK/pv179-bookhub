@@ -10,15 +10,20 @@
                 <div class="card-header">
                     <h5 class="mb-0">Genres</h5>
                 </div>
-                <div class="list-group list-group-flush">
+                <div class="card-body">
+                    <input type="text" id="genreSearch" class="form-control form-control-sm" placeholder="Search genres...">
+                </div>
+                <div class="list-group list-group-flush" id="genreList" style="max-height: 300px; overflow-y: auto;">
                     <a asp-action="Index" asp-route-page="1" asp-route-authorId="@Model.SelectedAuthorId"
-                       class="list-group-item list-group-item-action @(Model.SelectedGenreId == null ? "active" : "")">
+                       class="list-group-item list-group-item-action genre-item @(Model.SelectedGenreId == null ? "active" : "")"
+                       data-genre-name="All Genres">
                         All Genres
                     </a>
                     @foreach (var genre in Model.Genres)
                     {
                         <a asp-action="Index" asp-route-genreId="@genre.Id" asp-route-authorId="@Model.SelectedAuthorId" asp-route-page="1"
-                           class="list-group-item list-group-item-action @(Model.SelectedGenreId == genre.Id ? "active" : "")">
+                           class="list-group-item list-group-item-action genre-item @(Model.SelectedGenreId == genre.Id ? "active" : "")"
+                           data-genre-name="@genre.Name">
                             @genre.Name
                         </a>
                     }
@@ -29,15 +34,20 @@
                 <div class="card-header">
                     <h5 class="mb-0">Authors</h5>
                 </div>
-                <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
+                <div class="card-body">
+                    <input type="text" id="authorSearch" class="form-control form-control-sm" placeholder="Search authors...">
+                </div>
+                <div class="list-group list-group-flush" id="authorList" style="max-height: 400px; overflow-y: auto;">
                     <a asp-action="Index" asp-route-page="1" asp-route-genreId="@Model.SelectedGenreId"
-                       class="list-group-item list-group-item-action @(Model.SelectedAuthorId == null ? "active" : "")">
+                       class="list-group-item list-group-item-action author-item @(Model.SelectedAuthorId == null ? "active" : "")"
+                       data-author-name="All Authors">
                         All Authors
                     </a>
                     @foreach (var author in Model.Authors)
                     {
                         <a asp-action="Index" asp-route-authorId="@author.Id" asp-route-genreId="@Model.SelectedGenreId" asp-route-page="1"
-                           class="list-group-item list-group-item-action @(Model.SelectedAuthorId == author.Id ? "active" : "")">
+                           class="list-group-item list-group-item-action author-item @(Model.SelectedAuthorId == author.Id ? "active" : "")"
+                           data-author-name="@author.FullName">
                             @author.FullName
                         </a>
                     }
@@ -136,3 +146,47 @@ else
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Genre search
+            const genreSearch = document.getElementById('genreSearch');
+            const genreItems = document.querySelectorAll('.genre-item');
+
+            if (genreSearch) {
+                genreSearch.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+
+                    genreItems.forEach(function(item) {
+                        const genreName = item.getAttribute('data-genre-name').toLowerCase();
+                        if (genreName.includes(searchTerm)) {
+                            item.style.display = '';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Author search
+            const authorSearch = document.getElementById('authorSearch');
+            const authorItems = document.querySelectorAll('.author-item');
+
+            if (authorSearch) {
+                authorSearch.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+
+                    authorItems.forEach(function(item) {
+                        const authorName = item.getAttribute('data-author-name').toLowerCase();
+                        if (authorName.includes(searchTerm)) {
+                            item.style.display = '';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+}
