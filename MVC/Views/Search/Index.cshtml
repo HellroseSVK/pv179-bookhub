@@ -52,8 +52,28 @@
                                         }
                                         @if (book.Genres != null && book.Genres.Any())
                                         {
+                                            var primaryGenre = book.Genres.FirstOrDefault(g => g.IsPrimary);
+                                            var secondaryGenres = book.Genres.Where(g => !g.IsPrimary).ToList();
+
                                             <p class="card-text">
-                                                <small class="text-muted">Genres: @string.Join(", ", book.Genres.Select(g => g.Name))</small>
+                                                <small class="text-muted">
+                                                    @if (primaryGenre != null)
+                                                    {
+                                                        <span class="badge bg-primary">@primaryGenre.Name</span>
+                                                        @foreach (var genre in secondaryGenres)
+                                                        {
+                                                            <text> </text><span class="badge bg-secondary">@genre.Name</span>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        @* Fallback if no primary genre is set *@
+                                                        @foreach (var genre in book.Genres)
+                                                        {
+                                                            <span class="badge bg-secondary">@genre.Name</span>
+                                                        }
+                                                    }
+                                                </small>
                                             </p>
                                         }
                                     </div>

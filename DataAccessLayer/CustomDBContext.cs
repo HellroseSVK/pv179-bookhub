@@ -161,6 +161,11 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
             .WithMany(book => book.BookGenres)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<BookGenre>()
+            .HasIndex(bg => new { bg.BookId, bg.IsPrimary })
+            .HasFilter("IsPrimary = 1")
+            .IsUnique();
+
         modelBuilder.Entity<Book>()
             .HasOne<Publisher>(book => book.Publisher)
             .WithMany(publisher => publisher.Books)
