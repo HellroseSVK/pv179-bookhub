@@ -11,4 +11,6 @@ public class BookListViewModel
     public bool HasNextPage => CurrentPage < TotalPages;
     public List<GenreViewModel> Genres { get; set; } = [];
     public int? SelectedGenreId { get; set; }
+    public List<AuthorViewModel> Authors { get; set; } = [];
+    public int? SelectedAuthorId { get; set; }
 }
