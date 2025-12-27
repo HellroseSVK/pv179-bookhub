@@ -9,4 +9,6 @@ public class BookListViewModel
     public int TotalBooks { get; set; } = 0;
     public bool HasPreviousPage => CurrentPage > 1;
     public bool HasNextPage => CurrentPage < TotalPages;
+    public List<GenreViewModel> Genres { get; set; } = [];
+    public int? SelectedGenreId { get; set; }
 }

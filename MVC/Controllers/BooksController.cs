@@ -6,11 +6,17 @@ using Mapster;
 
 namespace MVC.Controllers;
 
-public class BooksController(IBookService bookService) : Controller
+public class BooksController(IBookService bookService, IGenreService genreService) : Controller
 {
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 12)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 12, int? genreId = null)
     {
-        var books = await bookService.FilterBooksAsync(new BookFilterDTO());
+        var filter = new BookFilterDTO();
+        if (genreId.HasValue)
+        {
+            filter.GenreIds = [genreId.Value];
+        }
+
+        var books = await bookService.FilterBooksAsync(filter);
         var totalBooks = books.Count;
         var totalPages = (int)Math.Ceiling(totalBooks / (double)pageSize);
 
@@ -20,13 +26,17 @@ public class BooksController(IBookService bookService) : Controller
             .Select(b => b.Adapt<BookViewModel>())
             .ToList();
 
+        var allGenres = await genreService.GetGenreAsync(includeBookGenres: false);
+
         var viewModel = new BookListViewModel
         {
             Books = paginatedBooks,
             CurrentPage = page,
             TotalPages = totalPages,
             PageSize = pageSize,
-            TotalBooks = totalBooks
+            TotalBooks = totalBooks,
+            Genres = allGenres.Select(g => g.Adapt<GenreViewModel>()).ToList(),
+            SelectedGenreId = genreId
         };
 
         return View(viewModel);
