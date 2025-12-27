@@ -183,22 +183,34 @@ public class BookService(CustomDBContext dbContext) : IBookService
         }
 
         if (includeAuthors)
+        {
             query = query.Include(b => b.BookAuthors).ThenInclude(ba => ba.Author);
+        }
 
         if (includeGenres)
+        {
             query = query.Include(b => b.BookGenres).ThenInclude(bg => bg.Genre);
+        }
 
         if (includePublisher)
+        {
             query = query.Include(b => b.Publisher);
+        }
 
         if (includeReviews)
+        {
             query = query.Include(b => b.Reviews);
+        }
 
         if (includeWishlistItems)
+        {
             query = query.Include(b => b.WishlistItems);
+        }
 
         if (includeOrderItems)
+        {
             query = query.Include(b => b.OrderItems);
+        }
 
         return query;
     }

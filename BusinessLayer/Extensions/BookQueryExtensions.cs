@@ -24,10 +24,14 @@ public static class BookQueryExtensions
             .Include(b => b.Reviews);
 
         if (includeWishlistItems)
+        {
             result = result.Include(b => b.WishlistItems);
+        }
 
         if (includeOrderItems)
+        {
             result = result.Include(b => b.OrderItems);
+        }
 
         return result;
     }
@@ -49,30 +53,46 @@ public static class BookQueryExtensions
         }
 
         if (!string.IsNullOrEmpty(filter.Title))
+        {
             query = query.Where(b => b.Title.Contains(filter.Title));
+        }
 
         if (!string.IsNullOrEmpty(filter.Description))
+        {
             query = query.Where(b => b.Description.Contains(filter.Description));
+        }
 
         if (filter.PriceMin.HasValue)
+        {
             query = query.Where(b => b.Price >= filter.PriceMin.Value);
+        }
 
         if (filter.PriceMax.HasValue)
+        {
             query = query.Where(b => b.Price <= filter.PriceMax.Value);
+        }
 
         if (filter.RatingMin.HasValue)
+        {
             query = query
                 .Where(b => b.Reviews.Any())
                 .Where(b => b.Reviews.Average(r => r.Rating) >= (double)filter.RatingMin.Value);
+        }
 
         if (filter.AuthorIds is { Count: > 0 })
+        {
             query = query.Where(b => b.BookAuthors.Any(ba => filter.AuthorIds.Contains(ba.AuthorId)));
+        }
 
         if (filter.GenreIds is { Count: > 0 })
+        {
             query = query.Where(b => b.BookGenres.Any(bg => filter.GenreIds.Contains(bg.GenreId)));
+        }
 
         if (filter.PublisherIds is { Count: > 0 })
+        {
             query = query.Where(b => filter.PublisherIds.Contains(b.PublisherId));
+        }
 
         return query;
     }
