@@ -1,0 +1,145 @@
+@model MVC.Models.Search.SearchViewModel
+
+@{
+    ViewData["Title"] = "Search Results";
+}
+
+<div class="container mt-4">
+    <h1>Search Results</h1>
+    
+    @if (!string.IsNullOrEmpty(Model.SearchTerm))
+    {
+        <p class="text-muted">Search results for: <strong>@Model.SearchTerm</strong></p>
+        
+        @* Books Section *@
+        @if (Model.Books != null && Model.Books.Items.Any())
+        {
+            <div class="mt-4">
+                <h3>Books (@Model.Books.TotalCount)</h3>
+                <div class="row">
+                    @foreach (var book in Model.Books.Items)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                @if (!string.IsNullOrEmpty(book.ImageUrl))
+                                {
+                                    <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" style="height: 200px; object-fit: cover;">
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@book.Title</h5>
+                                    <p class="card-text">@book.Description.Substring(0, Math.Min(100, book.Description.Length))...</p>
+                                    <p class="card-text"><small class="text-muted">Price: @book.Price</small></p>
+                                    @if (book.Authors != null && book.Authors.Any())
+                                    {
+                                        <p class="card-text"><small class="text-muted">Authors: @string.Join(", ", book.Authors.Select(a => $"{a.Name}"))</small></p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                @* Pagination for Books *@
+                @if (Model.Books.TotalPages > 1)
+                {
+                    <nav aria-label="Book search pagination">
+                        <ul class="pagination">
+                            @if (Model.Books.HasPreviousPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Index", new { searchTerm = Model.SearchTerm, page = Model.Books.PageNumber - 1 })">Previous</a>
+                                </li>
+                            }
+                            
+                            @for (int i = 1; i <= Model.Books.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.Books.PageNumber ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", new { searchTerm = Model.SearchTerm, page = i })">@i</a>
+                                </li>
+                            }
+                            
+                            @if (Model.Books.HasNextPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Index", new { searchTerm = Model.SearchTerm, page = Model.Books.PageNumber + 1 })">Next</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            </div>
+        }
+        
+        @* Genres Section *@
+        @if (Model.Genres != null && Model.Genres.Any())
+        {
+            <div class="mt-4">
+                <h3>Genres (@Model.Genres.Count)</h3>
+                <div class="row">
+                    @foreach (var genre in Model.Genres)
+                    {
+                        <div class="col-md-3 mb-2">
+                            <div class="alert alert-info">
+                                <strong>@genre.Name</strong>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        
+        @* Authors Section *@
+        @if (Model.Authors != null && Model.Authors.Any())
+        {
+            <div class="mt-4">
+                <h3>Authors (@Model.Authors.Count)</h3>
+                <div class="row">
+                    @foreach (var author in Model.Authors)
+                    {
+                        <div class="col-md-3 mb-2">
+                            <div class="alert alert-success">
+                                <strong>@author.Name @author.Surname</strong>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        
+        @* Publishers Section *@
+        @if (Model.Publishers != null && Model.Publishers.Any())
+        {
+            <div class="mt-4">
+                <h3>Publishers (@Model.Publishers.Count)</h3>
+                <div class="row">
+                    @foreach (var publisher in Model.Publishers)
+                    {
+                        <div class="col-md-3 mb-2">
+                            <div class="alert alert-warning">
+                                <strong>@publisher.Name</strong>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        
+        @if ((Model.Books == null || !Model.Books.Items.Any()) && 
+             (Model.Genres == null || !Model.Genres.Any()) && 
+             (Model.Authors == null || !Model.Authors.Any()) &&
+             (Model.Publishers == null || !Model.Publishers.Any()))
+        {
+            <div class="alert alert-info mt-4">
+                <h4>No results found</h4>
+                <p>Try searching with different keywords or check your spelling.</p>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <h4>Search</h4>
+            <p>Enter a search term to find books, genres, and publishers.</p>
+        </div>
+    }
+</div>

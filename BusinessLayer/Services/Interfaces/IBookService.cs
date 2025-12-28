@@ -1,3 +1,4 @@
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Book;
 
 namespace BusinessLayer.Services.Interfaces;
@@ -6,6 +7,7 @@ public interface IBookService
 {
     Task<BookDTO> CreateBookAsync(BookUpsertDTO bookDto);
     Task<List<BookDTO>> FilterBooksAsync(BookFilterDTO filter);
+    Task<PagedResult<BookDTO>> FilterBooksPaginatedAsync(BookFilterDTO filter);
     Task<BookDTO> GetBookAsync(
         int id,
         bool includeAuthors = true,
