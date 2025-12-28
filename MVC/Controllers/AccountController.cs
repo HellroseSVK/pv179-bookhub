@@ -29,17 +29,36 @@ public class AccountController(
             return View(model);
         }
 
+        var existing = await userManager.FindByEmailAsync(model.Email);
+        if (existing != null)
+        {
+            ModelState.AddModelError(nameof(model.Email), "A user with this email already exists.");
+            return View(model);
+        }
+
         var user = new User
         {
             Email = model.Email,
             Password = model.Password,
-            IsAdmin = false
+            IsAdmin = model.IsAdmin,
         };
         var identityUser = new LocalIdentityUser { UserName = model.Email, Email = model.Email, User = user };
         var result = await userManager.CreateAsync(identityUser, model.Password);
 
         if (result.Succeeded)
         {
+            var addRolesResult =
+                await userManager.AddToRolesAsync(identityUser, model.IsAdmin ? ["User", "Admin"] : ["User"]);
+            if (!addRolesResult.Succeeded)
+            {
+                foreach (var error in addRolesResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return View(model);
+            }
+
             await signInManager.SignInAsync(identityUser, isPersistent: false);
             // return RedirectToAction("Login", "Account");
             return RedirectToAction(nameof(Login), nameof(AccountController).Replace("Controller", ""));

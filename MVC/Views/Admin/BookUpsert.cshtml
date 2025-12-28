@@ -1,0 +1,44 @@
+@model BookViewModel
+@{
+ViewData["Title"] = "Models";
+}
+
+<div class="card h-100">
+    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+    {
+    <img src="@Model.ImageUrl" class="card-img-top" style="height: 200px; object-fit: cover;" alt="@Model.Title" />
+    }
+    else
+    {
+    <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background-color: #f8f9fa;">
+        <span class="text-muted">No Image</span>
+    </div>
+    }
+    <div class="card-body d-flex flex-column">
+        <h5 class="card-title">@Model.Title</h5>
+        <p class="card-text flex-grow-1">@Model.Description</p>
+        <div class="mt-auto">
+            <p class="card-text">
+                <strong>Price: @Model.Price.ToString("C")</strong>
+            </p>
+            @if (Model.Publisher != null)
+            {
+            <p class="card-text">
+                <small class="text-muted">Publisher: @Model.Publisher.Name</small>
+            </p>
+            }
+            @if (Model.Authors.Any())
+            {
+            <p class="card-text">
+                <small class="text-muted">Authors: @string.Join(", ", Model.Authors.Select(a => $"{a.Name} {a.Surname}"))</small>
+            </p>
+            }
+            @if (Model.Genres.Any())
+            {
+            <p class="card-text">
+                <small class="text-muted">Genres: @string.Join(", ", Model.Genres.Select(g => g.Name))</small>
+            </p>
+            }
+        </div>
+    </div>
+</div>

@@ -47,9 +47,9 @@ public class BookService(CustomDBContext dbContext) : IBookService
             .IncludeVirtuals()
             .ApplyBookFilter(filter)
             .Distinct();
-        
+
         var totalCount = await query.CountAsync();
-        
+
         var books = await query
             .Paginate(filter.PageNumber, filter.PageSize)
             .ToListAsync();

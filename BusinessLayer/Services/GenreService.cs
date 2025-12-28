@@ -49,12 +49,12 @@ public class GenreService(CustomDBContext dbContext) : IGenreService
     public async Task<List<GenreDTO>> SearchGenresAsync(string searchTerm)
     {
         var query = GetBaseQuery(false);
-        
+
         if (!string.IsNullOrEmpty(searchTerm))
         {
             query = query.Where(g => g.Name.ToLower().Contains(searchTerm.ToLower()));
         }
-        
+
         var genres = await query.ToListAsync();
         return genres.Adapt<List<GenreDTO>>();
     }
