@@ -408,17 +408,15 @@ public static class DataInitializer
         var missingBooks = Enumerable.Range(1, BookCount).Except(booksWithGenres).ToList();
 
         var nextId = uniqueBookGenres.Count + 1;
-        foreach (var bookId in missingBooks)
-        {
-            var randomGenreId = new Random(761321 + bookId).Next(1, GenreCount + 1);
-            uniqueBookGenres.Add(new BookGenre
+        uniqueBookGenres.AddRange(
+            missingBooks.Select((bookId, index) => new BookGenre
             {
-                Id = nextId++,
+                Id = nextId + index,
                 BookId = bookId,
-                GenreId = randomGenreId,
+                GenreId = new Random(761321 + bookId).Next(1, GenreCount + 1),
                 IsPrimary = false
-            });
-        }
+            })
+        );
 
         var bookGroups = uniqueBookGenres.GroupBy(bg => bg.BookId);
         foreach (var bookGroup in bookGroups)
