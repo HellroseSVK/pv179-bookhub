@@ -37,11 +37,11 @@ public class BooksController(IBookService bookService, IGenreService genreServic
 
         var viewModel = new BookListViewModel
         {
-            Books = paginatedBooks,
+            Items = paginatedBooks,
             CurrentPage = page,
             TotalPages = totalPages,
             PageSize = pageSize,
-            TotalBooks = totalBooks,
+            TotalItems = totalBooks,
             Genres = allGenres.Select(g => g.Adapt<GenreSimplifiedViewModel>()).ToList(),
             SelectedGenreId = genreId,
             Authors = allAuthors.Select(a => a.Adapt<AuthorSimplifiedViewModel>()).ToList(),
