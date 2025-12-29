@@ -13,4 +13,6 @@ public class BookGenre : BaseEntity
     public int GenreId { get; set; }
 
     public Genre? Genre { get; set; }
+
+    public bool IsPrimary { get; set; } = false;
 }

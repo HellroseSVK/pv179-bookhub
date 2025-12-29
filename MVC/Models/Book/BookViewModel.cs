@@ -14,4 +14,7 @@ public class BookViewModel
     public PublisherSimplifiedDTO? Publisher { get; set; }
     public List<AuthorSimplifiedDTO> Authors { get; set; } = [];
     public List<GenreSimplifiedDTO> Genres { get; set; } = [];
+
+    public GenreSimplifiedDTO? PrimaryGenre => Genres.FirstOrDefault(g => g.IsPrimary);
+    public List<GenreSimplifiedDTO> SecondaryGenres => Genres.Where(g => !g.IsPrimary).ToList();
 }

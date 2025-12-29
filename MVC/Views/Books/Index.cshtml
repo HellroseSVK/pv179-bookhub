@@ -58,12 +58,12 @@
         <div class="col-md-9 col-lg-10">
             <h2 class="mb-3">Books</h2>
 
-            @if (Model.TotalBooks > 0)
+            @if (Model.TotalItems > 0)
             {
-                <p class="text-muted">Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalBooks)) of @Model.TotalBooks books</p>
+                <p class="text-muted">Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalItems)) of @Model.TotalItems books</p>
 
                 <div class="row">
-                    @foreach (var book in Model.Books)
+                    @foreach (var book in Model.Items)
                     {
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card h-100">
@@ -99,7 +99,24 @@
                             @if (book.Genres.Any())
                             {
                                 <p class="card-text">
-                                    <small class="text-muted">Genres: @string.Join(", ", book.Genres.Select(g => g.Name))</small>
+                                    <small class="text-muted">
+                                        @if (book.PrimaryGenre != null)
+                                        {
+                                            <span class="badge bg-primary">@book.PrimaryGenre.Name</span>
+                                            @foreach (var genre in book.SecondaryGenres)
+                                            {
+                                                <text> </text><span class="badge bg-secondary">@genre.Name</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @* Fallback if no primary genre is set *@
+                                            @foreach (var genre in book.Genres)
+                                            {
+                                                <span class="badge bg-secondary">@genre.Name</span>
+                                            }
+                                        }
+                                    </small>
                                 </p>
                             }
                         </div>
