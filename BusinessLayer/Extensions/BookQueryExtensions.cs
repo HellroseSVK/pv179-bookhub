@@ -6,13 +6,6 @@ namespace BusinessLayer.Extensions;
 
 public static class BookQueryExtensions
 {
-    public static IQueryable<Book> Paginate(this IQueryable<Book> bookQuery, int pageNumber, int pageSize)
-    {
-        return bookQuery
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize);
-    }
-
     public static IQueryable<Book> IncludeVirtuals(this IQueryable<Book> query,
         bool includeWishlistItems = false,
         bool includeOrderItems = false)

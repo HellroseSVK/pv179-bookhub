@@ -1,4 +1,6 @@
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Genre;
+using BusinessLayer.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -37,6 +39,31 @@ public class GenreService(CustomDBContext dbContext) : IGenreService
         var genres = await query.ToListAsync();
 
         return genres.Adapt<List<GenreDTO>>();
+    }
+
+    public async Task<PagedResult<GenreDTO>> GetGenrePaginatedAsync(PaginationParameters paginationParameters, int[]? ids = null,
+        bool includeBookGenres = true)
+    {
+        var query = GetBaseQuery(includeBookGenres);
+
+        if (ids is { Length: > 0 })
+        {
+            query = query.Where(g => ids.Contains(g.Id));
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var genres = await query
+            .Paginate(paginationParameters.PageNumber, paginationParameters.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<GenreDTO>
+        {
+            Items = genres.Adapt<List<GenreDTO>>(),
+            TotalCount = totalCount,
+            PageNumber = paginationParameters.PageNumber,
+            PageSize = paginationParameters.PageSize
+        };
     }
 
     public async Task<GenreDTO> GetGenreAsync(int id, bool includeBookGenres = true)

@@ -390,45 +390,35 @@ public static class DataInitializer
 
     private static List<BookGenre> LinkBooksAndGenres()
     {
-        var faker = new Faker<BookGenre>()
-            .UseSeed(761321)
-            .RuleFor(w => w.Id, f => f.IndexFaker + 1)
-            .RuleFor(w => w.BookId, f => f.Random.Int(1, BookCount))
-            .RuleFor(w => w.GenreId, f => f.Random.Int(1, GenreCount))
-            .RuleFor(w => w.IsPrimary, false);  // Default to false
+        var rand = new Random(761321);
+        var pairs = new HashSet<(int BookId, int GenreId)>();
+        var primaryPairs = new HashSet<(int BookId, int GenreId)>();
 
-        var bookGenres = faker.Generate(BookGenreCount);
+        for (int bookId = 1; bookId <= BookCount; bookId++)
+        {
+            var genreId = rand.Next(1, GenreCount + 1);
+            pairs.Add((bookId, genreId));
+            primaryPairs.Add((bookId, genreId));
+        }
 
-        var uniqueBookGenres = bookGenres
-            .GroupBy(bg => new { bg.BookId, bg.GenreId })
-            .Select(g => g.First())
-            .ToList();
+        while (pairs.Count < BookGenreCount)
+        {
+            var bookId = rand.Next(1, BookCount + 1);
+            var genreId = rand.Next(1, GenreCount + 1);
+            pairs.Add((bookId, genreId));
+        }
 
-        var booksWithGenres = uniqueBookGenres.Select(bg => bg.BookId).Distinct().ToHashSet();
-        var missingBooks = Enumerable.Range(1, BookCount).Except(booksWithGenres).ToList();
-
-        var nextId = uniqueBookGenres.Count + 1;
-        uniqueBookGenres.AddRange(
-            missingBooks.Select((bookId, index) => new BookGenre
+        var result = pairs
+            .OrderBy(p => p.BookId)
+            .ThenBy(p => p.GenreId)
+            .Select((p, i) => new BookGenre
             {
-                Id = nextId + index,
-                BookId = bookId,
-                GenreId = new Random(761321 + bookId).Next(1, GenreCount + 1),
-                IsPrimary = false
+                Id = i + 1,
+                BookId = p.BookId,
+                GenreId = p.GenreId,
+                IsPrimary = primaryPairs.Contains(p)
             })
-        );
-
-        var bookGroups = uniqueBookGenres.GroupBy(bg => bg.BookId);
-        foreach (var bookGroup in bookGroups)
-        {
-            bookGroup.First().IsPrimary = true;
-        }
-
-        var result = uniqueBookGenres.OrderBy(bg => bg.BookId).ThenBy(bg => bg.GenreId).ToList();
-        for (int i = 0; i < result.Count; i++)
-        {
-            result[i].Id = i + 1;
-        }
+            .ToList();
 
         return result;
     }
