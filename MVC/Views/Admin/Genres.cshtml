@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-9 col-lg-10">
-            <h2 class="mb-3">Books</h2>
+            <h2 class="mb-3">Genres</h2>
 
             @if (TempData["SuccessMessage"] != null)
             {
@@ -18,9 +18,9 @@
 
             @if (Model.TotalItems > 0)
             {
-                <p class="text-muted">Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalItems)) of @Model.TotalItems books</p>
+                <p class="text-muted">Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalItems)) of @Model.TotalItems genres</p>
                 <p>
-                    <a class="btn btn-primary" asp-action="GenreUpsert" asp-route-genreId="@(null)">Create Book</a>
+                    <a class="btn btn-primary" asp-action="GenreUpsert" asp-route-genreId="@(null)">Create Genre</a>
                 </p>
                 <div class="row">
                     @foreach (var genre in Model.Items)

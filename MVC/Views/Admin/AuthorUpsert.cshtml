@@ -1,0 +1,75 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVC.Models.Author.AuthorUpsertViewModel
+@{
+    ViewData["Title"] = Model.Id.HasValue ? "Edit Author" : "Create Author";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <form asp-action="AuthorUpsert" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Name -->
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter author name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <!-- Surname -->
+                <div class="mb-3">
+                    <label asp-for="Surname" class="form-label"></label>
+                    <input asp-for="Surname" class="form-control" placeholder="Enter author surname" />
+                    <span asp-validation-for="Surname" class="text-danger"></span>
+                </div>
+
+                <!-- Books -->
+                <div class="mb-3">
+                    <label asp-for="SelectedBooksIds" class="form-label"></label>
+                    <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto; background-color: #fff;">
+                        @if (Model.Books.Any())
+                        {
+                            @foreach (var book in Model.Books)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           name="SelectedBooksIds"
+                                           value="@book.Value"
+                                           id="author_@book.Value"
+                                           @(Model.SelectedBooksIds.Contains(int.Parse(book.Value)) ? "checked" : "") />
+                                    <label class="form-check-label" for="author_@book.Value">
+                                        @book.Text
+                                    </label>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">No <books></books> available</p>
+                        }
+                    </div>
+                    <small class="form-text text-muted">Click to select multiple books.</small>
+                </div>
+
+                <!-- Buttons -->
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">
+                        @(Model.Id.HasValue ? "Update Author" : "Create Author")
+                    </button>
+                    <a asp-action="Authors" class="btn btn-secondary">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

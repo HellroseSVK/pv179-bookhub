@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MVC.Models;
 using System.Diagnostics;
 using BusinessLayer.DTOs;
+using BusinessLayer.DTOs.Author;
 using BusinessLayer.DTOs.Book;
 using BusinessLayer.DTOs.Genre;
 using BusinessLayer.Facades.Interfaces;
@@ -10,6 +11,7 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using MVC.Models.Book;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MVC.Models.Author;
 using MVC.Models.Genre;
 
 namespace MVC.Controllers;
@@ -158,7 +160,7 @@ public class AdminController(
 
         var viewModel = new GenreListViewModel
         {
-            Items = paginatedGenres.Items.Select(b => b.Adapt<GenreSimplifiedViewModel>()).ToList(),
+            Items = paginatedGenres.Items.Select(g => g.Adapt<GenreSimplifiedViewModel>()).ToList(),
             CurrentPage = page,
             TotalPages = paginatedGenres.TotalPages,
             PageSize = pageSize,
@@ -240,6 +242,97 @@ public class AdminController(
         return View(viewModel);
     }
 
+    public async Task<IActionResult> Authors(int page = 1, int pageSize = 12)
+    {
+        var paginatedGenres = await authorService.GetAuthorsPaginatedAsync(new PaginationParameters
+        { PageNumber = page, PageSize = pageSize });
+
+        var viewModel = new AuthorListViewModel
+        {
+            Items = paginatedGenres.Items.Select(a => a.Adapt<AuthorSimplifiedViewModel>()).ToList(),
+            CurrentPage = page,
+            TotalPages = paginatedGenres.TotalPages,
+            PageSize = pageSize,
+            TotalItems = paginatedGenres.TotalCount,
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AuthorUpsert(int? authorId = null)
+    {
+        var viewModel = new AuthorUpsertViewModel();
+        await PopulateAuthorDropdownsAsync(viewModel);
+
+        if (!authorId.HasValue)
+        {
+            return View(viewModel);
+        }
+
+        var author = await authorService.GetAuthorAsync(authorId.Value, includeBookAuthors: false);
+
+        viewModel.Id = author.Id;
+        viewModel.Name = author.Name;
+        viewModel.Surname = author.Surname;
+
+        viewModel.SelectedBooksIds = author.Books
+            .Select(b => b.Id)
+            .ToList();
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AuthorUpsert(AuthorUpsertViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            await PopulateAuthorDropdownsAsync(viewModel);
+            return View(viewModel);
+        }
+
+        var authorDto = new AuthorUpsertDTO()
+        {
+            Name = viewModel.Name,
+            Surname = viewModel.Surname,
+            BookIds = viewModel.SelectedBooksIds,
+        };
+
+        try
+        {
+            if (!viewModel.Id.HasValue)
+            {
+                await authorService.CreateAuthorAsync(authorDto);
+                TempData["SuccessMessage"] = "Author created successfully!";
+            }
+            else
+            {
+                await authorService.UpdateAuthorAsync(viewModel.Id.Value, authorDto);
+                TempData["SuccessMessage"] = "Author updated successfully!";
+            }
+
+            return RedirectToAction(nameof(Authors));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"Error saving author: {ex.Message}");
+            await PopulateAuthorDropdownsAsync(viewModel);
+            return View(viewModel);
+        }
+    }
+
+    public async Task<IActionResult> AuthorDelete(int authorId)
+    {
+        var author = await authorService.GetAuthorAsync(authorId, includeBookAuthors: false);
+        var viewModel = author.Adapt<AuthorSimplifiedViewModel>();
+
+        await authorService.DeleteAuthorAsync(authorId);
+
+        return View(viewModel);
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
@@ -271,6 +364,16 @@ public class AdminController(
     }
 
     private async Task PopulateGenreDropdownsAsync(GenreUpsertViewModel viewModel)
+    {
+        var books = await bookService.FilterBooksAsync(new BookFilterDTO());
+
+        viewModel.Books = books
+            .Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Title })
+            .OrderBy(a => a.Text)
+            .ToList();
+    }
+
+    private async Task PopulateAuthorDropdownsAsync(AuthorUpsertViewModel viewModel)
     {
         var books = await bookService.FilterBooksAsync(new BookFilterDTO());
 
