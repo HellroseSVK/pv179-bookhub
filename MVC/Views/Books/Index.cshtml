@@ -99,7 +99,24 @@
                             @if (book.Genres.Any())
                             {
                                 <p class="card-text">
-                                    <small class="text-muted">Genres: @string.Join(", ", book.Genres.Select(g => g.Name))</small>
+                                    <small class="text-muted">
+                                        @if (book.PrimaryGenre != null)
+                                        {
+                                            <span class="badge bg-primary">@book.PrimaryGenre.Name</span>
+                                            @foreach (var genre in book.SecondaryGenres)
+                                            {
+                                                <text> </text><span class="badge bg-secondary">@genre.Name</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @* Fallback if no primary genre is set *@
+                                            @foreach (var genre in book.Genres)
+                                            {
+                                                <span class="badge bg-secondary">@genre.Name</span>
+                                            }
+                                        }
+                                    </small>
                                 </p>
                             }
                         </div>

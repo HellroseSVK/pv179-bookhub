@@ -26,7 +26,13 @@ public static class MapsterConfig
         TypeAdapterConfig<Book, BookDTO>
             .NewConfig()
             .Map(dest => dest.Authors, src => src.BookAuthors.Select(ba => ba.Author))
-            .Map(dest => dest.Genres, src => src.BookGenres.Select(bg => bg.Genre))
+            .Map(dest => dest.Genres, src => src.BookGenres.Select(bg => new GenreSimplifiedDTO
+            {
+                Id = bg.Genre!.Id,
+                Name = bg.Genre.Name,
+                IsPrimary = bg.IsPrimary,
+                CreatedAt = bg.Genre.CreatedAt
+            }))
             .Map(dest => dest.ImageUrl, src => !string.IsNullOrEmpty(src.ImagePath) ? $"/images/books/{src.ImagePath}" : null);
 
         TypeAdapterConfig<Book, BookSimplifiedDTO>
