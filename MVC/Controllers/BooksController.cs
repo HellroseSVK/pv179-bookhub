@@ -3,6 +3,8 @@ using BusinessLayer.Services.Interfaces;
 using BusinessLayer.DTOs.Book;
 using MVC.Models.Book;
 using Mapster;
+using MVC.Models.Author;
+using MVC.Models.Genre;
 
 namespace MVC.Controllers;
 
@@ -40,9 +42,9 @@ public class BooksController(IBookService bookService, IGenreService genreServic
             TotalPages = totalPages,
             PageSize = pageSize,
             TotalBooks = totalBooks,
-            Genres = allGenres.Select(g => g.Adapt<GenreViewModel>()).ToList(),
+            Genres = allGenres.Select(g => g.Adapt<GenreSimplifiedViewModel>()).ToList(),
             SelectedGenreId = genreId,
-            Authors = allAuthors.Select(a => a.Adapt<AuthorViewModel>()).ToList(),
+            Authors = allAuthors.Select(a => a.Adapt<AuthorSimplifiedViewModel>()).ToList(),
             SelectedAuthorId = authorId
         };
 
