@@ -12,7 +12,11 @@ public class BooksController(IBookService bookService, IGenreService genreServic
 {
     public async Task<IActionResult> Index(int page = 1, int pageSize = 12, int? genreId = null, int? authorId = null)
     {
-        var filter = new BookFilterDTO();
+        var filter = new BookFilterDTO
+        {
+            PageNumber = page,
+            PageSize = pageSize
+        };
         if (genreId.HasValue)
         {
             filter.GenreIds = [genreId.Value];
@@ -22,26 +26,18 @@ public class BooksController(IBookService bookService, IGenreService genreServic
             filter.AuthorIds = [authorId.Value];
         }
 
-        var books = await bookService.FilterBooksAsync(filter);
-        var totalBooks = books.Count;
-        var totalPages = (int)Math.Ceiling(totalBooks / (double)pageSize);
-
-        var paginatedBooks = books
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(b => b.Adapt<BookViewModel>())
-            .ToList();
+        var pagedResult = await bookService.FilterBooksPaginatedAsync(filter);
 
         var allGenres = await genreService.GetGenreAsync(includeBookGenres: false);
         var allAuthors = await authorService.GetAuthorsAsync(includeBookAuthors: false);
 
         var viewModel = new BookListViewModel
         {
-            Items = paginatedBooks,
-            CurrentPage = page,
-            TotalPages = totalPages,
-            PageSize = pageSize,
-            TotalItems = totalBooks,
+            Items = pagedResult.Items.Select(b => b.Adapt<BookViewModel>()).ToList(),
+            CurrentPage = pagedResult.PageNumber,
+            TotalPages = pagedResult.TotalPages,
+            PageSize = pagedResult.PageSize,
+            TotalItems = pagedResult.TotalCount,
             Genres = allGenres.Select(g => g.Adapt<GenreSimplifiedViewModel>()).ToList(),
             SelectedGenreId = genreId,
             Authors = allAuthors.Select(a => a.Adapt<AuthorSimplifiedViewModel>()).ToList(),
