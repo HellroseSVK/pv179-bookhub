@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
 using BusinessLayer.DTOs.Book;
 using MVC.Models.Book;
@@ -8,7 +9,7 @@ using MVC.Models.Genre;
 
 namespace MVC.Controllers;
 
-public class BooksController(IBookService bookService, IGenreService genreService, IAuthorService authorService) : Controller
+public class BooksController(IBookFacade bookFacade, IGenreService genreService, IAuthorService authorService) : Controller
 {
     public async Task<IActionResult> Index(int page = 1, int pageSize = 12, int? genreId = null, int? authorId = null)
     {
@@ -26,7 +27,7 @@ public class BooksController(IBookService bookService, IGenreService genreServic
             filter.AuthorIds = [authorId.Value];
         }
 
-        var pagedResult = await bookService.FilterBooksPaginatedAsync(filter);
+        var pagedResult = await bookFacade.FilterBooksPaginatedAsync(filter);
 
         var allGenres = await genreService.GetGenreAsync(includeBookGenres: false);
         var allAuthors = await authorService.GetAuthorsAsync(includeBookAuthors: false);
