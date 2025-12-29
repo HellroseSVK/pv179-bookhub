@@ -41,7 +41,7 @@ public class PublisherService(CustomDBContext dbContext) : IPublisherService
         return publishers.Adapt<List<PublisherDTO>>();
     }
 
-    public async Task<PagedResult<PublisherDTO>> GetPublisherPaginatedAsync(PaginationParameters paginationParameters, int[]? ids = null, bool includeBooks = true)
+    public async Task<PagedResult<PublisherDTO>> GetPublishersPaginatedAsync(PaginationParameters paginationParameters, int[]? ids = null, bool includeBooks = true)
     {
         var query = GetBaseQuery(includeBooks);
 

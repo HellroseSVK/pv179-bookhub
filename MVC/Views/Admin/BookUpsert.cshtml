@@ -1,4 +1,5 @@
-@model BookUpsertViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVC.Models.Book.BookUpsertViewModel
 @{
     ViewData["Title"] = Model.Id.HasValue ? "Edit Book" : "Create Book";
 }

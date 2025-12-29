@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MVC.Models;
 using System.Diagnostics;
+using System.Text;
 using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Author;
 using BusinessLayer.DTOs.Book;
@@ -8,13 +9,17 @@ using BusinessLayer.DTOs.Genre;
 using BusinessLayer.DTOs.Publisher;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
+using DataAccessLayer.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using MVC.Models.Book;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
 using MVC.Models.Author;
 using MVC.Models.Genre;
 using MVC.Models.Publisher;
+using MVC.Models.User;
 
 namespace MVC.Controllers;
 
@@ -24,7 +29,9 @@ public class AdminController(
     IBookFacade bookFacade,
     IAuthorService authorService,
     IGenreService genreService,
-    IPublisherService publisherService) : Controller
+    IPublisherService publisherService,
+    IUserService userService,
+    UserManager<LocalIdentityUser> userManager) : Controller
 {
     public IActionResult Index()
     {
@@ -337,7 +344,7 @@ public class AdminController(
 
     public async Task<IActionResult> Publishers(int page = 1, int pageSize = 12)
     {
-        var paginatedPublishers = await publisherService.GetPublisherPaginatedAsync(new PaginationParameters
+        var paginatedPublishers = await publisherService.GetPublishersPaginatedAsync(new PaginationParameters
         { PageNumber = page, PageSize = pageSize });
 
         var viewModel = new PublisherListViewModel
@@ -420,6 +427,46 @@ public class AdminController(
         var viewModel = publisher.Adapt<PublisherSimplifiedViewModel>();
 
         await publisherService.DeletePublisherAsync(publisherId);
+
+        return View(viewModel);
+    }
+
+    public async Task<IActionResult> Users(int page = 1, int pageSize = 12)
+    {
+        var paginatedUsers = await userService.GetUsersPaginatedAsync(new PaginationParameters
+        { PageNumber = page, PageSize = pageSize });
+
+        var viewModel = new UserListViewModel
+        {
+            Items = paginatedUsers.Items.Select(u => u.Adapt<UserSimplifiedViewModel>()).ToList(),
+            CurrentPage = page,
+            TotalPages = paginatedUsers.TotalPages,
+            PageSize = pageSize,
+            TotalItems = paginatedUsers.TotalCount,
+        };
+
+        return View(viewModel);
+    }
+
+    public async Task<IActionResult> UserReset(string email)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            TempData["ErrorMessage"] = "User with the specified email was not found.";
+            return RedirectToAction(nameof(Users));
+        }
+
+        var token = await userManager.GeneratePasswordResetTokenAsync(user);
+        var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+        // TODO: send the callbackUrl to the user's email
+
+        var viewModel = new UserResetViewModel
+        {
+            Email = user.Email ?? string.Empty,
+            ResetToken = encodedToken
+        };
 
         return View(viewModel);
     }

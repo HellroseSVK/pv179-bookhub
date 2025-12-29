@@ -9,7 +9,7 @@ public interface IPublisherService
 
     public Task<List<PublisherDTO>> GetPublishersAsync(int[]? ids = null, bool includeBooks = true);
 
-    public Task<PagedResult<PublisherDTO>> GetPublisherPaginatedAsync(PaginationParameters paginationParameters,
+    public Task<PagedResult<PublisherDTO>> GetPublishersPaginatedAsync(PaginationParameters paginationParameters,
         int[]? ids = null, bool includeBooks = true);
 
     public Task<PublisherDTO> GetPublisherAsync(int id, bool includeBooks = true);
