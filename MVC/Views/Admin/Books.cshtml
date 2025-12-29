@@ -10,6 +10,14 @@ ViewData["Title"] = "Books";
         <div class="col-md-9 col-lg-10">
             <h2 class="mb-3">Books</h2>
 
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
             @if (Model.TotalBooks > 0)
             {
                 <p class="text-muted">Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalBooks)) of @Model.TotalBooks books</p>
