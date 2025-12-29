@@ -5,6 +5,7 @@ using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Author;
 using BusinessLayer.DTOs.Book;
 using BusinessLayer.DTOs.Genre;
+using BusinessLayer.DTOs.Publisher;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
 using Mapster;
@@ -13,6 +14,7 @@ using MVC.Models.Book;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MVC.Models.Author;
 using MVC.Models.Genre;
+using MVC.Models.Publisher;
 
 namespace MVC.Controllers;
 
@@ -244,16 +246,16 @@ public class AdminController(
 
     public async Task<IActionResult> Authors(int page = 1, int pageSize = 12)
     {
-        var paginatedGenres = await authorService.GetAuthorsPaginatedAsync(new PaginationParameters
+        var paginatedAuthors = await authorService.GetAuthorsPaginatedAsync(new PaginationParameters
         { PageNumber = page, PageSize = pageSize });
 
         var viewModel = new AuthorListViewModel
         {
-            Items = paginatedGenres.Items.Select(a => a.Adapt<AuthorSimplifiedViewModel>()).ToList(),
+            Items = paginatedAuthors.Items.Select(a => a.Adapt<AuthorSimplifiedViewModel>()).ToList(),
             CurrentPage = page,
-            TotalPages = paginatedGenres.TotalPages,
+            TotalPages = paginatedAuthors.TotalPages,
             PageSize = pageSize,
-            TotalItems = paginatedGenres.TotalCount,
+            TotalItems = paginatedAuthors.TotalCount,
         };
 
         return View(viewModel);
@@ -333,6 +335,95 @@ public class AdminController(
         return View(viewModel);
     }
 
+    public async Task<IActionResult> Publishers(int page = 1, int pageSize = 12)
+    {
+        var paginatedPublishers = await publisherService.GetPublisherPaginatedAsync(new PaginationParameters
+        { PageNumber = page, PageSize = pageSize });
+
+        var viewModel = new PublisherListViewModel
+        {
+            Items = paginatedPublishers.Items.Select(p => p.Adapt<PublisherSimplifiedViewModel>()).ToList(),
+            CurrentPage = page,
+            TotalPages = paginatedPublishers.TotalPages,
+            PageSize = pageSize,
+            TotalItems = paginatedPublishers.TotalCount,
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PublisherUpsert(int? publisherId = null)
+    {
+        var viewModel = new PublisherUpsertViewModel();
+        await PopulatePublisherDropdownsAsync(viewModel);
+
+        if (!publisherId.HasValue)
+        {
+            return View(viewModel);
+        }
+
+        var author = await publisherService.GetPublisherAsync(publisherId.Value, includeBooks: false);
+
+        viewModel.Id = author.Id;
+        viewModel.Name = author.Name;
+
+        viewModel.SelectedBooksIds = author.Books
+            .Select(b => b.Id)
+            .ToList();
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PublisherUpsert(PublisherUpsertViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            await PopulatePublisherDropdownsAsync(viewModel);
+            return View(viewModel);
+        }
+
+        var publisherDto = new PublisherUpsertDTO()
+        {
+            Name = viewModel.Name,
+            BookIds = viewModel.SelectedBooksIds,
+        };
+
+        try
+        {
+            if (!viewModel.Id.HasValue)
+            {
+                await publisherService.CreatePublisherAsync(publisherDto);
+                TempData["SuccessMessage"] = "Publisher created successfully!";
+            }
+            else
+            {
+                await publisherService.UpdatePublisherAsync(viewModel.Id.Value, publisherDto);
+                TempData["SuccessMessage"] = "Publisher updated successfully!";
+            }
+
+            return RedirectToAction(nameof(Publishers));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"Error saving publisher: {ex.Message}");
+            await PopulatePublisherDropdownsAsync(viewModel);
+            return View(viewModel);
+        }
+    }
+
+    public async Task<IActionResult> PublisherDelete(int publisherId)
+    {
+        var publisher = await publisherService.GetPublisherAsync(publisherId, includeBooks: false);
+        var viewModel = publisher.Adapt<PublisherSimplifiedViewModel>();
+
+        await publisherService.DeletePublisherAsync(publisherId);
+
+        return View(viewModel);
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
@@ -374,6 +465,16 @@ public class AdminController(
     }
 
     private async Task PopulateAuthorDropdownsAsync(AuthorUpsertViewModel viewModel)
+    {
+        var books = await bookService.FilterBooksAsync(new BookFilterDTO());
+
+        viewModel.Books = books
+            .Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Title })
+            .OrderBy(a => a.Text)
+            .ToList();
+    }
+
+    private async Task PopulatePublisherDropdownsAsync(PublisherUpsertViewModel viewModel)
     {
         var books = await bookService.FilterBooksAsync(new BookFilterDTO());
 

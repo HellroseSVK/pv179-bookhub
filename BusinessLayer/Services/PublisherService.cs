@@ -1,4 +1,6 @@
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Publisher;
+using BusinessLayer.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -37,6 +39,30 @@ public class PublisherService(CustomDBContext dbContext) : IPublisherService
         var publishers = await query.ToListAsync();
 
         return publishers.Adapt<List<PublisherDTO>>();
+    }
+
+    public async Task<PagedResult<PublisherDTO>> GetPublisherPaginatedAsync(PaginationParameters paginationParameters, int[]? ids = null, bool includeBooks = true)
+    {
+        var query = GetBaseQuery(includeBooks);
+
+        if (ids is { Length: > 0 })
+        {
+            query = query.Where(p => ids.Contains(p.Id));
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var publishers = await query
+            .Paginate(paginationParameters.PageNumber, paginationParameters.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<PublisherDTO>
+        {
+            Items = publishers.Adapt<List<PublisherDTO>>(),
+            TotalCount = totalCount,
+            PageNumber = paginationParameters.PageNumber,
+            PageSize = paginationParameters.PageSize
+        };
     }
 
     public async Task<PublisherDTO> GetPublisherAsync(int id, bool includeBooks = true)
