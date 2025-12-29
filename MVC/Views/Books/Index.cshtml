@@ -1,0 +1,192 @@
+@model BookListViewModel
+@{
+    ViewData["Title"] = "Books";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 col-lg-2">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Genres</h5>
+                </div>
+                <div class="card-body">
+                    <input type="text" id="genreSearch" class="form-control form-control-sm" placeholder="Search genres...">
+                </div>
+                <div class="list-group list-group-flush" id="genreList" style="max-height: 300px; overflow-y: auto;">
+                    <a asp-action="Index" asp-route-page="1" asp-route-authorId="@Model.SelectedAuthorId"
+                       class="list-group-item list-group-item-action genre-item @(Model.SelectedGenreId == null ? "active" : "")"
+                       data-genre-name="All Genres">
+                        All Genres
+                    </a>
+                    @foreach (var genre in Model.Genres)
+                    {
+                        <a asp-action="Index" asp-route-genreId="@genre.Id" asp-route-authorId="@Model.SelectedAuthorId" asp-route-page="1"
+                           class="list-group-item list-group-item-action genre-item @(Model.SelectedGenreId == genre.Id ? "active" : "")"
+                           data-genre-name="@genre.Name">
+                            @genre.Name
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Authors</h5>
+                </div>
+                <div class="card-body">
+                    <input type="text" id="authorSearch" class="form-control form-control-sm" placeholder="Search authors...">
+                </div>
+                <div class="list-group list-group-flush" id="authorList" style="max-height: 400px; overflow-y: auto;">
+                    <a asp-action="Index" asp-route-page="1" asp-route-genreId="@Model.SelectedGenreId"
+                       class="list-group-item list-group-item-action author-item @(Model.SelectedAuthorId == null ? "active" : "")"
+                       data-author-name="All Authors">
+                        All Authors
+                    </a>
+                    @foreach (var author in Model.Authors)
+                    {
+                        <a asp-action="Index" asp-route-authorId="@author.Id" asp-route-genreId="@Model.SelectedGenreId" asp-route-page="1"
+                           class="list-group-item list-group-item-action author-item @(Model.SelectedAuthorId == author.Id ? "active" : "")"
+                           data-author-name="@author.FullName">
+                            @author.FullName
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9 col-lg-10">
+            <h2 class="mb-3">Books</h2>
+
+            @if (Model.TotalItems > 0)
+            {
+                <p class="text-muted">Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalItems)) of @Model.TotalItems books</p>
+
+                <div class="row">
+                    @foreach (var book in Model.Items)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(book.ImageUrl))
+                    {
+                        <img src="@book.ImageUrl" class="card-img-top" style="height: 200px; object-fit: cover;" alt="@book.Title" />
+                    }
+                    else
+                    {
+                        <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background-color: #f8f9fa;">
+                            <span class="text-muted">No Image</span>
+                        </div>
+                    }
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@book.Title</h5>
+                        <p class="card-text flex-grow-1">@book.Description</p>
+                        <div class="mt-auto">
+                            <p class="card-text">
+                                <strong>Price: @book.Price.ToString("C")</strong>
+                            </p>
+                            @if (book.Publisher != null)
+                            {
+                                <p class="card-text">
+                                    <small class="text-muted">Publisher: @book.Publisher.Name</small>
+                                </p>
+                            }
+                            @if (book.Authors.Any())
+                            {
+                                <p class="card-text">
+                                    <small class="text-muted">Authors: @string.Join(", ", book.Authors.Select(a => $"{a.Name} {a.Surname}"))</small>
+                                </p>
+                            }
+                            @if (book.Genres.Any())
+                            {
+                                <p class="card-text">
+                                    <small class="text-muted">Genres: @string.Join(", ", book.Genres.Select(g => g.Name))</small>
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-genreId="@Model.SelectedGenreId" asp-route-authorId="@Model.SelectedAuthorId">Previous</a>
+                    </li>
+                }
+
+                @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-genreId="@Model.SelectedGenreId" asp-route-authorId="@Model.SelectedAuthorId">@i</a>
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-genreId="@Model.SelectedGenreId" asp-route-authorId="@Model.SelectedAuthorId">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <div class="text-center py-5">
+        <h4>No books found</h4>
+    </div>
+}
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Genre search
+            const genreSearch = document.getElementById('genreSearch');
+            const genreItems = document.querySelectorAll('.genre-item');
+
+            if (genreSearch) {
+                genreSearch.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+
+                    genreItems.forEach(function(item) {
+                        const genreName = item.getAttribute('data-genre-name').toLowerCase();
+                        if (genreName.includes(searchTerm)) {
+                            item.style.display = '';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Author search
+            const authorSearch = document.getElementById('authorSearch');
+            const authorItems = document.querySelectorAll('.author-item');
+
+            if (authorSearch) {
+                authorSearch.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+
+                    authorItems.forEach(function(item) {
+                        const authorName = item.getAttribute('data-author-name').toLowerCase();
+                        if (authorName.includes(searchTerm)) {
+                            item.style.display = '';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+}

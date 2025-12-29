@@ -1,5 +1,6 @@
 using BusinessLayer.Facades;
 using BusinessLayer.Facades.Interfaces;
+using BusinessLayer.Mapper;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
@@ -13,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Register Mapster configuration
+builder.Services.RegisterMapsterConfiguration();
 
 var envName = builder.Environment.EnvironmentName;
 
