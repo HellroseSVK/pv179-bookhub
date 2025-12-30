@@ -15,8 +15,36 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             }
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>@Model.Title</h3>
+
+                    <p>
+                        <strong>Valid From:</strong> @Model.ValidFrom.ToString("yyyy-MM-dd HH:mm")<br />
+                        <strong>Valid To:</strong> @Model.ValidTo.ToString("yyyy-MM-dd HH:mm")
+                    </p>
+
+                    @if (Model.IsCurrentlyValid)
+                    {
+                        <div class="alert alert-success">This gift card is currently valid</div>
+                    }
+                    else if (DateTime.UtcNow < Model.ValidFrom)
+                    {
+                        <div class="alert alert-warning">This gift card is not yet valid</div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger">This gift card has expired</div>
+                    }
+
+                    <a class="btn btn-secondary" asp-action="GiftCardUpsert" asp-route-giftCardId="@Model.Id">Edit Gift Card</a>
+                </div>
+            </div>
+
+            <h3 class="mb-3">Gift Codes</h3>
             <p>
-                <a class="btn btn-primary" asp-action="GiftCodesUpsert" asp-route-giftCardId="@Model.Id">Create Genre</a>
+                <a class="btn btn-primary" asp-action="GiftCodesUpsert" asp-route-giftCardId="@Model.Id">Add Gift Codes</a>
             </p>
             @if (Model.GiftCodes.Count > 0)
             {

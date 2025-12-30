@@ -15,6 +15,8 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
 {
     public async Task<GiftCardDTO> CreateGiftCardAsync(GiftCardUpsertDTO genreDto)
     {
+        ValidateGiftCardDates(genreDto.ValidFrom, genreDto.ValidTo);
+
         var giftCard = genreDto.Adapt<GiftCard>();
 
         var created = dbContext.GiftCards.Add(giftCard);
@@ -130,6 +132,17 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
 
         giftCard.Title = genreDto.Title ?? giftCard.Title;
 
+        var validFrom = genreDto.ValidFrom ?? giftCard.ValidFrom;
+        var validTo = genreDto.ValidTo ?? giftCard.ValidTo;
+
+        if (genreDto.ValidFrom.HasValue || genreDto.ValidTo.HasValue)
+        {
+            ValidateGiftCardDates(validFrom, validTo);
+        }
+
+        giftCard.ValidFrom = validFrom;
+        giftCard.ValidTo = validTo;
+
         dbContext.GiftCards.Update(giftCard);
 
         await dbContext.SaveChangesAsync();
@@ -139,7 +152,11 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
     {
         var giftCard = await FindGiftCard(id, false);
 
+        ValidateGiftCardDates(genreDto.ValidFrom, genreDto.ValidTo);
+
         giftCard.Title = genreDto.Title;
+        giftCard.ValidFrom = genreDto.ValidFrom;
+        giftCard.ValidTo = genreDto.ValidTo;
 
         dbContext.GiftCards.Update(giftCard);
 
@@ -176,5 +193,21 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
         }
 
         return userQuery;
+    }
+
+    private void ValidateGiftCardDates(DateTime validFrom, DateTime validTo)
+    {
+        if (validFrom >= validTo)
+        {
+            throw new StatusCodeException(
+                StatusCodes.Status400BadRequest,
+                "ValidFrom must be before ValidTo");
+        }
+    }
+
+    public bool IsGiftCardValid(GiftCardDTO giftCard)
+    {
+        var now = DateTime.UtcNow;
+        return now >= giftCard.ValidFrom && now <= giftCard.ValidTo;
     }
 }

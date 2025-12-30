@@ -16,7 +16,7 @@
                 </div>
             }
             <p>
-                <a class="btn btn-primary" asp-action="GiftCardUpsert" asp-route-authorId="@(null)">Create Gift Card</a>
+                <a class="btn btn-primary" asp-action="GiftCardUpsert" asp-route-giftCardId="@(null)">Create Gift Card</a>
             </p>
             @if (Model.TotalItems > 0)
             {
@@ -28,11 +28,32 @@
                             <div class="card h-100">
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title">@giftCard.Title</h5>
+
+                                    <p class="card-text">
+                                        <strong>Valid From:</strong> @giftCard.ValidFrom.ToString("yyyy-MM-dd")<br />
+                                        <strong>Valid To:</strong> @giftCard.ValidTo.ToString("yyyy-MM-dd")
+                                    </p>
+
+                                    <div class="mb-3">
+                                        @if (giftCard.IsCurrentlyValid)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else if (DateTime.UtcNow < giftCard.ValidFrom)
+                                        {
+                                            <span class="badge bg-warning text-dark">Not Yet Valid</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Expired</span>
+                                        }
+                                    </div>
+
                                     <div class="mt-auto">
-                                        <a asp-action="GiftCard" asp-route-giftCardId="@(giftCard.Id)">
+                                        <a asp-action="GiftCard" asp-route-giftCardId="@(giftCard.Id)" class="btn btn-sm btn-primary">
                                             View
                                         </a>
-                                        <a asp-action="GiftCardUpsert" asp-route-authorId="@(giftCard.Id)">
+                                        <a asp-action="GiftCardUpsert" asp-route-giftCardId="@(giftCard.Id)" class="btn btn-sm btn-secondary">
                                             Edit
                                         </a>
                                     </div>

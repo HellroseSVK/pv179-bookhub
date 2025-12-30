@@ -22,4 +22,6 @@ public interface IGiftCardService
     public Task PatchGiftCardAsync(int id, GiftCardPartialDTO genreDto);
     public Task UpdateGiftCardAsync(int id, GiftCardUpsertDTO genreDto);
     public Task DeleteGiftCardAsync(int id);
+
+    public bool IsGiftCardValid(GiftCardDTO giftCard);
 }

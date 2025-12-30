@@ -1,0 +1,49 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVC.Models.GiftCard.GiftCardUpsertViewModel
+@{
+    ViewData["Title"] = Model.Id.HasValue ? "Edit Gift Card" : "Create Gift Card";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <form asp-action="GiftCardUpsert" method="post">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <!-- Title -->
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label"></label>
+            <input asp-for="Title" class="form-control" placeholder="Enter gift card title" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <!-- Valid From -->
+        <div class="mb-3">
+            <label asp-for="ValidFrom" class="form-label"></label>
+            <input asp-for="ValidFrom" class="form-control" type="date" />
+            <span asp-validation-for="ValidFrom" class="text-danger"></span>
+        </div>
+
+        <!-- Valid To -->
+        <div class="mb-3">
+            <label asp-for="ValidTo" class="form-label"></label>
+            <input asp-for="ValidTo" class="form-control" type="date" />
+            <span asp-validation-for="ValidTo" class="text-danger"></span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">
+                @(Model.Id.HasValue ? "Update Gift Card" : "Create Gift Card")
+            </button>
+            <a asp-action="GiftCards" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

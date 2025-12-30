@@ -452,7 +452,9 @@ public static class DataInitializer
         var faker = new Faker<GiftCard>()
             .UseSeed(1645)
             .RuleFor(card => card.Id, f => f.IndexFaker + 1)
-            .RuleFor(card => card.Title, f => f.Random.ArrayElement(Titles));
+            .RuleFor(card => card.Title, f => f.Random.ArrayElement(Titles))
+            .RuleFor(card => card.ValidFrom, f => new DateTime(2025, 1, 1))
+            .RuleFor(card => card.ValidTo, f => new DateTime(2026, 1, 1));
 
         return faker.Generate(GiftCardCount);
     }
