@@ -226,4 +226,47 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
         var now = DateTime.UtcNow;
         return now >= giftCard.ValidFrom && now <= giftCard.ValidTo;
     }
+
+    public async Task<GiftCodeDTO> ValidateGiftCodeAsync(string code)
+    {
+        var giftCode = await dbContext.GiftCodes
+            .Include(gc => gc.GiftCard)
+            .FirstOrDefaultAsync(gc => gc.Code.ToLower() == code.ToLower());
+
+        if (giftCode == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                "Gift code not found.");
+        }
+
+        if (giftCode.OrderId != null)
+        {
+            throw new StatusCodeException(StatusCodes.Status400BadRequest,
+                "Gift code has already been used.");
+        }
+
+        var now = DateTime.UtcNow;
+        if (now < giftCode.GiftCard!.ValidFrom || now > giftCode.GiftCard.ValidTo)
+        {
+            throw new StatusCodeException(StatusCodes.Status400BadRequest,
+                "Gift code is not currently valid.");
+        }
+
+        return giftCode.Adapt<GiftCodeDTO>();
+    }
+
+    public async Task<GiftCardDTO> GetGiftCardByCodeAsync(string code)
+    {
+        var giftCode = await dbContext.GiftCodes
+            .Include(gc => gc.GiftCard)
+            .FirstOrDefaultAsync(gc => gc.Code.ToLower() == code.ToLower());
+
+        if (giftCode == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                "Gift code not found.");
+        }
+
+        return giftCode.GiftCard!.Adapt<GiftCardDTO>();
+    }
 }

@@ -9,4 +9,12 @@ public interface IOrderService
     Task<List<OrderDTO>> GetOrdersAsync(int? userId, bool includeUser = true, bool includeBooks = true);
     Task PatchOrderAsync(int id, OrderPartialDTO order);
     Task DeleteOrderAsync(int id);
+
+    // Cart methods
+    Task<OrderDTO> GetUserCartAsync(int userId);
+    Task<OrderDTO> AddBookToCartAsync(int userId, int bookId);
+    Task<OrderDTO> RemoveItemFromCartAsync(int userId, int orderItemId);
+    Task<OrderDTO> ApplyGiftCodeToCartAsync(int userId, string code);
+    Task<OrderDTO> RemoveGiftCodeFromCartAsync(int userId);
+    Task<CartSummaryDTO> CalculateCartTotalsAsync(int userId);
 }

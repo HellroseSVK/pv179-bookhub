@@ -26,4 +26,7 @@ public interface IGiftCardService
     public Task DeleteGiftCardAsync(int id);
 
     public bool IsGiftCardValid(GiftCardDTO giftCard);
+
+    public Task<GiftCodeDTO> ValidateGiftCodeAsync(string code);
+    public Task<GiftCardDTO> GetGiftCardByCodeAsync(string code);
 }
