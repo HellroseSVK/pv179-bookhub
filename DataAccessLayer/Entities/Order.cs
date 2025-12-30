@@ -11,8 +11,6 @@ namespace DataAccessLayer.Entities
         public User? User { get; set; }
 
         public List<OrderItem> OrderItems { get; set; } = [];
-
-        public int? GiftCodeId { get; set; }
         public GiftCode? GiftCode { get; set; }
 
         public OrderStatus OrderStatus { get; set; } = OrderStatus.Draft;

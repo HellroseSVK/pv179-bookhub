@@ -17,4 +17,5 @@ public interface IOrderService
     Task<OrderDTO> ApplyGiftCodeToCartAsync(int userId, string code);
     Task<OrderDTO> RemoveGiftCodeFromCartAsync(int userId);
     Task<CartSummaryDTO> CalculateCartTotalsAsync(int userId);
+    Task<OrderDTO> CompleteUserCartAsync(int userId);
 }

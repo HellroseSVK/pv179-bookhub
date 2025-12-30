@@ -203,17 +203,24 @@ namespace BusinessLayer.Services
 
             // Get cart entity
             var cartEntity = await dbContext.Orders
+                .Include(o => o.GiftCode)
                 .FirstOrDefaultAsync(o => o.Id == cart.Id);
 
-            if (cartEntity!.GiftCodeId != null)
+            if (cartEntity!.GiftCode != null)
             {
                 throw new StatusCodeException(StatusCodes.Status400BadRequest,
                     "Cart already has a gift code applied. Remove it first.");
             }
 
             // Apply gift code
-            cartEntity.GiftCodeId = giftCodeDto.Id;
-            dbContext.Orders.Update(cartEntity);
+            // Need to fetch full GiftCode entity to update it
+            var giftCodeEntity = await dbContext.GiftCodes
+                .FirstOrDefaultAsync(gc => gc.Id == giftCodeDto.Id);
+
+            if (giftCodeEntity == null) throw new StatusCodeException(StatusCodes.Status404NotFound, "Gift code not found.");
+
+            giftCodeEntity.OrderId = cart.Id;
+            dbContext.GiftCodes.Update(giftCodeEntity);
             await dbContext.SaveChangesAsync();
 
             // Reload and return updated cart
@@ -225,16 +232,18 @@ namespace BusinessLayer.Services
             var cart = await GetUserCartAsync(userId);
 
             var cartEntity = await dbContext.Orders
+                .Include(o => o.GiftCode)
                 .FirstOrDefaultAsync(o => o.Id == cart.Id);
 
-            if (cartEntity!.GiftCodeId == null)
+            if (cartEntity!.GiftCode == null)
             {
                 // No gift code to remove, return cart as-is
                 return cart;
             }
 
-            cartEntity.GiftCodeId = null;
-            dbContext.Orders.Update(cartEntity);
+            var giftCode = cartEntity.GiftCode;
+            giftCode.OrderId = null;
+            dbContext.GiftCodes.Update(giftCode);
             await dbContext.SaveChangesAsync();
 
             // Reload and return updated cart
@@ -272,6 +281,29 @@ namespace BusinessLayer.Services
                 Total = total,
                 AppliedGiftCode = cart.GiftCode?.Code
             };
+        }
+
+        public async Task<OrderDTO> CompleteUserCartAsync(int userId)
+        {
+            var cart = await dbContext.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.UserId == userId && o.OrderStatus == OrderStatus.Draft);
+
+            if (cart == null)
+            {
+                throw new StatusCodeException(StatusCodes.Status404NotFound, "No active cart found to complete.");
+            }
+
+            if (!cart.OrderItems.Any())
+            {
+                throw new StatusCodeException(StatusCodes.Status400BadRequest, "Cannot checkout an empty cart.");
+            }
+
+            cart.OrderStatus = OrderStatus.Completed;
+            dbContext.Orders.Update(cart);
+            await dbContext.SaveChangesAsync();
+
+            return cart.Adapt<OrderDTO>();
         }
     }
 }

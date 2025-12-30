@@ -1316,14 +1316,12 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("OrderId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("OrderId2")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.HasIndex("GiftCardId");
 
-                    b.HasIndex("OrderId2");
+                    b.HasIndex("OrderId")
+                        .IsUnique();
 
                     b.ToTable("GiftCodes");
 
@@ -4956,9 +4954,6 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<int?>("GiftCodeId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("OrderStatus")
                         .HasColumnType("INTEGER");
 
@@ -4966,9 +4961,6 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GiftCodeId")
-                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -4987,49 +4979,49 @@ namespace DataAccessLayer.Migrations
                             Id = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             OrderStatus = 1,
-                            UserId = 5
+                            UserId = 4
                         },
                         new
                         {
                             Id = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             OrderStatus = 1,
-                            UserId = 3
+                            UserId = 5
                         },
                         new
                         {
                             Id = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             OrderStatus = 1,
-                            UserId = 6
+                            UserId = 1
                         },
                         new
                         {
                             Id = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             OrderStatus = 1,
-                            UserId = 8
+                            UserId = 3
                         },
                         new
                         {
                             Id = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             OrderStatus = 1,
-                            UserId = 8
+                            UserId = 2
                         },
                         new
                         {
                             Id = 7,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             OrderStatus = 1,
-                            UserId = 3
+                            UserId = 6
                         },
                         new
                         {
                             Id = 8,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             OrderStatus = 1,
-                            UserId = 3
+                            UserId = 7
                         });
                 });
 
@@ -6018,8 +6010,9 @@ namespace DataAccessLayer.Migrations
                         .IsRequired();
 
                     b.HasOne("DataAccessLayer.Entities.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId2");
+                        .WithOne("GiftCode")
+                        .HasForeignKey("DataAccessLayer.Entities.GiftCode", "OrderId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("GiftCard");
 
@@ -6039,18 +6032,11 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Entities.Order", b =>
                 {
-                    b.HasOne("DataAccessLayer.Entities.GiftCode", "GiftCode")
-                        .WithOne()
-                        .HasForeignKey("DataAccessLayer.Entities.Order", "GiftCodeId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("DataAccessLayer.Entities.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("GiftCode");
 
                     b.Navigation("User");
                 });
@@ -6193,6 +6179,8 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Entities.Order", b =>
                 {
+                    b.Navigation("GiftCode");
+
                     b.Navigation("OrderItems");
                 });
 

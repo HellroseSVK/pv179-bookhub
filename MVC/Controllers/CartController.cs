@@ -122,4 +122,24 @@ public class CartController(
 
         return RedirectToAction("Index");
     }
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> Checkout()
+    {
+        var identityUser = await userManager.GetUserAsync(User);
+        if (identityUser == null) return Unauthorized();
+
+        try
+        {
+            await orderService.CompleteUserCartAsync(identityUser.UserId);
+            TempData["SuccessMessage"] = "Payment successful! Thank you for your order.";
+        }
+        catch (StatusCodeException ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+            return RedirectToAction("Index");
+        }
+
+        return RedirectToAction("Index", "Books");
+    }
 }
