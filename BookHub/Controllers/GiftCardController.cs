@@ -9,9 +9,9 @@ namespace BookHub.Controllers;
 public class GiftCardController(IGiftCardService giftCardService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetGiftCards([FromQuery] bool includeCodes = false)
+    public async Task<IActionResult> GetGiftCards()
     {
-        var giftCards = await giftCardService.GetGiftCardsAsync(includeCodes: includeCodes);
+        var giftCards = await giftCardService.GetGiftCardsSummaryAsync();
         return Ok(giftCards);
     }
 

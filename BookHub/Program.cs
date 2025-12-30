@@ -89,6 +89,7 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
+builder.Services.AddScoped<IGiftCardService, GiftCardService>();
 
 builder.Services.Configure<IISServerOptions>(options =>
 {

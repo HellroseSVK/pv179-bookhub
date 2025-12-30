@@ -40,6 +40,20 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
         return giftCards.Adapt<List<GiftCardDTO>>();
     }
 
+    public async Task<List<GiftCardSummaryDTO>> GetGiftCardsSummaryAsync(int[]? ids = null)
+    {
+        var query = GetBaseQuery(includeCodes: false);
+
+        if (ids is { Length: > 0 })
+        {
+            query = query.Where(p => ids.Contains(p.Id));
+        }
+
+        var giftCards = await query.ToListAsync();
+
+        return giftCards.Adapt<List<GiftCardSummaryDTO>>();
+    }
+
     public async Task<PagedResult<GiftCardDTO>> GetGiftCardPaginatedAsync(PaginationParameters paginationParameters,
         int[]? ids = null, bool includeCodes = true)
     {
