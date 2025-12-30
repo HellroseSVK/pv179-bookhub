@@ -15,8 +15,37 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             }
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>@Model.Title</h3>
+
+                    <p>
+                        <strong>Valid From:</strong> @Model.ValidFrom.ToString("yyyy-MM-dd HH:mm")<br />
+                        <strong>Valid To:</strong> @Model.ValidTo.ToString("yyyy-MM-dd HH:mm")<br />
+                        <strong>Discount Amount:</strong> @Model.Price.ToString("C")
+                    </p>
+
+                    @if (Model.IsCurrentlyValid)
+                    {
+                        <div class="alert alert-success">This gift card is currently valid</div>
+                    }
+                    else if (DateTime.UtcNow < Model.ValidFrom)
+                    {
+                        <div class="alert alert-warning">This gift card is not yet valid</div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger">This gift card has expired</div>
+                    }
+
+                    <a class="btn btn-secondary" asp-action="GiftCardUpsert" asp-route-giftCardId="@Model.Id">Edit Gift Card</a>
+                </div>
+            </div>
+
+            <h3 class="mb-3">Gift Codes</h3>
             <p>
-                <a class="btn btn-primary" asp-action="GiftCodesUpsert" asp-route-giftCardId="@Model.Id">Create Genre</a>
+                <a class="btn btn-primary" asp-action="GiftCodesUpsert" asp-route-giftCardId="@Model.Id">Add Gift Codes</a>
             </p>
             @if (Model.GiftCodes.Count > 0)
             {
@@ -24,16 +53,29 @@
                     @foreach (var giftCode in Model.GiftCodes)
                     {
                         <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card h-100">
+                            <div class="card h-100 @(giftCode.IsUsed ? "border-danger" : "border-success")">
                                 <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title">@giftCode.Code</h5>
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0">@giftCode.Code</h5>
+                                        @if (giftCode.IsUsed)
+                                        {
+                                            <span class="badge bg-danger">Used</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">Available</span>
+                                        }
+                                    </div>
+
+                                    @if (giftCode.IsUsed)
+                                    {
+                                        <p class="card-text text-muted small mb-0">
+                                            Used in Order #@giftCode.OrderId
+                                        </p>
+                                    }
+
                                     <div class="mt-auto">
-                                        @* <a asp-action="GiftCard" asp-route-authorId="@(giftCard.Id)"> *@
-                                        @*     View *@
-                                        @* </a> *@
-                                        @* <a asp-action="GiftCardUpsert" asp-route-authorId="@(giftCard.Id)"> *@
-                                        @*     Edit *@
-                                        @* </a> *@
+                                        <!-- Future: Add link to order detail when order views are implemented -->
                                     </div>
                                 </div>
                             </div>

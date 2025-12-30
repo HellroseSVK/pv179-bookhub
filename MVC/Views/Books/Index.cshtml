@@ -85,6 +85,13 @@
                             <p class="card-text">
                                 <strong>Price: @book.Price.ToString("C")</strong>
                             </p>
+                            @if (User.Identity!.IsAuthenticated)
+                            {
+                                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="mb-2">
+                                    <input type="hidden" name="bookId" value="@book.Id" />
+                                    <button type="submit" class="btn btn-primary btn-sm w-100">Add to Cart</button>
+                                </form>
+                            }
                             @if (book.Publisher != null)
                             {
                                 <p class="card-text">

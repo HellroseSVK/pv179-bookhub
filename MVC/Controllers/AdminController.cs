@@ -500,6 +500,70 @@ public class AdminController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> GiftCardUpsert(int? giftCardId = null)
+    {
+        var viewModel = new GiftCardUpsertViewModel();
+
+        if (giftCardId.HasValue)
+        {
+            var giftCard = await giftCardService.GetGiftCardAsync(giftCardId.Value);
+            viewModel.Id = giftCard.Id;
+            viewModel.Title = giftCard.Title;
+            viewModel.ValidFrom = giftCard.ValidFrom;
+            viewModel.ValidTo = giftCard.ValidTo;
+            viewModel.Price = giftCard.Price;
+        }
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> GiftCardUpsert(GiftCardUpsertViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
+
+        if (viewModel.ValidFrom >= viewModel.ValidTo)
+        {
+            ModelState.AddModelError(nameof(viewModel.ValidTo),
+                "Valid To must be after Valid From");
+            return View(viewModel);
+        }
+
+        var giftCardDto = new BusinessLayer.DTOs.GiftCard.GiftCardUpsertDTO
+        {
+            Title = viewModel.Title,
+            ValidFrom = viewModel.ValidFrom,
+            ValidTo = viewModel.ValidTo,
+            Price = viewModel.Price
+        };
+
+        try
+        {
+            if (!viewModel.Id.HasValue)
+            {
+                await giftCardService.CreateGiftCardAsync(giftCardDto);
+                TempData["SuccessMessage"] = "Gift card created successfully!";
+            }
+            else
+            {
+                await giftCardService.UpdateGiftCardAsync(viewModel.Id.Value, giftCardDto);
+                TempData["SuccessMessage"] = "Gift card updated successfully!";
+            }
+
+            return RedirectToAction(nameof(GiftCards));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"Error saving gift card: {ex.Message}");
+            return View(viewModel);
+        }
+    }
+
+    [HttpGet]
     public IActionResult GiftCodesUpsert(int giftCardId)
     {
         var viewModel = new GiftCodesUpsertViewModel

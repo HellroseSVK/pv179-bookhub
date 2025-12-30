@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.Entities;
+using DataAccessLayer.Enums;
 using Microsoft.EntityFrameworkCore;
 using Bogus;
 
@@ -318,7 +319,7 @@ public static class DataInitializer
             .UseSeed(111222)
             .RuleFor(o => o.Id, f => f.IndexFaker + 1)
             .RuleFor(o => o.UserId, f => f.Random.Int(1, UserCount))
-            .RuleFor(o => o.GiftCodeId, f => f.Random.Bool(0.80f) ? null : f.Random.Int(1, GiftCodeCount));
+            .RuleFor(o => o.OrderStatus, f => OrderStatus.Completed);
 
         return faker.Generate(OrderCount);
     }
@@ -452,7 +453,10 @@ public static class DataInitializer
         var faker = new Faker<GiftCard>()
             .UseSeed(1645)
             .RuleFor(card => card.Id, f => f.IndexFaker + 1)
-            .RuleFor(card => card.Title, f => f.Random.ArrayElement(Titles));
+            .RuleFor(card => card.Title, f => f.Random.ArrayElement(Titles))
+            .RuleFor(card => card.ValidFrom, f => new DateTime(2025, 1, 1))
+            .RuleFor(card => card.ValidTo, f => new DateTime(2026, 1, 1))
+            .RuleFor(card => card.Price, f => f.Random.ArrayElement(new[] { 50m, 100m, 150m, 200m, 250m }));
 
         return faker.Generate(GiftCardCount);
     }

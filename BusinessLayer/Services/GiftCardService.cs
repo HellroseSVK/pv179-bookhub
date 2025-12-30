@@ -15,6 +15,8 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
 {
     public async Task<GiftCardDTO> CreateGiftCardAsync(GiftCardUpsertDTO genreDto)
     {
+        ValidateGiftCardDates(genreDto.ValidFrom, genreDto.ValidTo);
+
         var giftCard = genreDto.Adapt<GiftCard>();
 
         var created = dbContext.GiftCards.Add(giftCard);
@@ -36,6 +38,20 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
         var giftCards = await query.ToListAsync();
 
         return giftCards.Adapt<List<GiftCardDTO>>();
+    }
+
+    public async Task<List<GiftCardSummaryDTO>> GetGiftCardsSummaryAsync(int[]? ids = null)
+    {
+        var query = GetBaseQuery(includeCodes: false);
+
+        if (ids is { Length: > 0 })
+        {
+            query = query.Where(p => ids.Contains(p.Id));
+        }
+
+        var giftCards = await query.ToListAsync();
+
+        return giftCards.Adapt<List<GiftCardSummaryDTO>>();
     }
 
     public async Task<PagedResult<GiftCardDTO>> GetGiftCardPaginatedAsync(PaginationParameters paginationParameters,
@@ -130,6 +146,18 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
 
         giftCard.Title = genreDto.Title ?? giftCard.Title;
 
+        var validFrom = genreDto.ValidFrom ?? giftCard.ValidFrom;
+        var validTo = genreDto.ValidTo ?? giftCard.ValidTo;
+
+        if (genreDto.ValidFrom.HasValue || genreDto.ValidTo.HasValue)
+        {
+            ValidateGiftCardDates(validFrom, validTo);
+        }
+
+        giftCard.ValidFrom = validFrom;
+        giftCard.ValidTo = validTo;
+        giftCard.Price = genreDto.Price ?? giftCard.Price;
+
         dbContext.GiftCards.Update(giftCard);
 
         await dbContext.SaveChangesAsync();
@@ -139,7 +167,12 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
     {
         var giftCard = await FindGiftCard(id, false);
 
+        ValidateGiftCardDates(genreDto.ValidFrom, genreDto.ValidTo);
+
         giftCard.Title = genreDto.Title;
+        giftCard.ValidFrom = genreDto.ValidFrom;
+        giftCard.ValidTo = genreDto.ValidTo;
+        giftCard.Price = genreDto.Price;
 
         dbContext.GiftCards.Update(giftCard);
 
@@ -176,5 +209,64 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
         }
 
         return userQuery;
+    }
+
+    private void ValidateGiftCardDates(DateTime validFrom, DateTime validTo)
+    {
+        if (validFrom >= validTo)
+        {
+            throw new StatusCodeException(
+                StatusCodes.Status400BadRequest,
+                "ValidFrom must be before ValidTo");
+        }
+    }
+
+    public bool IsGiftCardValid(GiftCardDTO giftCard)
+    {
+        var now = DateTime.UtcNow;
+        return now >= giftCard.ValidFrom && now <= giftCard.ValidTo;
+    }
+
+    public async Task<GiftCodeDTO> ValidateGiftCodeAsync(string code)
+    {
+        var giftCode = await dbContext.GiftCodes
+            .Include(gc => gc.GiftCard)
+            .FirstOrDefaultAsync(gc => gc.Code.ToLower() == code.ToLower());
+
+        if (giftCode == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                "Gift code not found.");
+        }
+
+        if (giftCode.OrderId != null)
+        {
+            throw new StatusCodeException(StatusCodes.Status400BadRequest,
+                "Gift code has already been used.");
+        }
+
+        var now = DateTime.UtcNow;
+        if (now < giftCode.GiftCard!.ValidFrom || now > giftCode.GiftCard.ValidTo)
+        {
+            throw new StatusCodeException(StatusCodes.Status400BadRequest,
+                "Gift code is not currently valid.");
+        }
+
+        return giftCode.Adapt<GiftCodeDTO>();
+    }
+
+    public async Task<GiftCardDTO> GetGiftCardByCodeAsync(string code)
+    {
+        var giftCode = await dbContext.GiftCodes
+            .Include(gc => gc.GiftCard)
+            .FirstOrDefaultAsync(gc => gc.Code.ToLower() == code.ToLower());
+
+        if (giftCode == null)
+        {
+            throw new StatusCodeException(StatusCodes.Status404NotFound,
+                "Gift code not found.");
+        }
+
+        return giftCode.GiftCard!.Adapt<GiftCardDTO>();
     }
 }

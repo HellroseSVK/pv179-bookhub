@@ -9,6 +9,8 @@ public interface IGiftCardService
 
     public Task<List<GiftCardDTO>> GetGiftCardsAsync(int[]? ids = null, bool includeCodes = true);
 
+    public Task<List<GiftCardSummaryDTO>> GetGiftCardsSummaryAsync(int[]? ids = null);
+
     public Task<PagedResult<GiftCardDTO>> GetGiftCardPaginatedAsync(PaginationParameters paginationParameters,
         int[]? ids = null, bool includeCodes = true);
 
@@ -22,4 +24,9 @@ public interface IGiftCardService
     public Task PatchGiftCardAsync(int id, GiftCardPartialDTO genreDto);
     public Task UpdateGiftCardAsync(int id, GiftCardUpsertDTO genreDto);
     public Task DeleteGiftCardAsync(int id);
+
+    public bool IsGiftCardValid(GiftCardDTO giftCard);
+
+    public Task<GiftCodeDTO> ValidateGiftCodeAsync(string code);
+    public Task<GiftCardDTO> GetGiftCardByCodeAsync(string code);
 }

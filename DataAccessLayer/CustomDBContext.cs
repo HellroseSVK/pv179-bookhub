@@ -181,8 +181,8 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
         // one-to-one relationships
         modelBuilder.Entity<Order>()
             .HasOne(o => o.GiftCode)
-            .WithOne() // no navigation on GiftCode side
-            .HasForeignKey<Order>(o => o.GiftCodeId)
+            .WithOne(gc => gc.Order)
+            .HasForeignKey<GiftCode>(gc => gc.OrderId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
 
