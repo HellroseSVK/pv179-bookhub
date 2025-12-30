@@ -454,7 +454,8 @@ public static class DataInitializer
             .RuleFor(card => card.Id, f => f.IndexFaker + 1)
             .RuleFor(card => card.Title, f => f.Random.ArrayElement(Titles))
             .RuleFor(card => card.ValidFrom, f => new DateTime(2025, 1, 1))
-            .RuleFor(card => card.ValidTo, f => new DateTime(2026, 1, 1));
+            .RuleFor(card => card.ValidTo, f => new DateTime(2026, 1, 1))
+            .RuleFor(card => card.Price, f => f.Random.ArrayElement(new[] { 50m, 100m, 150m, 200m, 250m }));
 
         return faker.Generate(GiftCardCount);
     }

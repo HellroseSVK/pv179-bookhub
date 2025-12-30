@@ -22,7 +22,8 @@
 
                     <p>
                         <strong>Valid From:</strong> @Model.ValidFrom.ToString("yyyy-MM-dd HH:mm")<br />
-                        <strong>Valid To:</strong> @Model.ValidTo.ToString("yyyy-MM-dd HH:mm")
+                        <strong>Valid To:</strong> @Model.ValidTo.ToString("yyyy-MM-dd HH:mm")<br />
+                        <strong>Discount Amount:</strong> @Model.Price.ToString("C")
                     </p>
 
                     @if (Model.IsCurrentlyValid)

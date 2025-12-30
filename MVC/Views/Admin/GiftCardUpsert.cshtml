@@ -34,6 +34,13 @@
             <span asp-validation-for="ValidTo" class="text-danger"></span>
         </div>
 
+        <!-- Price -->
+        <div class="mb-3">
+            <label asp-for="Price" class="form-label"></label>
+            <input asp-for="Price" class="form-control" type="number" step="0.01" placeholder="Enter discount amount" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
         <!-- Buttons -->
         <div class="mb-3">
             <button type="submit" class="btn btn-primary">

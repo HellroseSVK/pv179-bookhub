@@ -17,4 +17,9 @@ public class GiftCardUpsertViewModel
     [Required(ErrorMessage = "Valid To date is required")]
     [Display(Name = "Valid To")]
     public DateTime ValidTo { get; set; } = DateTime.Today.AddYears(1);
+
+    [Required(ErrorMessage = "Price is required")]
+    [Range(0.01, 10000, ErrorMessage = "Price must be between 0.01 and 10000")]
+    [Display(Name = "Price")]
+    public decimal Price { get; set; } = 100m;
 }

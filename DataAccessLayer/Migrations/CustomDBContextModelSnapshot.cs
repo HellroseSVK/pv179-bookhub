@@ -1230,6 +1230,9 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -1249,6 +1252,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Price = 150m,
                             Title = "Holiday Cheer Gift Card",
                             ValidFrom = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ValidTo = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1257,7 +1261,8 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "Thinking of You Gift Card",
+                            Price = 200m,
+                            Title = "Welcome Gift Card",
                             ValidFrom = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ValidTo = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -1265,7 +1270,8 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "Welcome Gift Card",
+                            Price = 50m,
+                            Title = "Seasonal Surprise Gift Card",
                             ValidFrom = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ValidTo = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -1273,7 +1279,8 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "Get Well Soon Gift Card",
+                            Price = 200m,
+                            Title = "Care Package Gift Card",
                             ValidFrom = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ValidTo = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -1281,7 +1288,8 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "Seasonal Surprise Gift Card",
+                            Price = 250m,
+                            Title = "Thinking of You Gift Card",
                             ValidFrom = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ValidTo = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });

@@ -156,6 +156,7 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
 
         giftCard.ValidFrom = validFrom;
         giftCard.ValidTo = validTo;
+        giftCard.Price = genreDto.Price ?? giftCard.Price;
 
         dbContext.GiftCards.Update(giftCard);
 
@@ -171,6 +172,7 @@ public class GiftCardService(CustomDBContext dbContext) : IGiftCardService
         giftCard.Title = genreDto.Title;
         giftCard.ValidFrom = genreDto.ValidFrom;
         giftCard.ValidTo = genreDto.ValidTo;
+        giftCard.Price = genreDto.Price;
 
         dbContext.GiftCards.Update(giftCard);
 

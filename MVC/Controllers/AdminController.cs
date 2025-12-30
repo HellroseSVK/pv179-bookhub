@@ -511,6 +511,7 @@ public class AdminController(
             viewModel.Title = giftCard.Title;
             viewModel.ValidFrom = giftCard.ValidFrom;
             viewModel.ValidTo = giftCard.ValidTo;
+            viewModel.Price = giftCard.Price;
         }
 
         return View(viewModel);
@@ -536,7 +537,8 @@ public class AdminController(
         {
             Title = viewModel.Title,
             ValidFrom = viewModel.ValidFrom,
-            ValidTo = viewModel.ValidTo
+            ValidTo = viewModel.ValidTo,
+            Price = viewModel.Price
         };
 
         try

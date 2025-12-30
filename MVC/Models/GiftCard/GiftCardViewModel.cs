@@ -6,6 +6,7 @@ public class GiftCardViewModel
     public string Title { get; set; } = string.Empty;
     public DateTime ValidFrom { get; set; }
     public DateTime ValidTo { get; set; }
+    public decimal Price { get; set; }
 
     public bool IsCurrentlyValid =>
         DateTime.UtcNow >= ValidFrom && DateTime.UtcNow <= ValidTo;

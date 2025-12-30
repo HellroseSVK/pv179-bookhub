@@ -13,4 +13,8 @@ public class GiftCardUpsertDTO
 
     [Required]
     public required DateTime ValidTo { get; set; }
+
+    [Required]
+    [Range(0.01, 10000, ErrorMessage = "Price must be between 0.01 and 10000")]
+    public decimal Price { get; set; }
 }
