@@ -10,7 +10,7 @@ namespace BookHub.Controllers;
 public class GiftCardController(IGiftCardService giftCardService) : ControllerBase
 {
     [HttpGet]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetGiftCards()
     {
         var giftCards = await giftCardService.GetGiftCardsSummaryAsync();
@@ -18,7 +18,7 @@ public class GiftCardController(IGiftCardService giftCardService) : ControllerBa
     }
 
     [HttpGet("{id}")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetGiftCard(int id)
     {
         var giftCard = await giftCardService.GetGiftCardAsync(id);
@@ -64,7 +64,7 @@ public class GiftCardController(IGiftCardService giftCardService) : ControllerBa
     }
 
     [HttpGet("{id}/is-valid")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> IsGiftCardValid(int id)
     {
         var giftCard = await giftCardService.GetGiftCardAsync(id);
