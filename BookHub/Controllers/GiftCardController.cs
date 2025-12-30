@@ -1,5 +1,6 @@
 using BusinessLayer.DTOs.GiftCard;
 using BusinessLayer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookHub.Controllers;
@@ -9,6 +10,7 @@ namespace BookHub.Controllers;
 public class GiftCardController(IGiftCardService giftCardService) : ControllerBase
 {
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetGiftCards()
     {
         var giftCards = await giftCardService.GetGiftCardsSummaryAsync();
@@ -16,6 +18,7 @@ public class GiftCardController(IGiftCardService giftCardService) : ControllerBa
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetGiftCard(int id)
     {
         var giftCard = await giftCardService.GetGiftCardAsync(id);
@@ -23,6 +26,7 @@ public class GiftCardController(IGiftCardService giftCardService) : ControllerBa
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateGiftCard([FromBody] GiftCardUpsertDTO giftCardDto)
     {
         if (!ModelState.IsValid)
@@ -33,6 +37,7 @@ public class GiftCardController(IGiftCardService giftCardService) : ControllerBa
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateGiftCard(int id, [FromBody] GiftCardUpsertDTO giftCardDto)
     {
         if (!ModelState.IsValid)
@@ -43,6 +48,7 @@ public class GiftCardController(IGiftCardService giftCardService) : ControllerBa
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> PatchGiftCard(int id, [FromBody] GiftCardPartialDTO giftCardDto)
     {
         await giftCardService.PatchGiftCardAsync(id, giftCardDto);
@@ -50,6 +56,7 @@ public class GiftCardController(IGiftCardService giftCardService) : ControllerBa
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteGiftCard(int id)
     {
         await giftCardService.DeleteGiftCardAsync(id);
@@ -57,6 +64,7 @@ public class GiftCardController(IGiftCardService giftCardService) : ControllerBa
     }
 
     [HttpGet("{id}/is-valid")]
+    [AllowAnonymous]
     public async Task<IActionResult> IsGiftCardValid(int id)
     {
         var giftCard = await giftCardService.GetGiftCardAsync(id);
@@ -65,6 +73,7 @@ public class GiftCardController(IGiftCardService giftCardService) : ControllerBa
     }
 
     [HttpPost("{id}/codes")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AddCodes(int id, [FromBody] int numberOfCodes)
     {
         await giftCardService.AddGiftCodesToGiftCard(id, numberOfCodes);
@@ -72,6 +81,7 @@ public class GiftCardController(IGiftCardService giftCardService) : ControllerBa
     }
 
     [HttpDelete("{id}/codes")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RemoveCodes(int id, [FromBody] string[] codes)
     {
         await giftCardService.RemoveGiftCodesToGiftCard(id, codes);
