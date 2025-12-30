@@ -17,9 +17,13 @@ public static class DataInitializer
     private const int ReviewCount = 20;
     private const int BookAuthorCount = 40;
     private const int BookGenreCount = 40;
+    private const int GiftCardCount = 5;
+    private const int GiftCodeCount = 500;
 
     public static void Seed(this ModelBuilder modelBuilder)
     {
+        var giftCards = PrepareGiftCards();
+        var giftCodes = PrepareGiftCode();
         var genres = PrepareGenres();
         var publishers = PreparePublishers();
         var authors = PrepareAuthors();
@@ -32,6 +36,10 @@ public static class DataInitializer
         var bookAuthors = LinkBooksAndAuthors();
         var bookGenres = LinkBooksAndGenres();
 
+        modelBuilder.Entity<GiftCard>()
+            .HasData(giftCards);
+        modelBuilder.Entity<GiftCode>()
+            .HasData(giftCodes);
         modelBuilder.Entity<Genre>()
             .HasData(genres);
         modelBuilder.Entity<Publisher>()
@@ -309,7 +317,8 @@ public static class DataInitializer
         var faker = new Faker<Order>()
             .UseSeed(111222)
             .RuleFor(o => o.Id, f => f.IndexFaker + 1)
-            .RuleFor(o => o.UserId, f => f.Random.Int(1, UserCount));
+            .RuleFor(o => o.UserId, f => f.Random.Int(1, UserCount))
+            .RuleFor(o => o.GiftCodeId, f => f.Random.Bool(0.80f) ? null : f.Random.Int(1, GiftCodeCount));
 
         return faker.Generate(OrderCount);
     }
@@ -421,5 +430,41 @@ public static class DataInitializer
             .ToList();
 
         return result;
+    }
+
+    private static readonly string[] Titles =
+    [
+        "Birthday Bliss Gift Card",
+        "Holiday Cheer Gift Card",
+        "Thank You Treat Gift Card",
+        "Just Because Gift Card",
+        "Congratulations Gift Card",
+        "Thinking of You Gift Card",
+        "Anniversary Delight Gift Card",
+        "Welcome Gift Card",
+        "Get Well Soon Gift Card",
+        "New Home Gift Card",
+        "Seasonal Surprise Gift Card",
+        "Care Package Gift Card"
+    ];
+    private static List<GiftCard> PrepareGiftCards()
+    {
+        var faker = new Faker<GiftCard>()
+            .UseSeed(1645)
+            .RuleFor(card => card.Id, f => f.IndexFaker + 1)
+            .RuleFor(card => card.Title, f => f.Random.ArrayElement(Titles));
+
+        return faker.Generate(GiftCardCount);
+    }
+
+    private static List<GiftCode> PrepareGiftCode()
+    {
+        var faker = new Faker<GiftCode>()
+            .UseSeed(1645)
+            .RuleFor(code => code.Id, f => f.IndexFaker + 1)
+            .RuleFor(code => code.Code, f => f.Random.AlphaNumeric(12).ToUpper())
+            .RuleFor(code => code.GiftCardId, f => f.Random.Int(1, GiftCardCount));
+
+        return faker.Generate(GiftCodeCount);
     }
 }

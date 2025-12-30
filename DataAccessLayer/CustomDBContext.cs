@@ -21,6 +21,8 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<BookAuthor> BookAuthors { get; set; }
     public DbSet<BookGenre> BookGenres { get; set; }
+    public DbSet<GiftCard> GiftCards { get; set; }
+    public DbSet<GiftCode> GiftCodes { get; set; }
 
     public DbSet<HttpLog> HttpLogs { get; set; }
 
@@ -170,6 +172,19 @@ public class CustomDBContext(DbContextOptions options, IHttpContextAccessor acce
             .HasOne<Publisher>(book => book.Publisher)
             .WithMany(publisher => publisher.Books)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<GiftCode>()
+            .HasOne<GiftCard>(gc => gc.GiftCard)
+            .WithMany(giftCard => giftCard.GiftCodes)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // one-to-one relationships
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.GiftCode)
+            .WithOne() // no navigation on GiftCode side
+            .HasForeignKey<Order>(o => o.GiftCodeId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Seed();
     }

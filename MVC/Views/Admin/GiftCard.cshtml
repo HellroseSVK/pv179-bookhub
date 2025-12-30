@@ -1,0 +1,52 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVC.Models.GiftCard.GiftCardViewModel
+@{
+    ViewData["Title"] = "GiftCard";
+}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-9 col-lg-10">
+            <h2 class="mb-3">GiftCard</h2>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            <p>
+                <a class="btn btn-primary" asp-action="GiftCodesUpsert" asp-route-giftCardId="@Model.Id">Create Genre</a>
+            </p>
+            @if (Model.GiftCodes.Count > 0)
+            {
+                <div class="row">
+                    @foreach (var giftCode in Model.GiftCodes)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">@giftCode.Code</h5>
+                                    <div class="mt-auto">
+                                        @* <a asp-action="GiftCard" asp-route-authorId="@(giftCard.Id)"> *@
+                                        @*     View *@
+                                        @* </a> *@
+                                        @* <a asp-action="GiftCardUpsert" asp-route-authorId="@(giftCard.Id)"> *@
+                                        @*     Edit *@
+                                        @* </a> *@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <h4>No gift codes found</h4>
+                </div>
+            }
+        </div>
+    </div>
+</div>

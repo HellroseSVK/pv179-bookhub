@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using MVC.Models.Author;
 using MVC.Models.Genre;
+using MVC.Models.GiftCard;
 using MVC.Models.Publisher;
 using MVC.Models.User;
 
@@ -31,6 +32,7 @@ public class AdminController(
     IGenreService genreService,
     IPublisherService publisherService,
     IUserService userService,
+    IGiftCardService giftCardService,
     UserManager<LocalIdentityUser> userManager) : Controller
 {
     public IActionResult Index()
@@ -469,6 +471,67 @@ public class AdminController(
         };
 
         return View(viewModel);
+    }
+
+    public async Task<IActionResult> GiftCards(int page = 1, int pageSize = 12)
+    {
+        var paginatedGiftCards = await giftCardService.GetGiftCardPaginatedAsync(new PaginationParameters
+        { PageNumber = page, PageSize = pageSize });
+
+        var viewModel = new GiftCardListViewModel()
+        {
+            Items = paginatedGiftCards.Items.Select(a => a.Adapt<GiftCardViewModel>()).ToList(),
+            CurrentPage = page,
+            TotalPages = paginatedGiftCards.TotalPages,
+            PageSize = pageSize,
+            TotalItems = paginatedGiftCards.TotalCount,
+        };
+
+        return View(viewModel);
+    }
+
+    public async Task<IActionResult> GiftCard(int giftCardId, int page = 1, int pageSize = 12)
+    {
+        var giftCard = await giftCardService.GetGiftCardAsync(giftCardId);
+
+        var viewModel = giftCard.Adapt<GiftCardViewModel>();
+
+        return View(viewModel);
+    }
+
+    [HttpGet]
+    public IActionResult GiftCodesUpsert(int giftCardId)
+    {
+        var viewModel = new GiftCodesUpsertViewModel
+        {
+            GiftCardId = giftCardId,
+            Count = 0,
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> GiftCodesUpsert(GiftCodesUpsertViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
+
+        try
+        {
+            await giftCardService.AddGiftCodesToGiftCard(viewModel.GiftCardId, viewModel.Count);
+            TempData["SuccessMessage"] = "Publisher created successfully!";
+
+            return RedirectToAction(nameof(GiftCard), new { giftCardId = viewModel.GiftCardId });
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"Error saving gift card: {ex.Message}");
+            return View(viewModel);
+        }
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

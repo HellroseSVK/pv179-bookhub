@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVC.Models.GiftCard.GiftCodesUpsertViewModel
+@{
+    ViewData["Title"] = "Add Gift Codes";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <form asp-action="GiftCodesUpsert" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Hidden Gift Card Id-->
+                <input asp-for="GiftCardId" type="hidden" />
+                
+                <!-- Count of codes -->
+                <div class="mb-3">
+                    <label asp-for="Count" class="form-label"></label>
+                    <input asp-for="Count" class="form-control" placeholder="Enter count of codes to create" type="number"/>
+                    <span asp-validation-for="Count" class="text"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Create Gift Codes</button>
+                    <a asp-action="GiftCard" asp-route-giftCardId="@(Model.GiftCardId)" class="btn btn-secondary">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}
