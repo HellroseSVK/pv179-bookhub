@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using DataAccessLayer.Enums;
 
 namespace DataAccessLayer.Entities
 {
@@ -13,5 +14,7 @@ namespace DataAccessLayer.Entities
 
         public int? GiftCodeId { get; set; }
         public GiftCode? GiftCode { get; set; }
+
+        public OrderStatus OrderStatus { get; set; } = OrderStatus.Draft;
     }
 }
