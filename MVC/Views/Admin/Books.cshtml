@@ -78,10 +78,10 @@ ViewData["Title"] = "Books";
                                                 </small>
                                             </p>
                                         }
-                                        <a asp-action="BookUpsert" asp-route-bookId="@(book.Id)">
+                                        <a asp-action="BookUpsert" asp-route-bookId="@(book.Id)" class="btn btn-sm btn-primary">
                                             Edit
                                         </a>
-                                        <a asp-action="BookDelete" asp-route-bookId="@(book.Id)">
+                                        <a asp-action="BookDelete" asp-route-bookId="@(book.Id)" class="btn btn-sm btn-secondary">
                                             Delete
                                         </a>
                                     </div>

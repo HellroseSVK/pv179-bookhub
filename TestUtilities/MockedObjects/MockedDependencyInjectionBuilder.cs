@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using BusinessLayer.Services.Interfaces;
+using Mapster;
+using MapsterMapper;
 using Microsoft.Extensions.Configuration;
 
 namespace TestUtilities.MockedObjects;
@@ -43,7 +45,11 @@ public class MockedDependencyInjectionBuilder
 
         _serviceCollection = _serviceCollection.AddSingleton<IConfiguration>(config);
 
-        _serviceCollection.RegisterMapsterConfiguration();
+        var mapsterConfig = TypeAdapterConfig.GlobalSettings;
+        mapsterConfig.Apply(new BLMappings());
+
+        _serviceCollection.AddSingleton(mapsterConfig);
+        _serviceCollection.AddScoped<IMapper, Mapper>();
 
         _serviceCollection = _serviceCollection
             .AddScoped<IAuthorService, AuthorService>()

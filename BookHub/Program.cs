@@ -1,5 +1,4 @@
 using System.IdentityModel.Tokens.Jwt;
-using BusinessLayer.Mapper;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
@@ -13,13 +12,22 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BusinessLayer.Mapper;
+using Mapster;
+using MapsterMapper;
 using Shared.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.RegisterMapsterConfiguration();
+// Register Mapster configuration
+var mapsterConfig = TypeAdapterConfig.GlobalSettings;
+mapsterConfig.Apply(new BLMappings());
+
+builder.Services.AddSingleton(mapsterConfig);
+builder.Services.AddScoped<IMapper, Mapper>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 

@@ -1,0 +1,110 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVC.Models.Order.OrderListItemViewModel
+@{
+    ViewData["Title"] = "Orders";
+}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-9 col-lg-10">
+            <h2 class="mb-3">Orders of @Model.UserEmail</h2>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            <p>
+                <a class="btn btn-primary" asp-action="OrderUpsert" asp-route-email="@(Model.UserEmail)">Create Order</a>
+            </p>
+            @if (Model.TotalItems > 0)
+            {
+                <p class="text-muted">Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalItems)) of @Model.TotalItems orders</p>
+                <div class="row">
+                    @foreach (var order in Model.Items)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">@order.Id</h5>
+                                    <p class="card-text flex-grow-1">@order.Books.Count items in order</p>
+                                    <div class="mt-auto">
+                                        <p class="card-text">
+                                            <strong>Price: @order.TotalPrice.ToString("C")</strong>
+                                        </p>
+                                        @{
+                                            var bookCount = order.Books.Count;
+                                            var showAll = bookCount <= 5;
+                                            var displayCount = showAll ? bookCount : 4;
+                                        }
+                                        @for (int i = 0; i < displayCount; i++)
+                                        {
+                                            var book = order.Books[i];
+                                            if (!string.IsNullOrEmpty(book.ImageUrl))
+                                            {
+                                                <img src="@book.ImageUrl" class="card-img-top me-1" style="height:20px; object-fit:cover;" alt="@book.Title"/>
+                                            }
+                                            else
+                                            {
+                                                <div class="card-img-top d-flex align-items-center justify-content-center me-1" style="height:20px; background-color:#f8f9fa;">
+                                                    <span class="text-muted small">No Image</span>
+                                                </div>
+                                            }
+                                        }
+                                        @if (!showAll)
+                                        {
+                                            <div class="card-img-top d-flex align-items-center justify-content-center" style="height:20px; background-color:transparent;">
+                                                <span class="text-muted">...</span>
+                                            </div>
+                                        }
+                                        <a asp-action="OrderUpsert" asp-route-orderId="@(order.Id)" asp-route-email="@(order.UserEmail)" class="btn btn-sm btn-primary">
+                                            Edit
+                                        </a>
+                                        <a asp-action="Order" asp-route-orderId="@(order.Id)" asp-route-email="@(order.UserEmail)" class="btn btn-sm btn-secondary">
+                                            View
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.TotalPages > 1)
+                {
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            @if (Model.HasPreviousPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)">Previous</a>
+                                </li>
+                            }
+
+                            @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                                </li>
+                            }
+
+                            @if (Model.HasNextPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)">Next</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <h4>No orders found</h4>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,4 +1,5 @@
-﻿using BusinessLayer.DTOs.Order;
+﻿using BusinessLayer.DTOs;
+using BusinessLayer.DTOs.Order;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -52,9 +53,10 @@ namespace BusinessLayer.Services
             return order.Adapt<OrderDTO>();
         }
 
-        public async Task<List<OrderDTO>> GetOrdersAsync(int? userId, bool includeUser = true, bool includeBooks = true)
+        public async Task<List<OrderDTO>> GetOrdersAsync(int? userId, bool includeUser = true, bool includeBooks = true,
+            bool includeGiftCode = true)
         {
-            var query = GetBaseQuery(includeUser, includeBooks);
+            var query = GetBaseQuery(includeUser, includeBooks, includeGiftCode);
 
             if (userId != null)
             {
@@ -66,19 +68,90 @@ namespace BusinessLayer.Services
             return orders.Adapt<List<OrderDTO>>();
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task PatchOrderAsync(int id, OrderPartialDTO orderDto)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task<PagedResult<OrderDTO>> GetOrdersPaginatedAsync(PaginationParameters paginationParameters,
+            int? userId = null, bool includeUser = true, bool includeBooks = true, bool includeGiftCode = true)
         {
-            throw new NotImplementedException();
+            var query = GetBaseQuery(includeUser, includeBooks, includeGiftCode);
+
+            if (userId != null)
+            {
+                query = query.Where(order => order.UserId == userId);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var orders = await query.ToListAsync();
+
+            return new PagedResult<OrderDTO>
+            {
+                Items = orders.Adapt<List<OrderDTO>>(),
+                TotalCount = totalCount,
+                PageNumber = paginationParameters.PageNumber,
+                PageSize = paginationParameters.PageSize
+            };
         }
 
-        private async Task<Order> FindOrder(int id, bool includeUser = true, bool includeBooks = true)
+        public async Task UpdateOrderAsync(int id, OrderUpsertDTO orderDto)
         {
-            var query = GetBaseQuery(includeUser, includeBooks);
+            if (orderDto.BookIds == null || orderDto.BookIds.Count == 0)
+            {
+                throw new StatusCodeException(StatusCodes.Status400BadRequest,
+                    "Order must contain at least one book.");
+            }
+
+            var order = await FindOrder(id, includeUser: false);
+
+            if (order == null)
+            {
+                throw new StatusCodeException(StatusCodes.Status404NotFound, $"Order with id {id} not found.");
+            }
+
+            var books = await FindBooks(orderDto.BookIds);
+
+            order.UserId = orderDto.UserId;
+
+            var assignedBooks = order.OrderItems.Select(oi => oi.Book).ToList();
+            var oldBooks = assignedBooks.Except(books);
+            order.OrderItems.RemoveAll(oi => oldBooks.Any(b => b != null && b.Id == oi.BookId));
+            var newAuthors = books.Except(assignedBooks);
+            order.OrderItems.AddRange(newAuthors.Select(b => new OrderItem { Book = b }));
+
+            dbContext.Orders.Update(order);
+            await dbContext.SaveChangesAsync();
+        }
+
+        public async Task PatchOrderAsync(int id, OrderPartialDTO orderDto)
+        {
+            var order = await FindOrder(id, includeUser: false);
+
+            order.OrderStatus = orderDto.OrderStatus ?? order.OrderStatus;
+            if (orderDto.GiftCode != null)
+            {
+                order.GiftCode = new GiftCode
+                {
+                    Code = orderDto.GiftCode
+                };
+            }
+
+            if (orderDto.BookIds is { Count: > 0 })
+            {
+                var books = await FindBooks(orderDto.BookIds);
+                var newBooks = books.Except(order.OrderItems.Select(oi => oi.Book));
+                order.OrderItems.AddRange(newBooks.Select(b => new OrderItem { Book = b }));
+            }
+
+            dbContext.Orders.Update(order);
+            await dbContext.SaveChangesAsync();
+        }
+
+        private async Task<Order> FindOrder(int id, bool includeUser = true, bool includeBooks = true,
+            bool includeGiftCode = true)
+        {
+            var query = GetBaseQuery(includeUser, includeBooks, includeGiftCode);
             var order = await query.FirstOrDefaultAsync(o => o.Id == id);
 
-            return order ?? throw new StatusCodeException(StatusCodes.Status404NotFound, $"Order with id {id} not found.");
+            return order ??
+                   throw new StatusCodeException(StatusCodes.Status404NotFound, $"Order with id {id} not found.");
         }
 
         private async Task<List<Book>> FindBooks(List<int> ids)
@@ -97,7 +170,7 @@ namespace BusinessLayer.Services
             return books;
         }
 
-        private IQueryable<Order> GetBaseQuery(bool includeUser, bool includeBooks)
+        private IQueryable<Order> GetBaseQuery(bool includeUser, bool includeBooks, bool includeGiftCode)
         {
             IQueryable<Order> query = dbContext.Orders;
 
@@ -113,6 +186,12 @@ namespace BusinessLayer.Services
                     .ThenInclude(oi => oi.Book);
             }
 
+            if (includeGiftCode)
+            {
+                query = query
+                    .Include(o => o.GiftCode);
+            }
+
             return query;
         }
 
@@ -122,22 +201,24 @@ namespace BusinessLayer.Services
         {
             var cart = await dbContext.Orders
                 .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Book)
+                .ThenInclude(oi => oi.Book)
                 .Include(o => o.GiftCode)
-                    .ThenInclude(gc => gc!.GiftCard)
+                .ThenInclude(gc => gc!.GiftCard)
                 .FirstOrDefaultAsync(o => o.UserId == userId && o.OrderStatus == OrderStatus.Draft);
 
-            if (cart == null)
+            if (cart != null)
             {
-                cart = new Order
-                {
-                    UserId = userId,
-                    OrderStatus = OrderStatus.Draft
-                };
-
-                dbContext.Orders.Add(cart);
-                await dbContext.SaveChangesAsync();
+                return cart.Adapt<OrderDTO>();
             }
+
+            cart = new Order
+            {
+                UserId = userId,
+                OrderStatus = OrderStatus.Draft
+            };
+
+            dbContext.Orders.Add(cart);
+            await dbContext.SaveChangesAsync();
 
             return cart.Adapt<OrderDTO>();
         }
@@ -194,19 +275,27 @@ namespace BusinessLayer.Services
             return await GetUserCartAsync(userId);
         }
 
-        public async Task<OrderDTO> ApplyGiftCodeToCartAsync(int userId, string code)
+        public async Task<OrderDTO> ApplyGiftCodeToOrderAsync(int userId, string code, int? orderId = null)
         {
             // Validate gift code
             var giftCodeDto = await giftCardService.ValidateGiftCodeAsync(code);
 
-            var cart = await GetUserCartAsync(userId);
+            OrderDTO order;
+            if (orderId == null)
+            {
+                order = await GetUserCartAsync(userId);
+            }
+            else
+            {
+                order = await GetOrderAsync(orderId.Value);
+            }
 
             // Get cart entity
-            var cartEntity = await dbContext.Orders
+            var orderEntity = await dbContext.Orders
                 .Include(o => o.GiftCode)
-                .FirstOrDefaultAsync(o => o.Id == cart.Id);
+                .FirstOrDefaultAsync(o => o.Id == order.Id);
 
-            if (cartEntity!.GiftCode != null)
+            if (orderEntity!.GiftCode != null)
             {
                 throw new StatusCodeException(StatusCodes.Status400BadRequest,
                     "Cart already has a gift code applied. Remove it first.");
@@ -217,9 +306,10 @@ namespace BusinessLayer.Services
             var giftCodeEntity = await dbContext.GiftCodes
                 .FirstOrDefaultAsync(gc => gc.Id == giftCodeDto.Id);
 
-            if (giftCodeEntity == null) throw new StatusCodeException(StatusCodes.Status404NotFound, "Gift code not found.");
+            if (giftCodeEntity == null)
+                throw new StatusCodeException(StatusCodes.Status404NotFound, "Gift code not found.");
 
-            giftCodeEntity.OrderId = cart.Id;
+            giftCodeEntity.OrderId = order.Id;
             dbContext.GiftCodes.Update(giftCodeEntity);
             await dbContext.SaveChangesAsync();
 
@@ -254,9 +344,9 @@ namespace BusinessLayer.Services
         {
             var cart = await dbContext.Orders
                 .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Book)
+                .ThenInclude(oi => oi.Book)
                 .Include(o => o.GiftCode)
-                    .ThenInclude(gc => gc!.GiftCard)
+                .ThenInclude(gc => gc!.GiftCard)
                 .FirstOrDefaultAsync(o => o.UserId == userId && o.OrderStatus == OrderStatus.Draft);
 
             if (cart == null)

@@ -53,7 +53,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a asp-area="" class="nav-link text-dark">Hello @UserManager.GetUserName(User)!</a>
+                                <a asp-area="" asp-controller="UserDetail" asp-action="Index" class="nav-link text-dark">Hello @UserManager.GetUserName(User)!</a>
                             </li>
                             @if(User.IsInRole("Admin"))
                             {

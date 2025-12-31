@@ -1,4 +1,5 @@
-﻿using BusinessLayer.DTOs.OrderItem;
+﻿using BusinessLayer.DTOs.GiftCard;
+using BusinessLayer.DTOs.OrderItem;
 using BusinessLayer.DTOs.User;
 
 namespace BusinessLayer.DTOs.Order
@@ -7,5 +8,7 @@ namespace BusinessLayer.DTOs.Order
     {
         public UserSimplifiedNoPasswordDTO? User { get; set; }
         public List<OrderItemDTO> OrderItems { get; set; } = [];
+
+        public GiftCodeDTO? GiftCode { get; set; }
     }
 }

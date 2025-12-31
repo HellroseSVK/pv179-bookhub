@@ -1,4 +1,5 @@
-﻿using BusinessLayer.DTOs.WishlistItem;
+﻿using BusinessLayer.DTOs;
+using BusinessLayer.DTOs.WishlistItem;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -30,6 +31,29 @@ public class WishlistItemService(CustomDBContext dbContext) : IWishlistItemServi
 
     }
 
+    public async Task<PagedResult<WishlistItemDTO>> GetWishlistItemsPaginatedAsync(PaginationParameters paginationParameters, int? userId, bool includeBook = true,
+        bool includeUser = true)
+    {
+        var query = GetBaseQuery(includeBook, includeUser);
+
+        if (userId != null)
+        {
+            query = query.Where(item => item.UserId == userId);
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var wishlistItems = await query.ToListAsync();
+
+        return new PagedResult<WishlistItemDTO>
+        {
+            Items = wishlistItems.Adapt<List<WishlistItemDTO>>(),
+            TotalCount = totalCount,
+            PageNumber = paginationParameters.PageNumber,
+            PageSize = paginationParameters.PageSize
+        };
+    }
+
     public async Task<WishlistItemDTO> GetWishlistItemAsync(int id, bool includeBook = true, bool includeUser = true)
     {
         var item = await FindWishlistItem(id, includeBook, includeUser);
@@ -37,18 +61,17 @@ public class WishlistItemService(CustomDBContext dbContext) : IWishlistItemServi
         return item.Adapt<WishlistItemDTO>();
     }
 
-    public async Task<List<WishlistItemDTO>> GetWishlistItemsAsync(int[]? ids = null, bool includeBook = true, bool includeUser = true)
+    public async Task<List<WishlistItemDTO>> GetWishlistItemsAsync(int? userId, bool includeBook = true, bool includeUser = true)
     {
         var query = GetBaseQuery(includeBook, includeUser);
 
-        if (ids is { Length: > 0 })
+        if (userId != null)
         {
-            query = query.Where(item => ids.Contains(item.Id));
+            query = query.Where(item => item.UserId == userId);
         }
 
         var wishlistItems = await query.ToListAsync();
         return wishlistItems.Adapt<List<WishlistItemDTO>>();
-
     }
 
     public async Task PatchWishlistItemAsync(int id, WishlistItemPartialDTO wishlistItemDto)
