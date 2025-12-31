@@ -10,6 +10,6 @@ public class BookFilterDTO : PaginationParameters
     public List<int>? AuthorIds { get; set; }
     public List<int>? GenreIds { get; set; }
     public List<int>? PublisherIds { get; set; }
-    
+
     public string? SearchTerm { get; set; }
 }

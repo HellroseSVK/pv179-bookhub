@@ -1,4 +1,6 @@
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Author;
+using BusinessLayer.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -39,6 +41,31 @@ public class AuthorService(CustomDBContext dbContext) : IAuthorService
         return authors.Adapt<List<AuthorDTO>>();
     }
 
+    public async Task<PagedResult<AuthorDTO>> GetAuthorsPaginatedAsync(PaginationParameters paginationParameters, int[]? ids = null,
+        bool includeBookAuthors = true)
+    {
+        var query = GetBaseQuery(includeBookAuthors);
+
+        if (ids is { Length: > 0 })
+        {
+            query = query.Where(a => ids.Contains(a.Id));
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var authors = await query
+            .Paginate(paginationParameters.PageNumber, paginationParameters.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<AuthorDTO>
+        {
+            Items = authors.Adapt<List<AuthorDTO>>(),
+            TotalCount = totalCount,
+            PageNumber = paginationParameters.PageNumber,
+            PageSize = paginationParameters.PageSize
+        };
+    }
+
     public async Task<AuthorDTO> GetAuthorAsync(int id, bool includeBookAuthors = true)
     {
         var author = await FindAuthor(id, includeBookAuthors);
@@ -49,16 +76,16 @@ public class AuthorService(CustomDBContext dbContext) : IAuthorService
     public async Task<List<AuthorDTO>> SearchAuthorsAsync(string searchTerm)
     {
         var query = GetBaseQuery(false);
-        
+
         if (!string.IsNullOrEmpty(searchTerm))
         {
             var searchTermLower = searchTerm.ToLower();
             query = query.Where(a => (a.Name + " " + a.Surname).ToLower().Contains(searchTermLower) ||
                                    (a.Surname + " " + a.Name).ToLower().Contains(searchTermLower) ||
-                                   a.Name.ToLower().Contains(searchTermLower) || 
+                                   a.Name.ToLower().Contains(searchTermLower) ||
                                    a.Surname.ToLower().Contains(searchTermLower));
         }
-        
+
         var authors = await query.ToListAsync();
         return authors.Adapt<List<AuthorDTO>>();
     }

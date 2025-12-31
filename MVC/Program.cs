@@ -51,6 +51,7 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
+builder.Services.AddScoped<IGiftCardService, GiftCardService>();
 
 builder.Services.Configure<IISServerOptions>(options =>
 {
@@ -94,6 +95,20 @@ using var scope = app.Services.CreateScope();
 var db = scope.ServiceProvider.GetRequiredService<CustomDBContext>();
 await db.Database.MigrateAsync();
 
+// Add roles to the database if they do not exist
+var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+string[] roles = ["Admin", "User"];
+List<Task> roleTasks = [];
+foreach (var role in roles)
+{
+    if (!await roleManager.RoleExistsAsync(role))
+    {
+        roleTasks.Add(roleManager.CreateAsync(new IdentityRole(role)));
+    }
+}
+
+await Task.WhenAll(roleTasks);
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -124,8 +139,8 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();

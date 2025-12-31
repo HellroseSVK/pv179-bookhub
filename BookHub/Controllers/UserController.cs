@@ -55,7 +55,7 @@ public class UserController(IUserService userService) : ControllerBase
     }
 
     [HttpPost("/token")]
-    [Authorize(Roles = "User")]
+    [AllowAnonymous]
     [ProducesResponseType<UserResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetToken([FromBody] UserLoginModel model)

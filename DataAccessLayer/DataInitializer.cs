@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.Entities;
+using DataAccessLayer.Enums;
 using Microsoft.EntityFrameworkCore;
 using Bogus;
 
@@ -17,9 +18,13 @@ public static class DataInitializer
     private const int ReviewCount = 20;
     private const int BookAuthorCount = 40;
     private const int BookGenreCount = 40;
+    private const int GiftCardCount = 5;
+    private const int GiftCodeCount = 500;
 
     public static void Seed(this ModelBuilder modelBuilder)
     {
+        var giftCards = PrepareGiftCards();
+        var giftCodes = PrepareGiftCode();
         var genres = PrepareGenres();
         var publishers = PreparePublishers();
         var authors = PrepareAuthors();
@@ -32,6 +37,10 @@ public static class DataInitializer
         var bookAuthors = LinkBooksAndAuthors();
         var bookGenres = LinkBooksAndGenres();
 
+        modelBuilder.Entity<GiftCard>()
+            .HasData(giftCards);
+        modelBuilder.Entity<GiftCode>()
+            .HasData(giftCodes);
         modelBuilder.Entity<Genre>()
             .HasData(genres);
         modelBuilder.Entity<Publisher>()
@@ -309,7 +318,8 @@ public static class DataInitializer
         var faker = new Faker<Order>()
             .UseSeed(111222)
             .RuleFor(o => o.Id, f => f.IndexFaker + 1)
-            .RuleFor(o => o.UserId, f => f.Random.Int(1, UserCount));
+            .RuleFor(o => o.UserId, f => f.Random.Int(1, UserCount))
+            .RuleFor(o => o.OrderStatus, f => OrderStatus.Completed);
 
         return faker.Generate(OrderCount);
     }
@@ -390,46 +400,75 @@ public static class DataInitializer
 
     private static List<BookGenre> LinkBooksAndGenres()
     {
-        var faker = new Faker<BookGenre>()
-            .UseSeed(761321)
-            .RuleFor(w => w.Id, f => f.IndexFaker + 1)
-            .RuleFor(w => w.BookId, f => f.Random.Int(1, BookCount))
-            .RuleFor(w => w.GenreId, f => f.Random.Int(1, GenreCount))
-            .RuleFor(w => w.IsPrimary, false);  // Default to false
+        var rand = new Random(761321);
+        var pairs = new HashSet<(int BookId, int GenreId)>();
+        var primaryPairs = new HashSet<(int BookId, int GenreId)>();
 
-        var bookGenres = faker.Generate(BookGenreCount);
+        for (int bookId = 1; bookId <= BookCount; bookId++)
+        {
+            var genreId = rand.Next(1, GenreCount + 1);
+            pairs.Add((bookId, genreId));
+            primaryPairs.Add((bookId, genreId));
+        }
 
-        var uniqueBookGenres = bookGenres
-            .GroupBy(bg => new { bg.BookId, bg.GenreId })
-            .Select(g => g.First())
+        while (pairs.Count < BookGenreCount)
+        {
+            var bookId = rand.Next(1, BookCount + 1);
+            var genreId = rand.Next(1, GenreCount + 1);
+            pairs.Add((bookId, genreId));
+        }
+
+        var result = pairs
+            .OrderBy(p => p.BookId)
+            .ThenBy(p => p.GenreId)
+            .Select((p, i) => new BookGenre
+            {
+                Id = i + 1,
+                BookId = p.BookId,
+                GenreId = p.GenreId,
+                IsPrimary = primaryPairs.Contains(p)
+            })
             .ToList();
 
-        var booksWithGenres = uniqueBookGenres.Select(bg => bg.BookId).Distinct().ToHashSet();
-        var missingBooks = Enumerable.Range(1, BookCount).Except(booksWithGenres).ToList();
-
-        var nextId = uniqueBookGenres.Count + 1;
-        uniqueBookGenres.AddRange(
-            missingBooks.Select((bookId, index) => new BookGenre
-            {
-                Id = nextId + index,
-                BookId = bookId,
-                GenreId = new Random(761321 + bookId).Next(1, GenreCount + 1),
-                IsPrimary = false
-            })
-        );
-
-        var bookGroups = uniqueBookGenres.GroupBy(bg => bg.BookId);
-        foreach (var bookGroup in bookGroups)
-        {
-            bookGroup.First().IsPrimary = true;
-        }
-
-        var result = uniqueBookGenres.OrderBy(bg => bg.BookId).ThenBy(bg => bg.GenreId).ToList();
-        for (int i = 0; i < result.Count; i++)
-        {
-            result[i].Id = i + 1;
-        }
-
         return result;
+    }
+
+    private static readonly string[] Titles =
+    [
+        "Birthday Bliss Gift Card",
+        "Holiday Cheer Gift Card",
+        "Thank You Treat Gift Card",
+        "Just Because Gift Card",
+        "Congratulations Gift Card",
+        "Thinking of You Gift Card",
+        "Anniversary Delight Gift Card",
+        "Welcome Gift Card",
+        "Get Well Soon Gift Card",
+        "New Home Gift Card",
+        "Seasonal Surprise Gift Card",
+        "Care Package Gift Card"
+    ];
+    private static List<GiftCard> PrepareGiftCards()
+    {
+        var faker = new Faker<GiftCard>()
+            .UseSeed(1645)
+            .RuleFor(card => card.Id, f => f.IndexFaker + 1)
+            .RuleFor(card => card.Title, f => f.Random.ArrayElement(Titles))
+            .RuleFor(card => card.ValidFrom, f => new DateTime(2025, 1, 1))
+            .RuleFor(card => card.ValidTo, f => new DateTime(2026, 1, 1))
+            .RuleFor(card => card.Price, f => f.Random.ArrayElement(new[] { 50m, 100m, 150m, 200m, 250m }));
+
+        return faker.Generate(GiftCardCount);
+    }
+
+    private static List<GiftCode> PrepareGiftCode()
+    {
+        var faker = new Faker<GiftCode>()
+            .UseSeed(1645)
+            .RuleFor(code => code.Id, f => f.IndexFaker + 1)
+            .RuleFor(code => code.Code, f => f.Random.AlphaNumeric(12).ToUpper())
+            .RuleFor(code => code.GiftCardId, f => f.Random.Int(1, GiftCardCount));
+
+        return faker.Generate(GiftCodeCount);
     }
 }

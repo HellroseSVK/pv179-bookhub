@@ -2,7 +2,9 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.User;
+using BusinessLayer.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -74,6 +76,31 @@ public class UserService(CustomDBContext dbContext, IConfiguration config) : IUs
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public async Task<PagedResult<UserDTO>> GetUsersPaginatedAsync(PaginationParameters paginationParameters, int[]? ids = null, bool includeReviews = true,
+        bool includeWishlistItems = true, bool includeOrders = true)
+    {
+        var query = GetBaseQuery(includeReviews, includeWishlistItems, includeOrders);
+
+        if (ids is { Length: > 0 })
+        {
+            query = query.Where(a => ids.Contains(a.Id));
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var users = await query
+            .Paginate(paginationParameters.PageNumber, paginationParameters.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<UserDTO>
+        {
+            Items = users.Adapt<List<UserDTO>>(),
+            TotalCount = totalCount,
+            PageNumber = paginationParameters.PageNumber,
+            PageSize = paginationParameters.PageSize
+        };
     }
 
     public async Task<UserDTO> GetUserAsync(int id, bool includeReviews = true,

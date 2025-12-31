@@ -1,0 +1,9 @@
+@model MVC.Models.User.UserResetViewModel
+@{
+ViewData["Title"] = "Models";
+}
+
+<div class="text-center">
+    <h1 class="display-4">The reset token for user with email "@Model.Email" is:</h1>
+    <p>@Model.ResetToken</p>
+</div>

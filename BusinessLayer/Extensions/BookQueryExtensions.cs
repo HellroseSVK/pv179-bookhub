@@ -6,15 +6,8 @@ namespace BusinessLayer.Extensions;
 
 public static class BookQueryExtensions
 {
-    public static IQueryable<Book> Paginate(this IQueryable<Book> bookQuery, int pageNumber, int pageSize)
-    {
-        return bookQuery
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize);
-    }
-
-    public static IQueryable<Book> IncludeVirtuals(this IQueryable<Book> query, 
-        bool includeWishlistItems = false, 
+    public static IQueryable<Book> IncludeVirtuals(this IQueryable<Book> query,
+        bool includeWishlistItems = false,
         bool includeOrderItems = false)
     {
         IQueryable<Book> result = query
@@ -41,12 +34,12 @@ public static class BookQueryExtensions
         if (!string.IsNullOrEmpty(filter.SearchTerm))
         {
             var searchTermLower = filter.SearchTerm.ToLower();
-            query = query.Where(b => b.Title.ToLower().Contains(searchTermLower) || 
+            query = query.Where(b => b.Title.ToLower().Contains(searchTermLower) ||
                                b.Description.ToLower().Contains(searchTermLower) ||
-                               b.BookAuthors.Any(ba => ba.Author != null && 
+                               b.BookAuthors.Any(ba => ba.Author != null &&
                                                      ((ba.Author.Name + " " + ba.Author.Surname).ToLower().Contains(searchTermLower) ||
                                                      (ba.Author.Surname + " " + ba.Author.Name).ToLower().Contains(searchTermLower) ||
-                                                     ba.Author.Name.ToLower().Contains(searchTermLower) || 
+                                                     ba.Author.Name.ToLower().Contains(searchTermLower) ||
                                                      ba.Author.Surname.ToLower().Contains(searchTermLower))) ||
                                b.BookGenres.Any(bg => bg.Genre != null && bg.Genre.Name.ToLower().Contains(searchTermLower)) ||
                                (b.Publisher != null && b.Publisher.Name.ToLower().Contains(searchTermLower)));

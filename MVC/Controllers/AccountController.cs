@@ -6,6 +6,7 @@ using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using MVC.Models.Account;
 
@@ -29,20 +30,38 @@ public class AccountController(
             return View(model);
         }
 
+        var existing = await userManager.FindByEmailAsync(model.Email);
+        if (existing != null)
+        {
+            ModelState.AddModelError(nameof(model.Email), "A user with this email already exists.");
+            return View(model);
+        }
+
         var user = new User
         {
             Email = model.Email,
             Password = model.Password,
-            IsAdmin = false
+            IsAdmin = model.IsAdmin,
         };
         var identityUser = new LocalIdentityUser { UserName = model.Email, Email = model.Email, User = user };
         var result = await userManager.CreateAsync(identityUser, model.Password);
 
         if (result.Succeeded)
         {
+            var addRolesResult =
+                await userManager.AddToRolesAsync(identityUser, model.IsAdmin ? ["User", "Admin"] : ["User"]);
+            if (!addRolesResult.Succeeded)
+            {
+                foreach (var error in addRolesResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return View(model);
+            }
+
             await signInManager.SignInAsync(identityUser, isPersistent: false);
-            // return RedirectToAction("Login", "Account");
-            return RedirectToAction(nameof(Login), nameof(AccountController).Replace("Controller", ""));
+            return RedirectToAction(nameof(Index), nameof(HomeController).Replace("Controller", ""));
         }
 
         foreach (var error in result.Errors)
@@ -133,5 +152,50 @@ public class AccountController(
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
         return View(new TokenViewModel { Token = tokenString });
+    }
+
+    [HttpGet]
+    public IActionResult ResetPassword() => View();
+
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = await userManager.FindByEmailAsync(model.Email);
+        if (user == null)
+        {
+            // Don't reveal that the user does not exist
+            ModelState.AddModelError(string.Empty, "Internal error occured.");
+            return View();
+        }
+
+        string decodedToken;
+        try
+        {
+            var tokenBytes = WebEncoders.Base64UrlDecode(model.Token);
+            decodedToken = Encoding.UTF8.GetString(tokenBytes);
+        }
+        catch
+        {
+            ModelState.AddModelError(string.Empty, "Invalid token.");
+            return View(model);
+        }
+
+        var result = await userManager.ResetPasswordAsync(user, decodedToken, model.Password);
+        if (result.Succeeded)
+        {
+            return RedirectToAction(nameof(Login), nameof(AccountController).Replace("Controller", ""));
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+
+        return View(model);
     }
 }
