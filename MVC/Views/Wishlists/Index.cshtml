@@ -1,12 +1,12 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MVC.Models.Wishlists.WishListItemListItemViewModel
 @{
-    ViewData["Title"] = "Orders";
+    ViewData["Title"] = "Wishlist";
 }
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-9 col-lg-10">
-            <h2 class="mb-3">Orders</h2>
+            <h2 class="mb-3">Wishlist</h2>
 
             @if (TempData["SuccessMessage"] != null)
             {
@@ -23,18 +23,25 @@
                     {
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card h-100">
+                                @* Image clickable *@
                                 @if (!string.IsNullOrEmpty(wishlistItem.Book.ImageUrl))
                                 {
-                                    <img src="@wishlistItem.Book.ImageUrl" class="card-img-top" style="height: 200px; object-fit: cover;" alt="@wishlistItem.Book.Title"/>
+                                    <a asp-controller="Books" asp-action="Details" asp-route-id="@wishlistItem.Book.Id" class="d-block">
+                                        <img src="@wishlistItem.Book.ImageUrl" class="card-img-top" style="height: 200px; object-fit: cover;" alt="@wishlistItem.Book.Title"/>
+                                    </a>
                                 }
                                 else
                                 {
-                                    <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background-color: #f8f9fa;">
-                                        <span class="text-muted">No Image</span>
-                                    </div>
+                                    <a asp-controller="Books" asp-action="Details" asp-route-id="@wishlistItem.Book.Id" class="d-block">
+                                        <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background-color: #f8f9fa;">
+                                            <span class="text-muted">No Image</span>
+                                        </div>
+                                    </a>
                                 }
                                 <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title">@wishlistItem.Book.Title</h5>
+                                    <h5 class="card-title">
+                                        <a asp-controller="Books" asp-action="Details" asp-route-id="@wishlistItem.Book.Id" class="text-decoration-none text-reset">@wishlistItem.Book.Title</a>
+                                    </h5>
                                     <p class="card-text flex-grow-1">@wishlistItem.Book.Description</p>
                                     <div class="mt-auto">
                                         <p class="card-text">
@@ -84,7 +91,7 @@
             else
             {
                 <div class="text-center py-5">
-                    <h4>No orders found</h4>
+                    <h4>No wishlisted books found</h4>
                 </div>
             }
         </div>
