@@ -61,7 +61,7 @@ public class WishlistItemService(CustomDBContext dbContext) : IWishlistItemServi
         return item.Adapt<WishlistItemDTO>();
     }
 
-    public async Task<List<WishlistItemDTO>> GetWishlistItemsAsync(int? userId, bool includeBook = true, bool includeUser = true)
+    public async Task<List<WishlistItemDTO>> GetWishlistItemsAsync(int? userId = null, bool includeBook = true, bool includeUser = true)
     {
         var query = GetBaseQuery(includeBook, includeUser);
 

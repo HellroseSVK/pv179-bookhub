@@ -7,7 +7,7 @@ public interface IWishlistItemService
 {
     public Task<WishlistItemDTO> CreateWishlistItemAsync(WishlistItemUpsertDTO wishlistItem);
 
-    public Task<List<WishlistItemDTO>> GetWishlistItemsAsync(int? userId, bool includeBook = true,
+    public Task<List<WishlistItemDTO>> GetWishlistItemsAsync(int? userId = null, bool includeBook = true,
         bool includeUser = true);
 
     public Task<PagedResult<WishlistItemDTO>> GetWishlistItemsPaginatedAsync(PaginationParameters paginationParameters,
