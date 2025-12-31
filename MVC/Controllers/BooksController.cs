@@ -56,14 +56,14 @@ public class BooksController(IBookFacade bookFacade, IGenreService genreService,
 
         var viewModel = new BookListViewModel
         {
-            Items = pagedResult.Items.Select(b => b.Adapt<BookViewModel>()).ToList(),
+            Items = pagedResult!.Items.Select(b => b.Adapt<BookViewModel>()).ToList(),
             CurrentPage = pagedResult.PageNumber,
             TotalPages = pagedResult.TotalPages,
             PageSize = pagedResult.PageSize,
             TotalItems = pagedResult.TotalCount,
-            Genres = allGenres.Select(g => g.Adapt<GenreSimplifiedViewModel>()).ToList(),
+            Genres = allGenres!.Select(g => g.Adapt<GenreSimplifiedViewModel>()).ToList(),
             SelectedGenreId = genreId,
-            Authors = allAuthors.Select(a => a.Adapt<AuthorSimplifiedViewModel>()).ToList(),
+            Authors = allAuthors!.Select(a => a.Adapt<AuthorSimplifiedViewModel>()).ToList(),
             SelectedAuthorId = authorId
         };
 
