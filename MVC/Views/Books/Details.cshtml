@@ -35,9 +35,19 @@
                                 <span class="h4">@Model.Book.Price.ToString("C")</span>
                             </div>
 
-                            <div class="mt-auto">
-                                <button type="button" class="btn btn-primary">Order</button>
-                            </div>
+                            @if (User.Identity!.IsAuthenticated)
+                            {
+                                <div class="mt-auto">
+                                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="mb-2">
+                                        <input type="hidden" name="bookId" value="@Model.Book.Id" />
+                                        <button type="submit" class="btn btn-primary btn-sm w-100">Add to Cart</button>
+                                    </form>
+                                    <form asp-controller="Wishlists" asp-action="AddToWishlist" method="post" class="mb-2">
+                                        <input type="hidden" name="bookId" value="@Model.Book.Id" />
+                                        <button type="submit" class="btn btn-primary btn-sm w-100">Add to Wishlist</button>
+                                    </form>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
