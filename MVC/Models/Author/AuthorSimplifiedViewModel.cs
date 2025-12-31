@@ -1,6 +1,6 @@
-namespace MVC.Models.Book;
+namespace MVC.Models.Author;
 
-public class AuthorViewModel
+public class AuthorSimplifiedViewModel
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

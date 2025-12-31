@@ -1,3 +1,4 @@
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Author;
 
 namespace BusinessLayer.Services.Interfaces;
@@ -7,6 +8,9 @@ public interface IAuthorService
     public Task<AuthorDTO> CreateAuthorAsync(AuthorUpsertDTO authorDto);
 
     public Task<List<AuthorDTO>> GetAuthorsAsync(int[]? ids = null, bool includeBookAuthors = true);
+
+    public Task<PagedResult<AuthorDTO>> GetAuthorsPaginatedAsync(PaginationParameters paginationParameters,
+        int[]? ids = null, bool includeBookAuthors = true);
 
     public Task<AuthorDTO> GetAuthorAsync(int id, bool includeBookAuthors = true);
 

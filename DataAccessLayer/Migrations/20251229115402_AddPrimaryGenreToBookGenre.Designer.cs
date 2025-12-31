@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(CustomDBContext))]
-    [Migration("20251227101553_AddPrimaryGenreToBookGenre")]
+    [Migration("20251229115402_AddPrimaryGenreToBookGenre")]
     partial class AddPrimaryGenreToBookGenre
     {
         /// <inheritdoc />
@@ -823,84 +823,44 @@ namespace DataAccessLayer.Migrations
                             Id = 1,
                             BookId = 1,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 2,
+                            GenreId = 1,
                             IsPrimary = true
                         },
                         new
                         {
                             Id = 2,
-                            BookId = 1,
+                            BookId = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 4,
+                            GenreId = 3,
                             IsPrimary = false
                         },
                         new
                         {
                             Id = 3,
-                            BookId = 1,
+                            BookId = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 9,
-                            IsPrimary = false
+                            GenreId = 6,
+                            IsPrimary = true
                         },
                         new
                         {
                             Id = 4,
-                            BookId = 2,
+                            BookId = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 3,
-                            IsPrimary = false
+                            GenreId = 1,
+                            IsPrimary = true
                         },
                         new
                         {
                             Id = 5,
-                            BookId = 2,
+                            BookId = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 4,
-                            IsPrimary = false
+                            GenreId = 2,
+                            IsPrimary = true
                         },
                         new
                         {
                             Id = 6,
-                            BookId = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 6,
-                            IsPrimary = true
-                        },
-                        new
-                        {
-                            Id = 7,
-                            BookId = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 8,
-                            IsPrimary = false
-                        },
-                        new
-                        {
-                            Id = 8,
-                            BookId = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 3,
-                            IsPrimary = false
-                        },
-                        new
-                        {
-                            Id = 9,
-                            BookId = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 6,
-                            IsPrimary = true
-                        },
-                        new
-                        {
-                            Id = 10,
-                            BookId = 4,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 4,
-                            IsPrimary = true
-                        },
-                        new
-                        {
-                            Id = 11,
                             BookId = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GenreId = 8,
@@ -908,56 +868,96 @@ namespace DataAccessLayer.Migrations
                         },
                         new
                         {
-                            Id = 12,
+                            Id = 7,
+                            BookId = 6,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            GenreId = 4,
+                            IsPrimary = true
+                        },
+                        new
+                        {
+                            Id = 8,
                             BookId = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GenreId = 5,
+                            IsPrimary = false
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BookId = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            GenreId = 1,
+                            IsPrimary = false
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BookId = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            GenreId = 6,
+                            IsPrimary = false
+                        },
+                        new
+                        {
+                            Id = 11,
+                            BookId = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            GenreId = 9,
                             IsPrimary = true
+                        },
+                        new
+                        {
+                            Id = 12,
+                            BookId = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            GenreId = 10,
+                            IsPrimary = false
                         },
                         new
                         {
                             Id = 13,
-                            BookId = 7,
+                            BookId = 8,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 2,
-                            IsPrimary = false
+                            GenreId = 4,
+                            IsPrimary = true
                         },
                         new
                         {
                             Id = 14,
-                            BookId = 7,
+                            BookId = 9,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 3,
-                            IsPrimary = false
+                            GenreId = 1,
+                            IsPrimary = true
                         },
                         new
                         {
                             Id = 15,
-                            BookId = 7,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 7,
-                            IsPrimary = false
-                        },
-                        new
-                        {
-                            Id = 16,
-                            BookId = 7,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 10,
-                            IsPrimary = true
-                        },
-                        new
-                        {
-                            Id = 17,
-                            BookId = 8,
+                            BookId = 10,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GenreId = 3,
                             IsPrimary = true
                         },
                         new
                         {
+                            Id = 16,
+                            BookId = 10,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            GenreId = 6,
+                            IsPrimary = false
+                        },
+                        new
+                        {
+                            Id = 17,
+                            BookId = 11,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            GenreId = 4,
+                            IsPrimary = false
+                        },
+                        new
+                        {
                             Id = 18,
-                            BookId = 9,
+                            BookId = 11,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GenreId = 8,
                             IsPrimary = true
@@ -965,47 +965,47 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 19,
-                            BookId = 10,
+                            BookId = 12,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 1,
+                            GenreId = 8,
                             IsPrimary = true
                         },
                         new
                         {
                             Id = 20,
-                            BookId = 11,
+                            BookId = 12,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 5,
-                            IsPrimary = true
-                        },
-                        new
-                        {
-                            Id = 21,
-                            BookId = 11,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 6,
+                            GenreId = 10,
                             IsPrimary = false
                         },
                         new
                         {
-                            Id = 22,
-                            BookId = 11,
+                            Id = 21,
+                            BookId = 13,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 7,
+                            GenreId = 6,
+                            IsPrimary = true
+                        },
+                        new
+                        {
+                            Id = 22,
+                            BookId = 14,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            GenreId = 3,
                             IsPrimary = false
                         },
                         new
                         {
                             Id = 23,
-                            BookId = 12,
+                            BookId = 14,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 4,
+                            GenreId = 8,
                             IsPrimary = true
                         },
                         new
                         {
                             Id = 24,
-                            BookId = 13,
+                            BookId = 15,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GenreId = 3,
                             IsPrimary = true
@@ -1013,15 +1013,15 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 25,
-                            BookId = 13,
+                            BookId = 15,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 6,
+                            GenreId = 8,
                             IsPrimary = false
                         },
                         new
                         {
                             Id = 26,
-                            BookId = 13,
+                            BookId = 16,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GenreId = 7,
                             IsPrimary = false
@@ -1029,23 +1029,23 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 27,
-                            BookId = 14,
+                            BookId = 16,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 9,
+                            GenreId = 10,
                             IsPrimary = true
                         },
                         new
                         {
                             Id = 28,
-                            BookId = 15,
+                            BookId = 17,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 8,
+                            GenreId = 1,
                             IsPrimary = true
                         },
                         new
                         {
                             Id = 29,
-                            BookId = 16,
+                            BookId = 18,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GenreId = 6,
                             IsPrimary = true
@@ -1053,7 +1053,7 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 30,
-                            BookId = 17,
+                            BookId = 19,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GenreId = 1,
                             IsPrimary = false
@@ -1061,7 +1061,7 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 31,
-                            BookId = 17,
+                            BookId = 19,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GenreId = 10,
                             IsPrimary = true
@@ -1069,49 +1069,49 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 32,
-                            BookId = 18,
+                            BookId = 20,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 8,
+                            GenreId = 6,
                             IsPrimary = true
                         },
                         new
                         {
                             Id = 33,
-                            BookId = 19,
+                            BookId = 20,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            GenreId = 7,
+                            IsPrimary = false
+                        },
+                        new
+                        {
+                            Id = 34,
+                            BookId = 21,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GenreId = 5,
                             IsPrimary = false
                         },
                         new
                         {
-                            Id = 34,
-                            BookId = 19,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 8,
-                            IsPrimary = true
-                        },
-                        new
-                        {
                             Id = 35,
-                            BookId = 20,
+                            BookId = 21,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 4,
+                            GenreId = 10,
                             IsPrimary = true
                         },
                         new
                         {
                             Id = 36,
-                            BookId = 21,
+                            BookId = 22,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 1,
+                            GenreId = 9,
                             IsPrimary = true
                         },
                         new
                         {
                             Id = 37,
-                            BookId = 22,
+                            BookId = 23,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 4,
+                            GenreId = 1,
                             IsPrimary = true
                         },
                         new
@@ -1119,39 +1119,23 @@ namespace DataAccessLayer.Migrations
                             Id = 38,
                             BookId = 23,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 2,
-                            IsPrimary = true
+                            GenreId = 8,
+                            IsPrimary = false
                         },
                         new
                         {
                             Id = 39,
                             BookId = 24,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 6,
+                            GenreId = 4,
                             IsPrimary = true
                         },
                         new
                         {
                             Id = 40,
-                            BookId = 24,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 9,
-                            IsPrimary = false
-                        },
-                        new
-                        {
-                            Id = 41,
                             BookId = 25,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 2,
-                            IsPrimary = false
-                        },
-                        new
-                        {
-                            Id = 42,
-                            BookId = 25,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            GenreId = 3,
+                            GenreId = 6,
                             IsPrimary = true
                         });
                 });

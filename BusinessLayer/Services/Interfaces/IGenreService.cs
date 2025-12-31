@@ -1,3 +1,4 @@
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Genre;
 
 namespace BusinessLayer.Services.Interfaces;
@@ -7,6 +8,9 @@ public interface IGenreService
     public Task<GenreDTO> CreateGenreAsync(GenreUpsertDTO genreDto);
 
     public Task<List<GenreDTO>> GetGenreAsync(int[]? ids = null, bool includeBookGenres = true);
+
+    public Task<PagedResult<GenreDTO>> GetGenrePaginatedAsync(PaginationParameters paginationParameters, int[]? ids = null,
+        bool includeBookGenres = true);
 
     public Task<GenreDTO> GetGenreAsync(int id, bool includeBookGenres = true);
 

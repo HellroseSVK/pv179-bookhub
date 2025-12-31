@@ -16,12 +16,22 @@ public class BookService(CustomDBContext dbContext) : IBookService
     public async Task<BookDTO> CreateBookAsync(BookUpsertDTO bookDto)
     {
         var authors = await FindAuthors(bookDto.AuthorIds);
-        var genres = await FindGenres(bookDto.GenreIds);
+        var genresFromDb = await FindGenres(bookDto.GenreIds);
         var publisher = await FindPublisher(bookDto.PublisherId);
+
+        // Reorder genres to match the order in bookDto.GenreIds (first is primary)
+        var genreDict = genresFromDb.ToDictionary(g => g.Id);
+        var genres = bookDto.GenreIds.Select(id => genreDict[id]).ToList();
 
         var book = bookDto.Adapt<Book>();
         book.BookAuthors = authors.Select(a => new BookAuthor { AuthorId = a.Id, Author = a, Book = book }).ToList();
-        book.BookGenres = genres.Select(g => new BookGenre { GenreId = g.Id, Genre = g, Book = book }).ToList();
+        book.BookGenres = genres.Select((g, index) => new BookGenre
+        {
+            GenreId = g.Id,
+            Genre = g,
+            Book = book,
+            IsPrimary = index == 0
+        }).ToList();
         book.PublisherId = publisher.Id;
 
         var created = dbContext.Books.Add(book);
@@ -47,9 +57,9 @@ public class BookService(CustomDBContext dbContext) : IBookService
             .IncludeVirtuals()
             .ApplyBookFilter(filter)
             .Distinct();
-        
+
         var totalCount = await query.CountAsync();
-        
+
         var books = await query
             .Paginate(filter.PageNumber, filter.PageSize)
             .ToListAsync();
@@ -116,8 +126,12 @@ public class BookService(CustomDBContext dbContext) : IBookService
         var book = await FindBook(id, includeAuthors: true, includeGenres: true);
 
         var authors = await FindAuthors(bookDto.AuthorIds);
-        var genres = await FindGenres(bookDto.GenreIds);
+        var genresFromDb = await FindGenres(bookDto.GenreIds);
         var publisher = await FindPublisher(bookDto.PublisherId);
+
+        // Reorder genres to match the order in bookDto.GenreIds (first is primary)
+        var genreDict = genresFromDb.ToDictionary(g => g.Id);
+        var genres = bookDto.GenreIds.Select(id => genreDict[id]).ToList();
 
         book.Title = bookDto.Title;
         book.Description = bookDto.Description;
@@ -131,11 +145,13 @@ public class BookService(CustomDBContext dbContext) : IBookService
         var newAuthors = authors.Except(assignedAuthors);
         book.BookAuthors.AddRange(newAuthors.Select(author => new BookAuthor { Author = author }));
 
-        var assignedGenres = book.BookGenres.Select(bg => bg.Genre).ToList();
-        var oldGenres = assignedGenres.Except(genres);
-        book.BookGenres.RemoveAll(bg => oldGenres.Any(og => og != null && og.Id == bg.GenreId));
-        var newGenres = genres.Except(assignedGenres);
-        book.BookGenres.AddRange(newGenres.Select(genre => new BookGenre { Genre = genre }));
+        // Clear all genres and re-add with correct IsPrimary flags
+        book.BookGenres.Clear();
+        book.BookGenres.AddRange(genres.Select((genre, index) => new BookGenre
+        {
+            Genre = genre,
+            IsPrimary = index == 0
+        }));
 
         dbContext.Books.Update(book);
         await dbContext.SaveChangesAsync();

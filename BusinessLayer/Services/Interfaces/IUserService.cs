@@ -1,4 +1,5 @@
-﻿using BusinessLayer.DTOs.User;
+﻿using BusinessLayer.DTOs;
+using BusinessLayer.DTOs.User;
 
 namespace BusinessLayer.Services.Interfaces;
 
@@ -13,6 +14,10 @@ public interface IUserService
         bool includeReviews = true,
         bool includeWishlistItems = true,
         bool includeOrders = true);
+
+    public Task<PagedResult<UserDTO>> GetUsersPaginatedAsync(PaginationParameters paginationParameters,
+        int[]? ids = null, bool includeReviews = true, bool includeWishlistItems = true, bool includeOrders = true);
+
 
     public Task<UserDTO> GetUserAsync(
         int id,
