@@ -11,10 +11,11 @@ using Microsoft.AspNetCore.Identity;
 using DataAccessLayer.Entities;
 using BusinessLayer.DTOs.Review;
 using Shared.Exception;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MVC.Controllers;
 
-public class BooksController(IBookFacade bookFacade, IGenreService genreService, IAuthorService authorService, IReviewService reviewService, UserManager<LocalIdentityUser> userManager) : Controller
+public class BooksController(IBookFacade bookFacade, IGenreService genreService, IAuthorService authorService, IReviewService reviewService, UserManager<LocalIdentityUser> userManager, IMemoryCache cache) : Controller
 {
     public async Task<IActionResult> Index(int page = 1, int pageSize = 12, int? genreId = null, int? authorId = null)
     {
@@ -32,10 +33,26 @@ public class BooksController(IBookFacade bookFacade, IGenreService genreService,
             filter.AuthorIds = [authorId.Value];
         }
 
-        var pagedResult = await bookFacade.FilterBooksPaginatedAsync(filter);
+        // Cache paginated book results with short TTL
+        var booksCacheKey = $"Books:Filter:{genreId?.ToString() ?? "0"}:{authorId?.ToString() ?? "0"}:{page}:{pageSize}";
+        var pagedResult = await cache.GetOrCreateAsync(booksCacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2);
+            return await bookFacade.FilterBooksPaginatedAsync(filter);
+        });
 
-        var allGenres = await genreService.GetGenreAsync(includeBookGenres: false);
-        var allAuthors = await authorService.GetAuthorsAsync(includeBookAuthors: false);
+        // Cache sidebar lists (long TTL)
+        var allGenres = await cache.GetOrCreateAsync("Genres:All", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6);
+            return await genreService.GetGenreAsync(includeBookGenres: false);
+        });
+
+        var allAuthors = await cache.GetOrCreateAsync("Authors:All", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6);
+            return await authorService.GetAuthorsAsync(includeBookAuthors: false);
+        });
 
         var viewModel = new BookListViewModel
         {
@@ -92,6 +109,11 @@ public class BooksController(IBookFacade bookFacade, IGenreService genreService,
         {
             await reviewService.CreateReviewAsync(dto);
             TempData["SuccessMessage"] = "Review submitted.";
+
+            // Invalidate cached book details and paginated lists that could be affected
+            cache.Remove($"Book:Details:{bookId}");
+            // Optionally remove filtered lists - simple approach: remove all Books:Filter* entries by a known pattern isn't directly supported by IMemoryCache
+            // For now rely on small TTL; for eager invalidation consider tracking keys or using a distributed cache that supports scanning.
         }
         catch (StatusCodeException ex)
         {

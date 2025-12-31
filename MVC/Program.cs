@@ -27,6 +27,9 @@ mapsterConfig.Apply(new MVCMappings());
 builder.Services.AddSingleton(mapsterConfig);
 builder.Services.AddScoped<IMapper, Mapper>();
 
+// In-memory cache for MVC
+builder.Services.AddMemoryCache();
+
 var envName = builder.Environment.EnvironmentName;
 
 Console.WriteLine($"Env Name: {envName}");
