@@ -27,37 +27,11 @@
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card h-100">
                                 <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title">@order.Id</h5>
-                                    <p class="card-text flex-grow-1">@order.Books.Count items in order</p>
+                                    <h5 class="card-title">@order.Books.Count items</h5>
                                     <div class="mt-auto">
                                         <p class="card-text">
                                             <strong>Price: @order.TotalPrice.ToString("C")</strong>
                                         </p>
-                                        @{
-                                            var bookCount = order.Books.Count;
-                                            var showAll = bookCount <= 5;
-                                            var displayCount = showAll ? bookCount : 4;
-                                        }
-                                        @for (int i = 0; i < displayCount; i++)
-                                        {
-                                            var book = order.Books[i];
-                                            if (!string.IsNullOrEmpty(book.ImageUrl))
-                                            {
-                                                <img src="@book.ImageUrl" class="card-img-top me-1" style="height:20px; object-fit:cover;" alt="@book.Title"/>
-                                            }
-                                            else
-                                            {
-                                                <div class="card-img-top d-flex align-items-center justify-content-center me-1" style="height:20px; background-color:#f8f9fa;">
-                                                    <span class="text-muted small">No Image</span>
-                                                </div>
-                                            }
-                                        }
-                                        @if (!showAll)
-                                        {
-                                            <div class="card-img-top d-flex align-items-center justify-content-center" style="height:20px; background-color:transparent;">
-                                                <span class="text-muted">...</span>
-                                            </div>
-                                        }
                                         <a asp-action="OrderUpsert" asp-route-orderId="@(order.Id)" asp-route-email="@(order.UserEmail)" class="btn btn-sm btn-primary">
                                             Edit
                                         </a>

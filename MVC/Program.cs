@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using MVC.Mapper;
+using Shared.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,9 @@ mapsterConfig.Apply(new MVCMappings());
 
 builder.Services.AddSingleton(mapsterConfig);
 builder.Services.AddScoped<IMapper, Mapper>();
+
+// In-memory cache for MVC
+builder.Services.AddMemoryCache();
 
 var envName = builder.Environment.EnvironmentName;
 
@@ -150,5 +154,7 @@ app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+app.UseMiddleware<LoggingMiddleware>("MVC:");
 
 app.Run();

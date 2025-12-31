@@ -180,7 +180,7 @@ app.UseMiddleware<JsonToXmlMiddleware>();
 
 app.MapControllers();
 
-app.UseMiddleware<LoggingMiddleware>();
+app.UseMiddleware<LoggingMiddleware>("API:");
 app.UseMiddleware<StatusCodeExceptionMiddleware>();
 
 app.Run();

@@ -17,6 +17,14 @@ public class WishlistItemService(CustomDBContext dbContext) : IWishlistItemServi
         var book = await FindBook(wishlistItemDto.BookId);
         var user = await FindUser(wishlistItemDto.UserId);
 
+        // Prevent duplicates: if user already has this book in wishlist, throw
+        var exists = await dbContext.WishlistItems
+            .AnyAsync(w => w.BookId == wishlistItemDto.BookId && w.UserId == wishlistItemDto.UserId);
+        if (exists)
+        {
+            throw new StatusCodeException(StatusCodes.Status400BadRequest, "Book is already in wishlist.");
+        }
+
         var wishlistItem = wishlistItemDto.Adapt<WishlistItem>();
         wishlistItem.BookId = book.Id;
         wishlistItem.Book = book;
