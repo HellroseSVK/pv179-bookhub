@@ -6,6 +6,7 @@ using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Author;
 using BusinessLayer.DTOs.Book;
 using BusinessLayer.DTOs.Genre;
+using BusinessLayer.DTOs.Order;
 using BusinessLayer.DTOs.Publisher;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
@@ -19,8 +20,10 @@ using Microsoft.AspNetCore.WebUtilities;
 using MVC.Models.Author;
 using MVC.Models.Genre;
 using MVC.Models.GiftCard;
+using MVC.Models.Order;
 using MVC.Models.Publisher;
 using MVC.Models.User;
+using Shared.Exception;
 
 namespace MVC.Controllers;
 
@@ -33,6 +36,7 @@ public class AdminController(
     IPublisherService publisherService,
     IUserService userService,
     IGiftCardService giftCardService,
+    IOrderService orderService,
     UserManager<LocalIdentityUser> userManager) : Controller
 {
     public IActionResult Index()
@@ -504,15 +508,17 @@ public class AdminController(
     {
         var viewModel = new GiftCardUpsertViewModel();
 
-        if (giftCardId.HasValue)
+        if (!giftCardId.HasValue)
         {
-            var giftCard = await giftCardService.GetGiftCardAsync(giftCardId.Value);
-            viewModel.Id = giftCard.Id;
-            viewModel.Title = giftCard.Title;
-            viewModel.ValidFrom = giftCard.ValidFrom;
-            viewModel.ValidTo = giftCard.ValidTo;
-            viewModel.Price = giftCard.Price;
+            return View(viewModel);
         }
+
+        var giftCard = await giftCardService.GetGiftCardAsync(giftCardId.Value);
+        viewModel.Id = giftCard.Id;
+        viewModel.Title = giftCard.Title;
+        viewModel.ValidFrom = giftCard.ValidFrom;
+        viewModel.ValidTo = giftCard.ValidTo;
+        viewModel.Price = giftCard.Price;
 
         return View(viewModel);
     }
@@ -598,6 +604,187 @@ public class AdminController(
         }
     }
 
+    public async Task<IActionResult> Orders(string email, int page = 1, int pageSize = 12)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var paginatedOrders = await orderService.GetOrdersPaginatedAsync(new BookFilterDTO
+        { PageNumber = page, PageSize = pageSize }, userId: user.UserId);
+
+        var giftCards = await giftCardService.GetGiftCardsAsync(paginatedOrders.Items
+            .Where(o => o.GiftCode != null)
+            .Select(o => o.GiftCode!.GiftCardId)
+            .Distinct().ToArray(), includeCodes: false);
+
+        var viewModel = new OrderListItemViewModel
+        {
+            UserEmail = user.Email,
+            Items = paginatedOrders.Items.Select(b => b.Adapt<OrderViewModel>()).ToList(),
+            CurrentPage = page,
+            TotalPages = paginatedOrders.TotalPages,
+            PageSize = pageSize,
+            TotalItems = paginatedOrders.TotalCount,
+        };
+
+        viewModel.Items.ForEach(o =>
+        {
+            var originalOrder = paginatedOrders.Items.FirstOrDefault(po => po.Id == o.Id);
+            var giftCard = originalOrder?.GiftCode != null
+                ? giftCards.FirstOrDefault(gc => gc.Id == originalOrder.GiftCode!.GiftCardId)
+                : null;
+
+            if (giftCard == null)
+            {
+                return;
+            }
+
+            o.GiftCard = giftCard.Adapt<OrderGiftCardViewModel>();
+            o.GiftCard.GiftCode = originalOrder!.GiftCode.Adapt<GiftCodeViewModel>();
+        });
+
+        return View(viewModel);
+    }
+
+    public async Task<IActionResult> Order(int orderId, string email)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var order = await orderService.GetOrderAsync(orderId);
+
+
+        var viewModel = order.Adapt<OrderViewModel>();
+
+        if (order.GiftCode == null)
+        {
+            return View(viewModel);
+        }
+
+        var giftCard = await giftCardService.GetGiftCardAsync(order.GiftCode.GiftCardId);
+
+        viewModel.GiftCard = giftCard.Adapt<OrderGiftCardViewModel>();
+        viewModel.GiftCard.GiftCode = order.GiftCode.Adapt<GiftCodeViewModel>();
+
+        return View(viewModel);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> OrderUpsert(string email, int? orderId = null)
+    {
+        var viewModel = new OrderUpsertViewModel
+        {
+            Id = orderId,
+            UserEmail = email,
+        };
+        await PopulateOrderDropdownsAsync(viewModel);
+
+        if (!orderId.HasValue)
+        {
+            return View(viewModel);
+        }
+
+        var order = await orderService.GetOrderAsync(orderId.Value);
+
+        viewModel.SelectedBookIds = order.OrderItems.Where(oi => oi.Book != null).Select(oi => oi.Book!.Id).ToList();
+        viewModel.GiftCode = order.GiftCode?.Code;
+        viewModel.OrderStatus = order.OrderStatus;
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> OrderUpsert(OrderUpsertViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            await PopulateOrderDropdownsAsync(viewModel);
+            return View(viewModel);
+        }
+
+        var user = await userManager.FindByEmailAsync(viewModel.UserEmail);
+
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        OrderDTO? order = null;
+
+        if (viewModel.Id.HasValue)
+        {
+            order = await orderService.GetOrderAsync(viewModel.Id.Value);
+        }
+
+        if (viewModel.GiftCode != null && order is { GiftCode: null } or null)
+        {
+            try
+            {
+                await giftCardService.ValidateGiftCodeAsync(viewModel.GiftCode);
+                TempData["SuccessMessage"] = "Gift code applied!";
+            }
+            catch (StatusCodeException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return View(viewModel);
+            }
+        }
+
+        var orderDto = new OrderUpsertDTO()
+        {
+            UserId = user.UserId,
+            BookIds = viewModel.SelectedBookIds,
+            OrderStatus = viewModel.OrderStatus,
+            GiftCode = viewModel.GiftCode,
+        };
+
+        try
+        {
+            if (!viewModel.Id.HasValue)
+            {
+                await orderService.CreateOrderAsync(orderDto);
+                TempData["SuccessMessage"] = "Order created successfully!";
+            }
+            else
+            {
+                await orderService.UpdateOrderAsync(viewModel.Id.Value, orderDto);
+                TempData["SuccessMessage"] = "Order updated successfully!";
+            }
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"Error saving order: {ex.Message}");
+            await PopulateOrderDropdownsAsync(viewModel);
+            return View(viewModel);
+        }
+
+        if (viewModel.GiftCode == null || order is not ({ GiftCode: null } or null))
+        {
+            return RedirectToAction(nameof(Orders), new { email = viewModel.UserEmail });
+        }
+
+        try
+        {
+            await orderService.ApplyGiftCodeToOrderAsync(user.UserId, viewModel.GiftCode);
+            TempData["SuccessMessage"] = "Gift code applied!";
+        }
+        catch (StatusCodeException ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Orders), new { email = viewModel.UserEmail });
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
@@ -649,6 +836,16 @@ public class AdminController(
     }
 
     private async Task PopulatePublisherDropdownsAsync(PublisherUpsertViewModel viewModel)
+    {
+        var books = await bookService.FilterBooksAsync(new BookFilterDTO());
+
+        viewModel.Books = books
+            .Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Title })
+            .OrderBy(a => a.Text)
+            .ToList();
+    }
+
+    private async Task PopulateOrderDropdownsAsync(OrderUpsertViewModel viewModel)
     {
         var books = await bookService.FilterBooksAsync(new BookFilterDTO());
 

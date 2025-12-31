@@ -11,5 +11,5 @@ public class GiftCardViewModel
     public bool IsCurrentlyValid =>
         DateTime.UtcNow >= ValidFrom && DateTime.UtcNow <= ValidTo;
 
-    public List<GiftCodeSimplifiedViewModel> GiftCodes { get; set; } = [];
+    public List<GiftCodeViewModel> GiftCodes { get; set; } = [];
 }

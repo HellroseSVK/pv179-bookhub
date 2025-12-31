@@ -1,6 +1,7 @@
 namespace DataAccessLayer.Enums;
 
-public enum OrderStatus
+public enum
+    OrderStatus
 {
     Draft = 0,      // Active shopping cart
     Completed = 1,  // Purchased order

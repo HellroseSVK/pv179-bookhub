@@ -1,6 +1,5 @@
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Entities;
-using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +47,10 @@ public class CartController(
     public async Task<IActionResult> AddToCart(int bookId)
     {
         var identityUser = await userManager.GetUserAsync(User);
-        if (identityUser == null) return Unauthorized();
+        if (identityUser == null)
+        {
+            return Unauthorized();
+        }
 
         try
         {
@@ -88,11 +90,14 @@ public class CartController(
     public async Task<IActionResult> ApplyGiftCode(string code)
     {
         var identityUser = await userManager.GetUserAsync(User);
-        if (identityUser == null) return Unauthorized();
+        if (identityUser == null)
+        {
+            return Unauthorized();
+        }
 
         try
         {
-            await orderService.ApplyGiftCodeToCartAsync(identityUser.UserId, code);
+            await orderService.ApplyGiftCodeToOrderAsync(identityUser.UserId, code);
             TempData["SuccessMessage"] = "Gift code applied!";
         }
         catch (StatusCodeException ex)
