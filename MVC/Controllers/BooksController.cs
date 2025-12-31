@@ -50,7 +50,7 @@ public class BooksController(IBookFacade bookFacade, IGenreService genreService,
 
     public async Task<IActionResult> Details(int id)
     {
-        var bookDto = await bookService.GetBookAsync(id, includeAuthors: true, includeGenres: true, includePublisher: true, includeReviews: true);
+        var bookDto = await bookFacade.GetBookAsync(id, includeAuthors: true, includeGenres: true, includePublisher: true, includeReviews: true);
         if (bookDto == null)
         {
             return NotFound();
