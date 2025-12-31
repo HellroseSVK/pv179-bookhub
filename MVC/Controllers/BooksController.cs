@@ -6,10 +6,15 @@ using MVC.Models.Book;
 using Mapster;
 using MVC.Models.Author;
 using MVC.Models.Genre;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using DataAccessLayer.Entities;
+using BusinessLayer.DTOs.Review;
+using Shared.Exception;
 
 namespace MVC.Controllers;
 
-public class BooksController(IBookFacade bookFacade, IGenreService genreService, IAuthorService authorService) : Controller
+public class BooksController(IBookFacade bookFacade, IGenreService genreService, IAuthorService authorService, IReviewService reviewService, UserManager<LocalIdentityUser> userManager) : Controller
 {
     public async Task<IActionResult> Index(int page = 1, int pageSize = 12, int? genreId = null, int? authorId = null)
     {
@@ -63,5 +68,36 @@ public class BooksController(IBookFacade bookFacade, IGenreService genreService,
         };
 
         return View(viewModel);
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> AddReview(int bookId, int rating, string body)
+    {
+        var identityUser = await userManager.GetUserAsync(User);
+        if (identityUser == null)
+        {
+            return Unauthorized();
+        }
+
+        var dto = new ReviewUpsertDTO
+        {
+            BookId = bookId,
+            Rating = rating,
+            Body = body,
+            UserId = identityUser.UserId
+        };
+
+        try
+        {
+            await reviewService.CreateReviewAsync(dto);
+            TempData["SuccessMessage"] = "Review submitted.";
+        }
+        catch (StatusCodeException ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
+
+        return RedirectToAction("Details", new { id = bookId });
     }
 }

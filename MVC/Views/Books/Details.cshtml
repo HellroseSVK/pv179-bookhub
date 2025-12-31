@@ -65,6 +65,45 @@
                     <div class="card mb-3">
                         <div class="card-header">Reviews (@Model.Reviews.Count)</div>
                         <div class="card-body">
+                            @if (TempData["SuccessMessage"] != null)
+                            {
+                                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                            }
+                            @if (TempData["ErrorMessage"] != null)
+                            {
+                                <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                            }
+
+                            @if (User.Identity!.IsAuthenticated)
+                            {
+                                <form asp-action="AddReview" method="post" class="mb-3">
+                                    <input type="hidden" name="bookId" value="@Model.Book.Id" />
+
+                                    <div class="mb-3">
+                                        <label for="rating" class="form-label">Rating</label>
+                                        <select id="rating" name="rating" class="form-select" required>
+                                            <option value="">Choose...</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="body" class="form-label">Review</label>
+                                        <textarea id="body" name="body" class="form-control" rows="3" required></textarea>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-success">Submit Review</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Please <a asp-controller="Account" asp-action="Login">login</a> to submit a review.</p>
+                            }
+
                             @if (!Model.Reviews.Any())
                             {
                                 <p class="text-muted">No reviews yet.</p>
