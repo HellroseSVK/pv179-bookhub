@@ -47,4 +47,21 @@ public class BooksController(IBookFacade bookFacade, IGenreService genreService,
 
         return View(viewModel);
     }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        var bookDto = await bookFacade.GetBookAsync(id, includeAuthors: true, includeGenres: true, includePublisher: true, includeReviews: true);
+        if (bookDto == null)
+        {
+            return NotFound();
+        }
+
+        var viewModel = new BookDetailsViewModel
+        {
+            Book = bookDto.Adapt<BookViewModel>(),
+            Reviews = bookDto.Reviews ?? new List<BusinessLayer.DTOs.Review.ReviewSimplifiedDTO>()
+        };
+
+        return View(viewModel);
+    }
 }
