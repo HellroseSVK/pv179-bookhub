@@ -7,8 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Shared.Middleware;
 
-public class LoggingMiddleware(RequestDelegate next, IDbContextFactory<CustomDBContext> dbFactory)
+public class LoggingMiddleware(RequestDelegate next, IDbContextFactory<CustomDBContext> dbFactory, string prefix = "")
 {
+    private readonly string _prefix = prefix;
+
     public async Task InvokeAsync(HttpContext context)
     {
         // ----- Read Request Body -----
@@ -36,8 +38,8 @@ public class LoggingMiddleware(RequestDelegate next, IDbContextFactory<CustomDBC
         var httpLog = new HttpLog
         {
             Timestamp = DateTime.UtcNow,
-            RequestMethod = context.Request.Method,
-            RequestPath = context.Request.Path,
+            RequestMethod = (string.IsNullOrEmpty(_prefix) ? "" : _prefix + " ") + context.Request.Method,
+            RequestPath = (string.IsNullOrEmpty(_prefix) ? "" : _prefix + " ") + context.Request.Path,
             QueryString = context.Request.QueryString.Value ?? "",
             RequestHeaders = JsonSerializer.Serialize(context.Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString())),
             RequestBody = requestBody ?? "",

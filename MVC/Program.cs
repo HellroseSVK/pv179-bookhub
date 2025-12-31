@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using MVC.Mapper;
+using Shared.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -150,5 +151,7 @@ app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+app.UseMiddleware<LoggingMiddleware>("MVC:");
 
 app.Run();
